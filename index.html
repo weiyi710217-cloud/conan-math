@@ -97,7 +97,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案</p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v2.5</span></p>
                 </div>
             </div>
 
@@ -191,7 +191,7 @@
                 </div>
                 <h3 class="text-2xl font-black text-yellow-300">真相只有一個！目前錯題庫為空</h3>
                 <p class="text-slate-300 max-w-md mx-auto text-sm leading-relaxed">
-                    目前沒有任何待解決的數學錯題。請家長透過拍照上傳，或點擊下方按鈕載入 3 題六升私中入學考經典範例錯題！
+                    目前沒有任何待解決的數學錯題。請家長貼上文字新增錯題，或點擊下方按鈕載入 3 題六升私中入學考經典範例錯題！
                 </p>
                 <div class="pt-2 flex flex-wrap justify-center gap-3">
                     <button onclick="loadDefaultWrongQuestions()" class="bg-gradient-to-r from-conanRed to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition flex items-center space-x-2">
@@ -287,7 +287,7 @@
                         <span>家長錯題庫中心</span>
                     </h2>
                     <p class="text-xs text-slate-400 mt-1">
-                        每筆錯題均已為您自動衍生 <strong class="text-blue-300">【類似題】</strong> 與 <strong class="text-red-300">【進階題】</strong>。可自由編輯、重新抽題或單獨測驗。
+                        每筆錯題均已為您自動衍生 <strong class="text-blue-300">【類似題】</strong> 與 <strong class="text-red-300">【進階題】</strong>，並追蹤答對／答錯次數。
                     </p>
                 </div>
 
@@ -551,7 +551,7 @@
     </div>
 
 
-    <!-- 6. ⚙️ 設定 Modal (Gemini API Key 設定) -->
+    <!-- 6. ⚙️ 設定 Modal (Gemini API Key 與 GitHub 同步設定) -->
     <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -563,9 +563,9 @@
             </div>
 
             <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-300">Google Gemini API Key（可選，用於拍照 AI 視覺解析並生成專屬題目）：</label>
+                <label class="block text-xs font-bold text-slate-300">Google Gemini API Key（可選，用於 AI 智慧衍生專屬題目）：</label>
                 <input type="password" id="geminiApiKeyInput" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-mono text-white focus:outline-none focus:border-amber-400" placeholder="AIzaSy...">
-                <p class="text-[11px] text-slate-400">若未設定 Gemini API Key，系統將預設使用內建「30 大私中數學題目生成器」與離線 Tesseract OCR 處理上傳照片。</p>
+                <p class="text-[11px] text-slate-400">若未設定 Gemini API Key，系統將預設使用內建「30 大私中數學題目生成器」自動產生類似題與進階題。</p>
             </div>
 
             <!-- GitHub 跨裝置雲端題庫同步設定 -->
@@ -862,16 +862,14 @@
             const unit1 = /筆/.test(item1) ? "支" : (/書|本/.test(item1) ? "本" : "個");
             const unit2 = /本|書/.test(item2) ? "本" : (/筆/.test(item2) ? "支" : "個");
 
-            // 設定一組乾淨整數單價（y = 2x，方便設計奇偶數與倍數判斷選項）
-            const priceX = randInt(6, 12) * 2 + 1; // 奇數單價，如 13, 15, 17, 19, 21
-            const priceY = priceX * 2;             // 偶數單價，如 26, 30, 34, 38, 42
+            const priceX = randInt(6, 12) * 2 + 1;
+            const priceY = priceX * 2;
 
             const a1 = randInt(3, 5), b1 = randInt(6, 8);
             const total1 = a1 * priceX + b1 * priceY;
             const a2 = 1, b2 = 2;
             const total2 = a2 * priceX + b2 * priceY;
 
-            // 檢驗選項真偽：2x + y 必為偶數（錯誤敘述為「2x+y是奇數」）；y 可被 x 整除（正確）；2x = y（正確）；3x + y 為奇數（正確）
             const sim = {
                 question: `${c1}在文具店調查線索：買 $${a1}$ ${unit1}${item1}和 $${b1}$ ${unit2}${item2}，共用去 $${total1}$ 元；買同樣的 $${a2}$ ${unit1}${item1}和 $${b2}$ ${unit2}${item2}共用去 $${total2}$ 元。若一${unit1}${item1}是 $x$ 元，一${unit2}${item2}是 $y$ 元，請問下列哪個選項是「錯誤」的？`,
                 options: [
@@ -910,12 +908,11 @@
         }
 
         /**
-         * 30 大私中數學題目生成器 Engine（優先解析貼上題目結構，再依對應單元產生柯南角色情境類似題 + 進階題）
+         * 30 大私中數學題目生成器 Engine
          */
         function generateVariantProblems(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
 
-            // 若貼上的題目符合特定應用結構（如二元一次買賣問題），直接依原題結構生成同構題組
             const linearSystemResult = tryBuildLinearSystemVariants(originalText, c1, c2, c3);
             if (linearSystemResult) {
                 return linearSystemResult;
@@ -925,7 +922,6 @@
             let sim, adv;
 
             if (id === 1) {
-                // 1. 代數的式與運算
                 const a = randInt(3, 7), b = randInt(5, 18), x = randInt(4, 12);
                 const val = a * x + b;
                 sim = {
@@ -945,7 +941,6 @@
                     explanation: `$x + ${m} = ${rhs} \\div ${k} = ${rhs / k}$，所以 $x = ${rhs / k} - ${m} = ${ansX}$。`
                 };
             } else if (id === 2) {
-                // 2. 運算方法與指數律
                 const m = randInt(2, 4), n = randInt(2, 4);
                 const sumExp = m + n;
                 const ansVal = Math.pow(2, sumExp);
@@ -966,7 +961,6 @@
                     explanation: `$(2^{${p1}})^{${p2}} = 2^{${p1} \\times ${p2}} = 2^{${p1 * p2}}$；再除以 $2^{${sub}}$ 得 $2^{${p1 * p2} - ${sub}} = 2^{${remExp}} = ${Math.pow(2, remExp)}$。`
                 };
             } else if (id === 3) {
-                // 3. 因數倍數
                 const base = randInt(6, 12);
                 const target = base * randInt(4, 8);
                 sim = {
@@ -977,7 +971,6 @@
                     explanation: `$${target} \\div ${base} = ${target / base}$ 可整除，而 $${target} \\div (${base + 5})$ 無法整除，故 $${base + 5}$ 不是因數。`
                 };
                 const k = randInt(3, 9);
-                const numStr = `54${k}`;
                 const rem3 = (5 + 4 + k) % 3;
                 const addNeeded = rem3 === 0 ? 0 : (3 - rem3);
                 const validNum = 540 + k + addNeeded;
@@ -989,7 +982,6 @@
                     explanation: `檢驗選項是否為偶數且數字和可被 $3$ 整除，只有 $${validNum % 2 === 0 ? validNum : validNum + 3}$ 同時滿足 $2$ 與 $3$ 的倍數條件。`
                 };
             } else if (id === 4) {
-                // 4. 公因數公倍數
                 const g = randInt(6, 12);
                 const a = g * 3, b = g * 4;
                 sim = {
@@ -1010,7 +1002,6 @@
                     explanation: `$[${t1}, ${t2}] = ${lcm}$，故 $${lcm}$ 分鐘後會再次同時經過。`
                 };
             } else if (id === 5) {
-                // 5. 分數
                 const den = randInt(5, 9), n1 = randInt(1, den - 2), n2 = randInt(1, den - 1);
                 sim = {
                     question: `${c1}喝了 $\\frac{${n1}}{${den}}$ 瓶果汁，${c2}喝了 $\\frac{${n2}}{${den}}$ 瓶果汁，兩人總共喝了多少瓶果汁？`,
@@ -1029,7 +1020,6 @@
                     explanation: `$${total} \\times (\\frac{2}{3} - \\frac{1}{4}) = ${total} \\times \\frac{5}{12} = ${ans}$ 公尺。`
                 };
             } else if (id === 6) {
-                // 6. 小數
                 const a = (randInt(12, 35) / 10).toFixed(1);
                 const b = (randInt(4, 9) / 10).toFixed(1);
                 const prod = (parseFloat(a) * parseFloat(b)).toFixed(2);
@@ -1050,7 +1040,6 @@
                     explanation: `$${divA} \\div 0.24 = ${Math.round(parseFloat(divA) * 100)} \\div 24 = ${ansDiv}$ 支。`
                 };
             } else if (id === 7) {
-                // 7. 概數
                 const raw = randInt(3451, 3498);
                 sim = {
                     question: `${c1}查閱帝丹圖書館藏書量共有 $${raw}$ 冊，若用「四捨五入法」取概數到「百位」，大約是多少冊？`,
@@ -1067,7 +1056,6 @@
                     explanation: `最大為 $8499$，最小為 $7500$，相差 $8499 - 7500 = 999$。`
                 };
             } else if (id === 8) {
-                // 8. 單位換算
                 const km = randInt(2, 5), m = randInt(15, 85);
                 const totalM = km * 1000 + m;
                 sim = {
@@ -1086,7 +1074,6 @@
                     explanation: `$${ha} \\times 10000 = ${ha * 10000}$ 平方公尺。`
                 };
             } else if (id === 9) {
-                // 9. 植樹問題
                 const gap = randInt(5, 10), count = randInt(12, 20);
                 const dist = gap * (count - 1);
                 sim = {
@@ -1107,7 +1094,6 @@
                     explanation: `封閉圓形頭尾相接，盞數 $= ${perim} \\div ${treeGap} = ${trees}$ 盞。`
                 };
             } else if (id === 10) {
-                // 10. 數列規律
                 const a1 = randInt(3, 8), d = randInt(4, 7), n = randInt(10, 15);
                 const an = a1 + (n - 1) * d;
                 sim = {
@@ -1118,8 +1104,8 @@
                     explanation: `首項 $a_1 = ${a1}$，公差 $d = ${d}$，第 $${n}$ 項為 $${a1} + (${n}-1) \\times ${d} = ${an}$。`
                 };
                 const terms = 10;
-                const last = 2 + (terms - 1) * 3; // 29
-                const sum = ((2 + last) * terms) / 2; // 155
+                const last = 2 + (terms - 1) * 3;
+                const sum = ((2 + last) * terms) / 2;
                 adv = {
                     question: `${c3}將數字依序累加：$2 + 5 + 8 + 11 + \\dots + 29$（共 $10$ 項），請問這個等差級數的總和是多少？`,
                     options: [`$${sum}$`, `$${sum + 15}$`, `$${sum - 10}$`, `$310$`],
@@ -1128,7 +1114,6 @@
                     explanation: `$\\frac{(2 + 29) \\times 10}{2} = \\frac{31 \\times 10}{2} = ${sum}$。`
                 };
             } else if (id === 11) {
-                // 11. 數與形（空心與實心正方形方陣問題）
                 const outer = randInt(15, 25);
                 const l1 = (outer - 1) * 4;
                 const l2 = (outer - 3) * 4;
@@ -1154,7 +1139,6 @@
                     explanation: `原實心人數 $= ${bigSide} \\times ${bigSide} = ${totalSolid}$ 人；中間拿掉人數 $= ${holeSide} \\times ${holeSide} = ${removed}$ 人；剩餘空心方陣 $= ${totalSolid} - ${removed} = ${remainHollow}$ 人。`
                 };
             } else if (id === 12) {
-                // 12. 三角形
                 const a1 = randInt(40, 65), a2 = randInt(50, 75);
                 const a3 = 180 - a1 - a2;
                 sim = {
@@ -1174,7 +1158,6 @@
                     explanation: `高 $= ${area} \\times 2 \\div ${base} = ${h}$ 公分。`
                 };
             } else if (id === 13) {
-                // 13. 四邊形
                 const top = randInt(6, 12), bot = randInt(14, 22), h = randInt(6, 10);
                 const area = ((top + bot) * h) / 2;
                 sim = {
@@ -1194,7 +1177,6 @@
                     explanation: `$${d1} \\times ${d2} \\div 2 = ${rArea}$ 平方公分。`
                 };
             } else if (id === 14) {
-                // 14. 幾何計數
                 const segs = randInt(4, 6);
                 const totalSeg = (segs * (segs + 1)) / 2;
                 sim = {
@@ -1216,7 +1198,6 @@
                         : `$4^2 + 3^2 + 2^2 + 1^2 = 16 + 9 + 4 + 1 = 30$ 個。`
                 };
             } else if (id === 15) {
-                // 15. 圓、扇形周長
                 const r = randInt(5, 10);
                 const circ = +(2 * r * 3.14).toFixed(2);
                 sim = {
@@ -1227,7 +1208,7 @@
                     explanation: `$2 \\times ${r} \\times 3.14 = ${circ}$ 公分。`
                 };
                 const sr = 10;
-                const sectorPerim = +(2 * sr * 3.14 * 0.25 + 2 * sr).toFixed(2); // 35.7
+                const sectorPerim = +(2 * sr * 3.14 * 0.25 + 2 * sr).toFixed(2);
                 adv = {
                     question: `${c2}打開一把半徑為 $10$ 公分的 $\\frac{1}{4}$ 圓扇形密碼盤（圓周率 $\\approx 3.14$），請問這塊扇形的「周長」是多少公分？`,
                     options: [`$${sectorPerim}$ 公分`, `$15.7$ 公分`, `$78.5$ 公分`, `$25.7$ 公分`],
@@ -1236,7 +1217,6 @@
                     explanation: `弧長 $= 2 \\times 10 \\times 3.14 \\times \\frac{1}{4} = 15.7$ 公分，再加上兩條半徑 $10 + 10 = 20$ 公分，周長 $= 35.7$ 公分。`
                 };
             } else if (id === 16) {
-                // 16. 圓、扇形面積
                 const r = randInt(4, 8);
                 const area = +(r * r * 3.14).toFixed(2);
                 sim = {
@@ -1247,7 +1227,7 @@
                     explanation: `$${r} \\times ${r} \\times 3.14 = ${area}$ 平方公分。`
                 };
                 const bigR = 10, smallR = 6;
-                const ringArea = +((bigR * bigR - smallR * smallR) * 3.14).toFixed(2); // 200.96
+                const ringArea = +((bigR * bigR - smallR * smallR) * 3.14).toFixed(2);
                 adv = {
                     question: `鈴木美術館展出一枚外圓半徑 $10$ 公分、內圓半徑 $6$ 公分的圓環形古玉（圓周率 $\\approx 3.14$），請問古玉有玉石部分的面積是多少平方公分？`,
                     options: [`$${ringArea}$ 平方公分`, `$314$ 平方公分`, `$113.04$ 平方公分`, `$12.56$ 平方公分`],
@@ -1256,7 +1236,6 @@
                     explanation: `$(10^2 - 6^2) \\times 3.14 = (100 - 36) \\times 3.14 = 64 \\times 3.14 = ${ringArea}$ 平方公分。`
                 };
             } else if (id === 17) {
-                // 17. 基本立體圖形
                 const l = randInt(6, 10), w = randInt(4, 7), h = randInt(5, 8);
                 const vol = l * w * h;
                 sim = {
@@ -1276,7 +1255,6 @@
                     explanation: `$${s} \\times ${s} \\times 6 = ${surf}$ 平方公分。`
                 };
             } else if (id === 18) {
-                // 18. 特殊立體圖形
                 const r = 5, h = randInt(6, 10);
                 const cylVol = +(r * r * 3.14 * h).toFixed(2);
                 sim = {
@@ -1287,7 +1265,7 @@
                     explanation: `底面積 $= 5 \\times 5 \\times 3.14 = 78.5$，體積 $= 78.5 \\times ${h} = ${cylVol}$ 立方公分。`
                 };
                 const s = 4;
-                const twoCubesSurf = 10 * s * s; // 160
+                const twoCubesSurf = 10 * s * s;
                 adv = {
                     question: `${c3}把兩個邊長都是 $4$ 公分的正方體積木緊密拼成一個長方體，請問拼成後的長方體「表面積」是多少平方公分？`,
                     options: [`$${twoCubesSurf}$ 平方公分`, `$192$ 平方公分`, `$128$ 平方公分`, `$176$ 平方公分`],
@@ -1296,7 +1274,6 @@
                     explanation: `$4 \\times 4 \\times (12 - 2) = 16 \\times 10 = ${twoCubesSurf}$ 平方公分。`
                 };
             } else if (id === 19) {
-                // 19. 比與連比
                 const a = randInt(2, 4), b = randInt(3, 5), mult = randInt(4, 8);
                 sim = {
                     question: `${c1}與${c2}收集的線索卡數量比為 $${a} : ${b}$，已知${c1}有 $${a * mult}$ 張，請問${c2}有多少張線索卡？`,
@@ -1305,7 +1282,6 @@
                     clue: `先找出前項放大了幾倍（$${a * mult} \\div ${a} = ${mult}$ 倍），後項也乘以相同倍數。`,
                     explanation: `$${a * mult} \\div ${a} = ${mult}$ 倍，故${c2}有 $${b} \\times ${mult} = ${b * mult}$ 張。`
                 };
-                const total = 180; // 2:3:4 -> 40, 60, 80
                 adv = {
                     question: `${c1}、${c2}與${c3}三人共有 $180$ 枚偵探代幣，三人的代幣數量連比為 $2 : 3 : 4$，請問代幣最多的${c3}有多少枚？`,
                     options: [`$80$ 枚`, `$60$ 枚`, `$40$ 枚`, `$90$ 枚`],
@@ -1314,7 +1290,6 @@
                     explanation: `$180 \\div (2 + 3 + 4) = 20$ 枚/份，${c3}佔 $4$ 份，共有 $20 \\times 4 = 80$ 枚。`
                 };
             } else if (id === 20) {
-                // 20. 比例尺
                 const cm = randInt(3, 7);
                 const realKm = cm * 5;
                 sim = {
@@ -1324,7 +1299,6 @@
                     clue: `圖上 $1$ 公分代表實際 $500000$ 公分 $= 5000$ 公尺 $= 5$ 公里。`,
                     explanation: `$${cm} \\times 500000 = ${cm * 500000}$ 公分 $= ${realKm}$ 公里。`
                 };
-                const realM = 240, mapCm = 6; // 24000 / 6 = 4000
                 adv = {
                     question: `實際長度為 $240$ 公尺的跨海大橋，在${c2}繪製的建築藍圖上長度為 $6$ 公分，請問這張藍圖的比例尺是多少？`,
                     options: [`$1 : 4000$`, `$1 : 40$`, `$1 : 400$`, `$1 : 40000$`],
@@ -1333,7 +1307,6 @@
                     explanation: `$240$ 公尺 $= 24000$ 公分，比例尺 $= 6 : 24000 = 1 : 4000$。`
                 };
             } else if (id === 21) {
-                // 21. 速率問題
                 const v = randInt(45, 75), t = randInt(2, 4);
                 sim = {
                     question: `${c2}開著愛車以時速 $${v}$ 公里行駛了 $${t}$ 小時前往案發現場，請問總共行駛了多少公里？`,
@@ -1342,7 +1315,6 @@
                     clue: `距離 $= \\text{速率} \\times \\text{時間}$。`,
                     explanation: `$${v} \\times ${t} = ${v * t}$ 公里。`
                 };
-                const d = 120; // 去時速60(2hr)，回時速40(3hr)，平均速率 240 / 5 = 48
                 adv = {
                     question: `${c1}前往距離 $120$ 公里的山莊辦案，去程時速 $60$ 公里，回程時速 $40$ 公里，請問往返一趟的「平均時速」是多少公里？`,
                     options: [`$48$ 公里/時`, `$50$ 公里/時`, `$45$ 公里/時`, `$52$ 公里/時`],
@@ -1351,7 +1323,6 @@
                     explanation: `總距離 $= 120 \\times 2 = 240$ 公里；去程時間 $= 120 \\div 60 = 2$ 小時，回程時間 $= 120 \\div 40 = 3$ 小時；平均時速 $= 240 \\div (2 + 3) = 48$ 公里/時。`
                 };
             } else if (id === 22) {
-                // 22. 追趕與相遇問題
                 const vFast = randInt(65, 85), vSlow = randInt(40, 55);
                 const diff = vFast - vSlow;
                 const mins = randInt(8, 15);
@@ -1373,9 +1344,7 @@
                     explanation: `兩人每分鐘共靠近 $${v1} + ${v2} = ${v1 + v2}$ 公尺，總距離 $= ${v1 + v2} \\times ${t} = ${totalD}$ 公尺。`
                 };
             } else if (id === 23) {
-                // 23. 百分率
                 const price = randInt(4, 9) * 100;
-                const off = 8; // 8折
                 const sale = price * 0.8;
                 sim = {
                     question: `米花百貨舉辦週年慶，一件原價 $${price}$ 元的偵探披風打 $8$ 折出售，${c2}購買這件披風需要付多少元？`,
@@ -1384,7 +1353,6 @@
                     clue: `$8$ 折代表售價為原價的 $80\\%$（即 $\\times 0.8$）。`,
                     explanation: `$${price} \\times 0.8 = ${sale}$ 元。`
                 };
-                const cost = 500; // 加3成 = 650, 再打8折 = 520 -> 賺 20 元
                 adv = {
                     question: `波羅咖啡廳的${c3}將成本 $500$ 元的限定甜點禮盒，先「加 $3$ 成」作為定價，再依定價打「$8$ 折」促銷，請問賣出一盒最後是賺還是賠多少元？`,
                     options: [`賺 $20$ 元`, `賠 $20$ 元`, `不賺不賠`, `賺 $50$ 元`],
@@ -1393,7 +1361,6 @@
                     explanation: `定價 $= 500 \\times 1.3 = 650$ 元；售價 $= 650 \\times 0.8 = 520$ 元；$520 - 500 = 20$ 元，共賺 $20$ 元。`
                 };
             } else if (id === 24) {
-                // 24. 應用問題 1（雞兔同籠/得失分）
                 const heads = 20, rabbits = randInt(6, 12), chickens = heads - rabbits;
                 const legs = chickens * 2 + rabbits * 4;
                 sim = {
@@ -1403,7 +1370,6 @@
                     clue: `假設 $20$ 隻全部都是雞（共有 $40$ 隻腳），多出來的腳每 $2$ 隻就代表有 $1$ 隻兔子。`,
                     explanation: `假設全為雞有 $20 \\times 2 = 40$ 隻腳，多出 $${legs} - 40 = ${legs - 40}$ 隻腳，兔子有 $${legs - 40} \\div (4 - 2) = ${rabbits}$ 隻。`
                 };
-                // 20題，對得5分，錯倒扣2分
                 const wrongQ = randInt(3, 6), rightQ = 20 - wrongQ;
                 const score = rightQ * 5 - wrongQ * 2;
                 adv = {
@@ -1414,9 +1380,7 @@
                     explanation: `全對得 $100$ 分，少得 $100 - ${score} = ${100 - score}$ 分；答錯題數 $= ${100 - score} \\div (5 + 2) = ${wrongQ}$ 題；答對 $= 20 - ${wrongQ} = ${rightQ}$ 題。`
                 };
             } else if (id === 25) {
-                // 25. 應用問題 2（年齡與盈虧）
                 const childAge = randInt(7, 10), dadAge = childAge + 30;
-                const targetDiff = 30; // 爸爸是小孩的3倍 -> 2倍 = 30 -> 小孩15歲 -> 15 - childAge 年後
                 const yearsLater = 15 - childAge;
                 sim = {
                     question: `今年${c1}是 $${childAge}$ 歲，${c2}是 $${dadAge}$ 歲，請問幾年後${c2}的年齡剛好是${c1}的 $3$ 倍？`,
@@ -1425,7 +1389,6 @@
                     clue: `兩人的「年齡差」永遠不變（相差 $30$ 歲）。當${c2}是 $3$ 倍時，年齡差剛好是${c1}當時年齡的 $2$ 倍。`,
                     explanation: `年齡差 $= ${dadAge} - ${childAge} = 30$ 歲；當為 $3$ 倍時，${c1}為 $30 \\div (3 - 1) = 15$ 歲，故需 $15 - ${childAge} = ${yearsLater}$ 年後。`
                 };
-                // 盈虧問題：每人分5顆剩12顆，每人分7顆不夠8顆 -> 人數 = (12+8)/(7-5) = 10人，糖果 = 62顆
                 adv = {
                     question: `${c2}分巧克力給少年偵探團成員，如果每人分 $5$ 顆會剩下 $12$ 顆；如果每人分 $7$ 顆則不夠 $8$ 顆，請問巧克力總共有多少顆？`,
                     options: [`$62$ 顆`, `$52$ 顆`, `$70$ 顆`, `$48$ 顆`],
@@ -1434,7 +1397,6 @@
                     explanation: `人數 $= (12 + 8) \\div (7 - 5) = 20 \\div 2 = 10$ 人；巧克力 $= 10 \\times 5 + 12 = 62$ 顆。`
                 };
             } else if (id === 26) {
-                // 26. 應用問題 3（工程問題）
                 sim = {
                     question: `修理阿笠博士的實驗設備，${c1}獨自修理需要 $6$ 小時完成，${c3}獨自修理需要 $12$ 小時完成，如果兩人合作一起修理，需要多少小時完成？`,
                     options: [`$4$ 小時`, `$9$ 小時`, `$3$ 小時`, `$5$ 小時`],
@@ -1450,7 +1412,6 @@
                     explanation: `合作 $3$ 天完成 $3 \\times (\\frac{1}{10} + \\frac{1}{15}) = 3 \\times \\frac{1}{6} = \\frac{1}{2}$；剩下 $\\frac{1}{2}$，${c1}還需 $\\frac{1}{2} \\div \\frac{1}{10} = 5$ 天。`
                 };
             } else if (id === 27) {
-                // 27. 應用問題 4（濃度與利潤）
                 const salt = randInt(15, 30);
                 const water = 200 - salt;
                 const pct = +(salt / 200 * 100).toFixed(1);
@@ -1461,7 +1422,6 @@
                     clue: `濃度 $= \\frac{\\text{溶質（食鹽）}}{\\text{溶液（食鹽 + 水）}} \\times 100\\%$，分母記得是總重量 $200$ 公克！`,
                     explanation: `$\\frac{${salt}}{${salt} + ${water}} \\times 100\\% = \\frac{${salt}}{200} \\times 100\\% = ${pct}\\%$。`
                 };
-                // 200g 10%食鹽水(鹽20g)，加50g水變成250g -> 20/250 = 8%
                 adv = {
                     question: `有一杯 $200$ 公克、濃度為 $10\\%$ 的糖水，${c3}覺得太甜了，於是又倒入 $50$ 公克的純水攪拌均勻，請問稀釋後的糖水濃度變為多少？`,
                     options: [`$8\\%$`, `$5\\%$`, `$7.5\\%$`, `$9\\%$`],
@@ -1470,9 +1430,6 @@
                     explanation: `糖重 $= 200 \\times 10\\% = 20$ 公克，新總重 $= 200 + 50 = 250$ 公克，新濃度 $= \\frac{20}{250} \\times 100\\% = 8\\%$。`
                 };
             } else if (id === 28) {
-                // 28. 文氏圖
-                const total = 40, math = 26, eng = 22, both = 12;
-                const none = total - (math + eng - both); // 4
                 sim = {
                     question: `帝丹小學六年一班共有 $40$ 位學生，喜歡數學推理的有 $26$ 人，喜歡英文的有 $22$ 人，兩科都喜歡的有 $12$ 人，請問兩科「都不喜歡」的有幾人？`,
                     options: [`$4$ 人`, `$8$ 人`, `$6$ 人`, `$10$ 人`],
@@ -1480,7 +1437,6 @@
                     clue: `利用文氏圖排容原理：至少喜歡一科的人數 $= 26 + 22 - 12$。`,
                     explanation: `至少喜歡一科 $= 26 + 22 - 12 = 36$ 人，兩科都不喜歡 $= 40 - 36 = 4$ 人。`
                 };
-                // 1~100 中是 3 或 5 的倍數：33 + 20 - 6 = 47
                 adv = {
                     question: `${c1}在 $1$ 到 $100$ 的整數中篩選線索編號，請問「是 $3$ 的倍數」或是「是 $5$ 的倍數」的整數總共有多少個？`,
                     options: [`$47$ 個`, `$53$ 個`, `$41$ 個`, `$50$ 個`],
@@ -1489,9 +1445,7 @@
                     explanation: `$3$ 的倍數有 $33$ 個，$5$ 的倍數有 $20$ 個，$15$ 的倍數有 $6$ 個，共有 $33 + 20 - 6 = 47$ 個。`
                 };
             } else if (id === 29) {
-                // 29. 餘數問題
-                const d1 = 6, d2 = 8, rem = 3;
-                const ans = 24 + rem; // 27
+                const ans = 27;
                 sim = {
                     question: `${c1}統計現場留下的彈珠數量，發現每 $6$ 顆一數會剩下 $3$ 顆，每 $8$ 顆一數也會剩下 $3$ 顆，已知彈珠不到 $40$ 顆，請問共有幾顆彈珠？`,
                     options: [`$${ans}$ 顆`, `$24$ 顆`, `$21$ 顆`, `$30$ 顆`],
@@ -1499,7 +1453,6 @@
                     clue: `餘數相同（同餘問題）：彈珠數量 $= [6, 8] \\text{ 的公倍數} + 3$。`,
                     explanation: `$[6, 8] = 24$，加上共同餘數 $3$，得到 $24 + 3 = 27$ 顆。`
                 };
-                // 除以5不足2(餘3)，除以7不足2(餘5) -> [5, 7] - 2 = 33
                 adv = {
                     question: `一個正整數用 $5$ 去除會不足 $2$，用 $7$ 去除也會不足 $2$，請問符合條件的「最小」正整數是多少？`,
                     options: [`$33$`, `$37$`, `$35$`, `$68$`],
@@ -1508,7 +1461,6 @@
                     explanation: `$[5, 7] = 35$，因為都不足 $2$，所以這個數最小為 $35 - 2 = 33$。`
                 };
             } else {
-                // 30. 巧算
                 const kMult = randInt(37, 86);
                 const ansCalc = 1000 * kMult;
                 sim = {
@@ -1534,7 +1486,7 @@
         }
 
         /**
-         * 預設 3 題六升私中模擬錯題（融入名偵探柯南角色情境，並隨機洗牌選項位置）
+         * 預設 3 題六升私中模擬錯題
          */
         function getDefaultWrongQuestions() {
             const now = new Date().toISOString().split('T')[0];
@@ -1564,6 +1516,7 @@
                         clue: "中間拿掉的也是實心正方形，單邊人數為 $10$，人數為 $10 \\times 10 = 100$ 人。",
                         explanation: "原本實心人數 $= 25 \\times 25 = 625$ 人。\n拿掉的中空邊長為 $10$，拿掉人數 $= 10 \\times 10 = 100$ 人。\n剩餘空心人數 $= 625 - 100 = 525$ 人。"
                     },
+                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
                     createdDate: now
                 },
                 {
@@ -1586,6 +1539,7 @@
                         clue: "$(a^m)^n = a^{m \\times n}$，同底數相除指數相減。",
                         explanation: "$(2^3)^2 = 2^{3 \\times 2} = 2^6$。\n$2^6 \\div 2^2 = 2^{6-2} = 2^4 = 16$。"
                     },
+                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
                     createdDate: now
                 },
                 {
@@ -1608,6 +1562,7 @@
                         clue: "相遇問題：總距離 $= (v_A + v_B) \\times \\text{時間}$。",
                         explanation: "兩人每分鐘相向走 $70 + 50 = 120$ 公尺。\n總距離 $= 120 \\times 10 = 1200$ 公尺。"
                     },
+                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
                     createdDate: now
                 }
             ];
@@ -1672,6 +1627,71 @@
         }
 
         /**
+         * 家長密碼驗證視窗（通用密碼 19820217）
+         */
+        function openPasswordModal(title, subtitle, onSuccessCallback) {
+            pendingPasswordAction = onSuccessCallback;
+            document.getElementById("passwordModalTitle").innerText = title || "家長安全驗證";
+            document.getElementById("passwordModalSub").innerText = subtitle || "請輸入家長安全密碼以解鎖：";
+            const input = document.getElementById("passwordInput");
+            input.value = "";
+            document.getElementById("passwordError").classList.add("hidden");
+            document.getElementById("passwordModal").classList.remove("hidden");
+            setTimeout(() => input.focus(), 60);
+        }
+
+        function closePasswordModal() {
+            document.getElementById("passwordModal").classList.add("hidden");
+            pendingPasswordAction = null;
+        }
+
+        function verifyPasswordSubmit() {
+            const input = document.getElementById("passwordInput");
+            const val = (input.value || "").trim();
+            if (val === PARENT_PASSWORD) {
+                const action = pendingPasswordAction;
+                closePasswordModal();
+                playSound("unlock");
+                if (typeof action === "function") {
+                    action();
+                }
+            } else {
+                playSound("wrong");
+                const errEl = document.getElementById("passwordError");
+                const cardEl = document.getElementById("passwordCard");
+                errEl.classList.remove("hidden");
+                cardEl.classList.remove("animate-shake");
+                void cardEl.offsetWidth;
+                cardEl.classList.add("animate-shake");
+                input.value = "";
+                input.focus();
+            }
+        }
+
+        /**
+         * 破案線索密碼解鎖
+         */
+        function requestClueUnlock() {
+            if (isClueUnlockedForCurrentQuestion) {
+                document.getElementById("clueContentArea").classList.toggle("hidden");
+                return;
+            }
+            openPasswordModal(
+                "解鎖柯南破案線索",
+                "查看本題推理線索需要輸入家長安全密碼：",
+                () => {
+                    isClueUnlockedForCurrentQuestion = true;
+                    document.getElementById("clueLockIcon").className = "fa-solid fa-lock-open text-emerald-400";
+                    document.getElementById("clueLockBtnText").innerText = "💡 破案線索已解鎖（點擊收合/展開）";
+                    const area = document.getElementById("clueContentArea");
+                    area.classList.remove("hidden");
+                    renderMathIn(area);
+                    showToast("破案線索已解鎖！", "🔍");
+                }
+            );
+        }
+
+        /**
          * 頁籤切換（家長錯題庫管理受密碼 19820217 保護）
          */
         function switchTab(tab) {
@@ -1732,7 +1752,6 @@
             const item = questionBank[currentBankIndex];
             const problem = currentQuizMode === 'similar' ? item.similarProblem : item.advancedProblem;
 
-            // 狀態標籤
             const modeBadge = document.getElementById("quizModeBadge");
             const tierTag = document.getElementById("quizTierTag");
             if (currentQuizMode === 'similar') {
@@ -1751,7 +1770,6 @@
             document.getElementById("quizProgressText").innerText = `第 ${currentBankIndex + 1} / ${questionBank.length} 組`;
             document.getElementById("quizItemDate").innerText = item.createdDate || "";
 
-            // 原始錯題對照
             const origTextEl = document.getElementById("quizOriginalText");
             origTextEl.innerText = item.originalQuestion || "（未填寫原始文字）";
             renderMathIn(origTextEl);
@@ -1765,12 +1783,10 @@
                 photoContainer.classList.add("hidden");
             }
 
-            // 當前題目
             const qTextEl = document.getElementById("quizQuestionText");
             qTextEl.innerText = problem.question;
             renderMathIn(qTextEl);
 
-            // 重置破案線索狀態
             isClueUnlockedForCurrentQuestion = false;
             isAnsweringLocked = false;
             document.getElementById("clueContentArea").classList.add("hidden");
@@ -1780,7 +1796,6 @@
             clueTextEl.innerText = problem.clue || "仔細審題，找出關鍵數據與比例關係！";
             renderMathIn(clueTextEl);
 
-            // 渲染四選一按鈕
             const optionsContainer = document.getElementById("quizOptionsContainer");
             const labels = ["A", "B", "C", "D"];
             optionsContainer.innerHTML = "";
@@ -1807,6 +1822,14 @@
             icon.classList.toggle("rotate-180");
         }
 
+        function skipToNextBankItem() {
+            if (questionBank.length === 0) return;
+            currentBankIndex = (currentBankIndex + 1) % questionBank.length;
+            currentQuizMode = 'similar';
+            renderQuizView();
+            showToast("已切換至下一組錯題（類似題熱身）！", "➡️");
+        }
+
         /**
          * 處理四選一作答判分與紅果短劇時間計算
          */
@@ -1820,7 +1843,6 @@
             const isCorrect = selectedIndex === problem.answerIndex;
             lastQuizWasCorrect = isCorrect;
 
-            // 高亮選項按鈕視覺回饋
             const btns = document.querySelectorAll("#quizOptionsContainer .option-btn");
             btns.forEach((btn, idx) => {
                 btn.disabled = true;
@@ -1848,7 +1870,6 @@
                 const gained = isFiveStreak ? 4 : 1;
                 curMins = setWeeklyMinutes(curMins + gained);
 
-                // 累計此題組（類似題/進階題）答對次數與連續答對次數
                 item.stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
                 item.stats.right = (item.stats.right || 0) + 1;
                 item.stats.consecutiveRight = (item.stats.consecutiveRight || 0) + 1;
@@ -1879,14 +1900,49 @@
                 currentStreak = 0;
                 curMins = setWeeklyMinutes(curMins - 1);
 
-                // 累計此題組答錯次數，並重置該題組的連續答對紀錄
                 item.stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
                 item.stats.wrong = (item.stats.wrong || 0) + 1;
                 item.stats.consecutiveRight = 0;
                 saveQuestionBank();
 
                 playSound('wrong');
+
+                iconBox.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl bg-red-500/20 text-red-400 border-2 border-red-400";
+                iconBox.innerHTML = "💦";
+                titleEl.className = "text-2xl font-black text-rose-400";
+                titleEl.innerText = `推理失誤！正確答案是 (${labels[problem.answerIndex]})`;
+                subEl.innerText = "別灰心！系統將針對同一題型重新產生一道新的【類似題】讓你再練一次！";
+                deltaEl.innerText = "-1 分鐘（連勝歸零）";
+                totalEl.innerText = `扣分後目前本週累計可用觀看時間：${curMins} 分鐘`;
+                nextBtn.innerText = "再練一題類似題 💪 ➔";
             }
+
+            expEl.innerText = problem.explanation || `正確選項為 (${labels[problem.answerIndex]}) ${problem.options[problem.answerIndex]}`;
+            renderMathIn(expEl);
+            document.getElementById("resultModal").classList.remove("hidden");
+        }
+
+        function closeResultModalAndNext() {
+            document.getElementById("resultModal").classList.add("hidden");
+            if (questionBank.length === 0) return;
+
+            const item = questionBank[currentBankIndex];
+            if (lastQuizWasCorrect) {
+                if (currentQuizMode === 'similar') {
+                    currentQuizMode = 'advanced';
+                } else {
+                    currentQuizMode = 'similar';
+                    currentBankIndex = (currentBankIndex + 1) % questionBank.length;
+                }
+            } else {
+                // 答錯：重新生成同題型的新類似題繼續練習
+                const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
+                item.similarProblem = fresh.similarProblem;
+                currentQuizMode = 'similar';
+                saveQuestionBank();
+            }
+
+            renderQuizView();
         }
 
         /**
@@ -1954,7 +2010,6 @@
                 const rightCount = stats.right || 0;
                 const wrongCount = stats.wrong || 0;
                 const streakRight = stats.consecutiveRight || 0;
-                // 累計答對 >= 2 次（完整通過類似題+進階題）且連續答對 >= 2 次，判定已精熟不再出錯
                 const isMastered = rightCount >= 2 && streakRight >= 2;
 
                 const card = document.createElement("div");
@@ -2132,7 +2187,7 @@
                     }
                 }
             } catch (e) {
-                // 若瀏覽器權限限制讀取剪貼簿，聚焦輸入框讓使用者直接按貼上
+                // 權限限制時聚焦輸入框提示貼上
             }
             inputEl.focus();
             showToast("請在輸入框內長按選擇「貼上」或按 Ctrl+V！", "💡");
@@ -2277,243 +2332,6 @@
             }
         }
 
-        function setUploadedPhoto(dataUrl) {
-            const img = new Image();
-            img.onload = function() {
-                // 1. 產生輕量壓縮圖供介面預覽與 GitHub 同步儲存（節省空間）
-                const storeCanvas = document.createElement("canvas");
-                const storeMaxW = 640;
-                const storeScale = Math.min(1, storeMaxW / img.width);
-                storeCanvas.width = Math.round(img.width * storeScale);
-                storeCanvas.height = Math.round(img.height * storeScale);
-                const storeCtx = storeCanvas.getContext("2d");
-                storeCtx.drawImage(img, 0, 0, storeCanvas.width, storeCanvas.height);
-                currentUploadedPhotoData = storeCanvas.toDataURL("image/jpeg", 0.72);
-
-                // 2. 產生高解析、白邊留白、自動去背與高對比增強圖供 OCR 精準判字
-                const targetW = Math.min(1600, Math.max(1100, img.width));
-                const ocrScale = targetW / img.width;
-                const drawW = Math.round(img.width * ocrScale);
-                const drawH = Math.round(img.height * ocrScale);
-                const pad = 28;
-
-                const ocrCanvas = document.createElement("canvas");
-                ocrCanvas.width = drawW + pad * 2;
-                ocrCanvas.height = drawH + pad * 2;
-                const ocrCtx = ocrCanvas.getContext("2d");
-                ocrCtx.fillStyle = "#ffffff";
-                ocrCtx.fillRect(0, 0, ocrCanvas.width, ocrCanvas.height);
-                ocrCtx.drawImage(img, pad, pad, drawW, drawH);
-
-                const imgData = ocrCtx.getImageData(pad, pad, drawW, drawH);
-                const data = imgData.data;
-                const hist = new Uint32Array(256);
-                const grayBuf = new Uint8Array(drawW * drawH);
-
-                for (let i = 0, p = 0; i < data.length; i += 4, p++) {
-                    const g = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
-                    grayBuf[p] = g;
-                    hist[g]++;
-                }
-
-                const totalPixels = drawW * drawH;
-                let acc = 0, lowCut = 40, highCut = 210;
-                for (let g = 0; g < 256; g++) {
-                    acc += hist[g];
-                    if (acc < totalPixels * 0.06) lowCut = g;
-                    if (acc < totalPixels * 0.72) highCut = g;
-                }
-                if (highCut <= lowCut + 20) {
-                    lowCut = 50;
-                    highCut = 200;
-                }
-
-                const span = highCut - lowCut;
-                for (let i = 0, p = 0; i < data.length; i += 4, p++) {
-                    let norm = ((grayBuf[p] - lowCut) / span) * 255;
-                    if (norm < 0) norm = 0;
-                    if (norm > 255) norm = 255;
-                    const enhanced = norm < 135 ? Math.round(norm * 0.55) : Math.min(255, Math.round(135 + (norm - 135) * 1.45));
-                    data[i] = enhanced;
-                    data[i + 1] = enhanced;
-                    data[i + 2] = enhanced;
-                    data[i + 3] = 255;
-                }
-                ocrCtx.putImageData(imgData, pad, pad);
-                currentEnhancedOcrData = ocrCanvas.toDataURL("image/png");
-
-                document.getElementById("addPhotoPreview").src = currentUploadedPhotoData;
-                document.getElementById("addPhotoPreviewContainer").classList.remove("hidden");
-                runSmartOCR(currentEnhancedOcrData, true);
-            };
-            img.src = dataUrl;
-        }
-
-        function removeUploadedPhoto() {
-            currentUploadedPhotoData = "";
-            currentEnhancedOcrData = "";
-            document.getElementById("addPhotoPreview").src = "";
-            document.getElementById("addPhotoPreviewContainer").classList.add("hidden");
-            document.getElementById("ocrStatusText").innerText = "";
-        }
-
-        function reRunOCR() {
-            if (!currentEnhancedOcrData && !currentUploadedPhotoData) {
-                showToast("請先上傳錯題圖片再進行辨識！", "⚠️");
-                return;
-            }
-            runSmartOCR(currentEnhancedOcrData || currentUploadedPhotoData, false);
-        }
-
-        function cleanOcrMathText(rawText) {
-            return rawText
-                .replace(/([\u4e00-\u9fa5，。？：；、（）\(\)])\s+(?=[\u4e00-\u9fa5，。？：；、（）\(\)])/g, '$1')
-                .replace(/([\u4e00-\u9fa5])\s+(\d)/g, '$1$2')
-                .replace(/(\d)\s+([\u4e00-\u9fa5])/g, '$1$2')
-                .replace(/(\d)[oO](\d)/g, '$10$2')
-                .replace(/(\d)[lI](\d)/g, '$11$2')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        async function runSmartOCR(ocrImageDataUrl, keepExistingIfNotEmpty = false) {
-            const statusEl = document.getElementById("ocrStatusText");
-            const inputEl = document.getElementById("addQuestionInput");
-            const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
-
-            if (geminiKey && currentUploadedPhotoData) {
-                statusEl.innerText = "🤖 正在透過 Gemini AI 視覺引擎精準辨識考卷文字...";
-                try {
-                    const base64 = currentUploadedPhotoData.split(',')[1];
-                    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [
-                                    { text: "請精準辨識這張台灣國小數學考卷照片中的印刷題目文字（包含選項，若有的話），請自動忽略手寫鉛筆圈選或塗鴉干擾，數學公式或分數/指數請用 $...$ 表示。只回傳辨識出的題目純文字，不要加任何前言或解釋。" },
-                                    { inline_data: { mime_type: "image/jpeg", data: base64 } }
-                                ]
-                            }]
-                        })
-                    });
-                    if (resp.ok) {
-                        const data = await resp.json();
-                        const aiText = (data.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
-                        if (aiText) {
-                            if (!keepExistingIfNotEmpty || !inputEl.value.trim()) {
-                                inputEl.value = aiText;
-                            }
-                            autoMatchTopicByText(aiText);
-                            statusEl.innerText = "✅ Gemini AI 視覺辨識完成！已自動過濾鉛筆筆跡並帶入題目。";
-                            return;
-                        }
-                    }
-                } catch (e) {
-                    console.log("Gemini OCR fallback to local Tesseract:", e);
-                }
-            }
-
-            statusEl.innerText = "⏳ 正在執行高對比增強 OCR 文字辨識中...";
-            try {
-                if (window.Tesseract) {
-                    const res = await Tesseract.recognize(ocrImageDataUrl, 'chi_tra+eng');
-                    const cleaned = cleanOcrMathText(res.data.text || "");
-                    if (cleaned) {
-                        if (!keepExistingIfNotEmpty || !inputEl.value.trim()) {
-                            inputEl.value = cleaned;
-                        }
-                        autoMatchTopicByText(cleaned);
-                        statusEl.innerText = "✅ 離線增強 OCR 辨識完成！請確認下方文字（若設定 Gemini API Key 可達 99% AI 視覺準確率）。";
-                    } else {
-                        statusEl.innerText = "⚠️ 圖片字跡較模糊，請手動輸入題目文字或設定 Gemini API Key。";
-                    }
-                }
-            } catch (err) {
-                statusEl.innerText = "⚠️ 離線 OCR 暫無法載入，請直接輸入題目文字。";
-            }
-        }
-
-        async function saveNewWrongQuestion() {
-            const unitId = parseInt(document.getElementById("addUnitSelect").value, 10) || 11;
-            const topicObj = TOPICS.find(t => t.id === unitId) || TOPICS[10];
-            const qText = document.getElementById("addQuestionInput").value.trim();
-
-            if (!qText && !currentUploadedPhotoData) {
-                showToast("請先上傳錯題照片或輸入題目文字！", "⚠️");
-                return;
-            }
-
-            const btn = document.getElementById("saveNewQuestionBtn");
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在生成【類似題】與【進階題】...</span>`;
-
-            const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
-            let variants = null;
-
-            if (geminiKey) {
-                try {
-                    const prompt = `你是一位台灣國小六升私中數學資深老師。請根據以下錯題（單元：${topicObj.name}，文字：${qText || "見附圖"}），生成 1 題「類似題 (similarProblem)」與 1 題「進階題 (advancedProblem)」，皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3，不要每次都放 0）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
-                    請嚴格回傳 JSON 格式（不要有 markdown 標記）：
-                    {
-                      "extractedQuestion": "辨識出的原題目文字",
-                      "similarProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
-                      "advancedProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"}
-                    }`;
-
-                    const parts = [{ text: prompt }];
-                    if (currentUploadedPhotoData) {
-                        const base64 = currentUploadedPhotoData.split(',')[1];
-                        parts.push({ inline_data: { mime_type: "image/jpeg", data: base64 } });
-                    }
-
-                    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts }] })
-                    });
-                    if (resp.ok) {
-                        const data = await resp.json();
-                        const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-                        const parsed = JSON.parse(rawJson);
-                        variants = {
-                            similarProblem: shuffleProblemOptions(parsed.similarProblem),
-                            advancedProblem: shuffleProblemOptions(parsed.advancedProblem),
-                            extractedQuestion: parsed.extractedQuestion
-                        };
-                    }
-                } catch (e) {
-                    console.log("Gemini fallback to local generator:", e);
-                }
-            }
-
-            if (!variants) {
-                variants = generateVariantProblems(unitId, qText);
-            }
-
-            const newItem = {
-                id: "q_" + Date.now(),
-                unitId: topicObj.id,
-                unitTitle: topicObj.name,
-                originalQuestion: qText || variants.extractedQuestion || `（拍照上傳錯題 - ${topicObj.name}）`,
-                photoUrl: currentUploadedPhotoData,
-                similarProblem: variants.similarProblem,
-                advancedProblem: variants.advancedProblem,
-                createdDate: new Date().toISOString().split('T')[0]
-            };
-
-            questionBank.unshift(newItem);
-            currentBankIndex = 0;
-            currentQuizMode = 'similar';
-            saveQuestionBank();
-
-            btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>一鍵生成【類似題】與【進階題】並儲存</span>`;
-            closeAddModal();
-            activateTab('bank');
-            showToast("✅ 已成功生成【類似題】與【進階題】並加入錯題庫！", "🎉");
-        }
-
         /**
          * 編輯題組 Modal
          */
@@ -2605,6 +2423,14 @@
         /**
          * GitHub 跨裝置雲端題庫同步引擎（questions.json）
          */
+        function autoSyncGitHubIfConfigured() {
+            const repo = (localStorage.getItem("conan_gh_repo") || "").trim();
+            const token = (localStorage.getItem("conan_gh_token") || "").trim();
+            if (repo && token) {
+                pushToGitHub();
+            }
+        }
+
         function autoDetectGitHubRepoFromLocation() {
             const params = new URLSearchParams(window.location.search);
             const paramRepo = params.get("repo");
@@ -2669,8 +2495,10 @@
             }
 
             const btn = document.getElementById("pushGithubBtn");
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在推送至 GitHub...</span>`;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在推送至 GitHub...</span>`;
+            }
 
             try {
                 const apiUrl = `https://api.github.com/repos/${repo}/contents/questions.json`;
@@ -2723,8 +2551,10 @@
             } catch (err) {
                 showToast(`GitHub 同步失敗：${err.message}`, "❌");
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>☁️ 同步更新至 GitHub</span>`;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>☁️ 同步更新至 GitHub</span>`;
+                }
             }
         }
 
@@ -2742,7 +2572,6 @@
 
             if (syncIcon) syncIcon.classList.add("fa-spin");
             try {
-                // 優先透過 raw.githubusercontent.com 讀取公開倉庫（免 Token 且無 API 次數限制）
                 const rawUrl = `https://raw.githubusercontent.com/${repo}/${encodeURIComponent(branch)}/questions.json?t=${Date.now()}`;
                 let parsedData = null;
 
@@ -2851,13 +2680,16 @@
         });
 
         window.onload = function() {
-            autoDetectGitHubRepoFromLocation();
-            populateTopicSelects();
-            loadQuestionBankFromStorage();
-            updateTimeAndStreakUI();
-            updateGitHubStatusUI();
-            renderQuizView();
-            pullFromGitHub(true);
+            try {
+                autoDetectGitHubRepoFromLocation();
+                populateTopicSelects();
+                loadQuestionBankFromStorage();
+                updateTimeAndStreakUI();
+                updateGitHubStatusUI();
+                renderQuizView();
+            } catch (e) {
+                console.error("Initialization error:", e);
+            }
         };
     </script>
 </body>
