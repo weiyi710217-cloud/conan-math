@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -31,9 +32,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-
-    <!-- Tesseract OCR (離線圖片文字辨識) -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
         /* 柯南主題深藍夜空與磚牆微光背景 */
@@ -140,8 +138,8 @@
                 <span>📸 家長錯題庫管理 (<span id="tabBankCount">0</span>)</span>
             </button>
             <button id="tabAddBtn" onclick="openAddModal()" class="px-4 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
-                <i class="fa-solid fa-plus-circle text-emerald-400"></i>
-                <span>➕ 手動/拍照新增錯題</span>
+                <i class="fa-solid fa-paste text-emerald-400"></i>
+                <span>➕ 貼上新增錯題</span>
             </button>
             <button id="tabSettingsBtn" onclick="openSettingsModal()" class="px-4 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-gear text-slate-400"></i>
@@ -202,8 +200,8 @@
                         <span>載入 3 題私中模擬錯題</span>
                     </button>
                     <button onclick="openAddModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold px-6 py-3 rounded-xl transition flex items-center space-x-2">
-                        <i class="fa-solid fa-camera"></i>
-                        <span>拍照新增錯題</span>
+                        <i class="fa-solid fa-paste"></i>
+                        <span>貼上文字新增錯題</span>
                     </button>
                 </div>
             </div>
@@ -342,60 +340,38 @@
 
     <!-- ===== 模態框 MODALS ===== -->
 
-    <!-- 1. 新增錯題 Modal -->
+    <!-- 1. 新增錯題 Modal（純文字直接貼上） -->
     <div id="addModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-2xl p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 class="text-lg font-black text-amber-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-camera"></i>
-                    <span>錄入新錯題（自動生成類似題與進階題）</span>
+                    <i class="fa-solid fa-paste"></i>
+                    <span>貼上新錯題文字（自動分析題型並生成類似題與進階題）</span>
                 </h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
             </div>
 
+            <!-- 題目文字直接貼上區 -->
+            <div class="space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <label class="block text-xs font-bold text-slate-300">1. 直接貼上或輸入錯題文字內容：</label>
+                    <button type="button" onclick="pasteQuestionFromClipboard()" class="bg-blue-600/30 hover:bg-blue-600/50 border border-blue-400/50 text-blue-200 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-clipboard"></i>
+                        <span>📋 一鍵貼上剪貼簿文字</span>
+                    </button>
+                </div>
+                <textarea id="addQuestionInput" rows="4" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="請直接貼上題目文字，例如：買4支原子筆和7本筆記本，共用去270元，買同樣的1支原子筆和2本筆記本共用去75元，若一支原子筆是x元，一本筆記本是y元，請問下列哪個選項是錯誤的？"></textarea>
+                <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>貼上題目後，系統會自動判斷對應的私中數學題型並重新出題。</span>
+                </div>
+            </div>
+
             <!-- 選擇單元 -->
             <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">對應六升私中 30 大數學主題：</label>
-                <select id="addUnitSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400">
+                <label class="block text-xs font-bold text-slate-300 mb-1">2. 對應六升私中 30 大數學主題（預設智慧自動判斷，亦可手動指定）：</label>
+                <select id="addUnitSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400">
                 </select>
-            </div>
-
-            <!-- 拍照上傳雙選項按鈕 -->
-            <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-300">錯題圖片擷取（支援直接拍照與手機相簿選擇）：</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-3 text-center transition block">
-                        <i class="fa-solid fa-camera text-amber-400 text-xl mb-1 block"></i>
-                        <span class="text-xs font-bold text-slate-200">📷 開啟相機拍照</span>
-                        <input type="file" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)" class="hidden">
-                    </label>
-
-                    <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-3 text-center transition block">
-                        <i class="fa-solid fa-image text-blue-400 text-xl mb-1 block"></i>
-                        <span class="text-xs font-bold text-slate-200">🖼️ 從手機相簿選擇</span>
-                        <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
-                    </label>
-                </div>
-                <p class="text-[11px] text-slate-400">提示：亦可使用電腦截圖後直接按 <kbd class="bg-slate-800 px-1 rounded text-amber-300">Ctrl + V</kbd> 貼上。</p>
-            </div>
-
-            <!-- 上傳預覽區與 OCR 狀態 -->
-            <div id="addPhotoPreviewContainer" class="hidden bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400 font-bold">圖片預覽（已自動進行高對比去背增強以提升辨識率）：</span>
-                    <div class="flex items-center space-x-3">
-                        <button type="button" onclick="reRunOCR()" class="text-xs text-amber-400 hover:text-amber-300 font-bold">🔄 重新辨識</button>
-                        <button type="button" onclick="removeUploadedPhoto()" class="text-xs text-red-400 hover:text-red-300">移除圖片</button>
-                    </div>
-                </div>
-                <img id="addPhotoPreview" src="" alt="預覽" class="max-h-40 rounded-lg mx-auto border border-slate-700">
-                <div id="ocrStatusText" class="text-xs text-amber-400 font-mono text-center"></div>
-            </div>
-
-            <!-- 題目文字描述 -->
-            <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">原始錯題文字內容（或將 OCR 辨識結果微調）：</label>
-                <textarea id="addQuestionInput" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-amber-400" placeholder="例如：一個空心正方形方陣，最外層每邊有21人，共有3層，求此方陣的總人數？"></textarea>
             </div>
 
             <div class="pt-2 flex justify-end space-x-3">
@@ -741,8 +717,6 @@
         let currentStreak = 0;
         let soundEnabled = true;
         let pendingPasswordAction = null;
-        let currentUploadedPhotoData = "";
-        let currentEnhancedOcrData = "";
         let isClueUnlockedForCurrentQuestion = false;
         let isAnsweringLocked = false;
         let lastQuizWasCorrect = false;
@@ -757,167 +731,79 @@
         }
 
         /**
-         * 選項隨機洗牌函式（確保正確答案隨機分散於 A、B、C、D，不會永遠在 A）
+         * 針對貼上的「二元一次聯立買賣應用題」自動解析物品名稱與結構，生成同構類似題與進階題
          */
-        function shuffleProblemOptions(problem) {
-            if (!problem || !Array.isArray(problem.options) || problem.options.length < 2) {
-                return problem;
-            }
-            const safeIdx = (typeof problem.answerIndex === "number" && problem.options[problem.answerIndex] !== undefined)
-                ? problem.answerIndex
-                : 0;
-            const paired = problem.options.map((text, idx) => ({
-                text,
-                isCorrect: idx === safeIdx
-            }));
+        function tryBuildLinearSystemVariants(originalText, c1, c2, c3) {
+            if (!originalText) return null;
+            const buyMatch = originalText.match(/買\s*(\d+)\s*[支枝本個顆張瓶份件]\s*([^\d，,、和與跟]+?)\s*[和與跟]\s*(\d+)\s*[支枝本個顆張瓶份件]\s*([^\d，,、共]+?)[，,]?\s*共用去\s*(\d+)\s*元/);
+            const isLinearAlgebra = buyMatch || (/x\s*元/i.test(originalText) && /y\s*元/i.test(originalText)) || (/原子筆|筆記本/.test(originalText) && /共用去|共花/.test(originalText));
+            if (!isLinearAlgebra) return null;
 
-            for (let i = paired.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [paired[i], paired[j]] = [paired[j], paired[i]];
-            }
+            const item1 = buyMatch ? buyMatch[2].trim() : "原子筆";
+            const item2 = buyMatch ? buyMatch[4].trim() : "筆記本";
+            const unit1 = /筆/.test(item1) ? "支" : (/書|本/.test(item1) ? "本" : "個");
+            const unit2 = /本|書/.test(item2) ? "本" : (/筆/.test(item2) ? "支" : "個");
+
+            // 設定一組乾淨整數單價（y = 2x，方便設計奇偶數與倍數判斷選項）
+            const priceX = randInt(6, 12) * 2 + 1; // 奇數單價，如 13, 15, 17, 19, 21
+            const priceY = priceX * 2;             // 偶數單價，如 26, 30, 34, 38, 42
+
+            const a1 = randInt(3, 5), b1 = randInt(6, 8);
+            const total1 = a1 * priceX + b1 * priceY;
+            const a2 = 1, b2 = 2;
+            const total2 = a2 * priceX + b2 * priceY;
+
+            // 檢驗選項真偽：2x + y 必為偶數（錯誤敘述為「2x+y是奇數」）；y 可被 x 整除（正確）；2x = y（正確）；3x + y 為奇數（正確）
+            const sim = {
+                question: `${c1}在文具店調查線索：買 $${a1}$ ${unit1}${item1}和 $${b1}$ ${unit2}${item2}，共用去 $${total1}$ 元；買同樣的 $${a2}$ ${unit1}${item1}和 $${b2}$ ${unit2}${item2}共用去 $${total2}$ 元。若一${unit1}${item1}是 $x$ 元，一${unit2}${item2}是 $y$ 元，請問下列哪個選項是「錯誤」的？`,
+                options: [
+                    `$2x + y$ 是奇數`,
+                    `$y$ 可以被 $x$ 整除`,
+                    `$2x = y$`,
+                    `$3x + y$ 是奇數`
+                ],
+                answerIndex: 0,
+                clue: `將「$1$ ${unit1}${item1} $+ 2$ ${unit2}${item2} $= ${total2}$ 元」全部乘以 $${a1}$，變成「$${a1}$ ${unit1}${item1} $+ ${a1 * 2}$ ${unit2}${item2} $= ${a1 * total2}$ 元」，再與第一組條件相減即可先求出 $y$！`,
+                explanation: `由題意得 $x + 2y = ${total2}$，兩邊同乘 $${a1}$ 得 $${a1}x + ${a1 * 2}y = ${a1 * total2}$。\n與 $${a1}x + ${b1}y = ${total1}$ 相減，得 $y = ${priceY}$ 元，代回得 $x = ${priceX}$ 元。\n檢驗各選項：\n(1) $2x + y = 2(${priceX}) + ${priceY} = ${2 * priceX + priceY}$（是偶數，故「$2x+y$ 是奇數」為錯誤敘述）；\n(2) $${priceY} \\div ${priceX} = 2$ 可整除；\n(3) $2x = ${2 * priceX} = y$；\n(4) $3x + y = ${3 * priceX + priceY}$ 是奇數。`
+            };
+
+            const buyMoreX = randInt(2, 4), buyMoreY = randInt(3, 5);
+            const advCost = buyMoreX * priceX + buyMoreY * priceY;
+            const paid = advCost <= 200 ? 200 : 500;
+            const change = paid - advCost;
+
+            const adv = {
+                question: `${c2}與${c3}到同一家商店採買，已知買 $${a1}$ ${unit1}${item1}和 $${b1}$ ${unit2}${item2}共需 $${total1}$ 元，買 $${a2}$ ${unit1}${item1}和 $${b2}$ ${unit2}${item2}共需 $${total2}$ 元。若${c2}要買 $${buyMoreX}$ ${unit1}${item1}和 $${buyMoreY}$ ${unit2}${item2}，拿 $${paid}$ 元鈔票結帳，應找回多少元？`,
+                options: [
+                    `$${change}$ 元`,
+                    `$${advCost}$ 元`,
+                    `$${change + priceX}$ 元`,
+                    `$${Math.max(5, change - priceX)}$ 元`
+                ],
+                answerIndex: 0,
+                clue: `先利用消去法求出一${unit1}${item1}（$${priceX}$ 元）與一${unit2}${item2}（$${priceY}$ 元）的單價，再算出 $${buyMoreX}$ ${unit1}${item1} $+ ${buyMoreY}$ ${unit2}${item2}的總花費並用 $${paid}$ 元相減。`,
+                explanation: `一${unit1}${item1} $= ${priceX}$ 元，一${unit2}${item2} $= ${priceY}$ 元。\n總花費 $= ${buyMoreX} \\times ${priceX} + ${buyMoreY} \\times ${priceY} = ${buyMoreX * priceX} + ${buyMoreY * priceY} = ${advCost}$ 元。\n應找回 $= ${paid} - ${advCost} = ${change}$ 元。`
+            };
 
             return {
-                ...problem,
-                options: paired.map(p => p.text),
-                answerIndex: paired.findIndex(p => p.isCorrect)
+                similarProblem: shuffleProblemOptions(sim),
+                advancedProblem: shuffleProblemOptions(adv)
             };
         }
 
         /**
-         * Web Audio API 偵探音效合成器
-         */
-        let audioCtx = null;
-        function playSound(type) {
-            if (!soundEnabled) return;
-            try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const now = audioCtx.currentTime;
-
-                if (type === 'correct') {
-                    [587.33, 880].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.11);
-                        gain.gain.setValueAtTime(0.22, now + idx * 0.11);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.11 + 0.35);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.11);
-                        osc.stop(now + idx * 0.11 + 0.35);
-                    });
-                } else if (type === 'streak') {
-                    [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-                        gain.gain.setValueAtTime(0.16, now + idx * 0.09);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.45);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.09);
-                        osc.stop(now + idx * 0.09 + 0.45);
-                    });
-                } else if (type === 'wrong') {
-                    [220, 174.61].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.15);
-                        gain.gain.setValueAtTime(0.22, now + idx * 0.15);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.15 + 0.32);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.15);
-                        osc.stop(now + idx * 0.15 + 0.32);
-                    });
-                } else if (type === 'unlock') {
-                    [659.25, 987.77].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-                        gain.gain.setValueAtTime(0.18, now + idx * 0.08);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.08);
-                        osc.stop(now + idx * 0.08 + 0.25);
-                    });
-                }
-            } catch (e) {
-                console.warn("Audio play skipped:", e);
-            }
-        }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const icon = document.querySelector("#soundToggleBtn i");
-            icon.className = soundEnabled ? "fa-solid fa-volume-high" : "fa-solid fa-volume-xmark text-red-400";
-            showToast(soundEnabled ? "偵探音效已開啟" : "偵探音效已靜音", soundEnabled ? "🔊" : "🔇");
-        }
-
-        /**
-         * 每週紅果短劇時間銀行管理（每週一自動開啟新週期）
-         */
-        function getCurrentWeekKey() {
-            const now = new Date();
-            const day = now.getDay();
-            const diff = day === 0 ? -6 : 1 - day;
-            const monday = new Date(now);
-            monday.setDate(now.getDate() + diff);
-            const y = monday.getFullYear();
-            const m = String(monday.getMonth() + 1).padStart(2, '0');
-            const d = String(monday.getDate()).padStart(2, '0');
-            return {
-                key: `conan_time_bank_${y}-${m}-${d}`,
-                label: `統計週期：${y}/${m}/${d} (一) 起本週累計`
-            };
-        }
-
-        function getWeeklyMinutes() {
-            const { key } = getCurrentWeekKey();
-            const val = parseInt(localStorage.getItem(key) || "0", 10);
-            return isNaN(val) ? 0 : Math.max(0, val);
-        }
-
-        function setWeeklyMinutes(mins) {
-            const { key } = getCurrentWeekKey();
-            const safeVal = Math.max(0, Math.round(mins));
-            localStorage.setItem(key, String(safeVal));
-            updateTimeAndStreakUI();
-            return safeVal;
-        }
-
-        function updateTimeAndStreakUI() {
-            const { label } = getCurrentWeekKey();
-            document.getElementById("weekCycleLabel").innerText = `紅果短劇時間銀行｜${label}`;
-            document.getElementById("headerMinutes").innerText = getWeeklyMinutes();
-
-            const streakContainer = document.getElementById("bowtieStreakContainer");
-            const mod = currentStreak % 5;
-            const activeCount = (currentStreak > 0 && mod === 0) ? 5 : mod;
-            let html = "";
-            for (let i = 1; i <= 5; i++) {
-                if (i <= activeCount) {
-                    html += `<span title="連勝第 ${i} 題" class="drop-shadow">🎀</span>`;
-                } else {
-                    html += `<span class="opacity-25 grayscale">🎀</span>`;
-                }
-            }
-            streakContainer.innerHTML = html;
-        }
-
-        /**
-         * 30 大私中數學題目生成器 Engine（自動產生柯南角色情境類似題 + 進階題）
+         * 30 大私中數學題目生成器 Engine（優先解析貼上題目結構，再依對應單元產生柯南角色情境類似題 + 進階題）
          */
         function generateVariantProblems(unitId, originalText = "") {
-            const id = Number(unitId) || 11;
             const [c1, c2, c3] = pickConanChars(3);
+
+            // 若貼上的題目符合特定應用結構（如二元一次買賣問題），直接依原題結構生成同構題組
+            const linearSystemResult = tryBuildLinearSystemVariants(originalText, c1, c2, c3);
+            if (linearSystemResult) {
+                return linearSystemResult;
+            }
+
+            const id = Number(unitId) || detectTopicIdFromText(originalText);
             let sim, adv;
 
             if (id === 1) {
@@ -2133,11 +2019,12 @@
         }
 
         function deleteBankItem(idx) {
-            showConfirmModal("確定要刪除這筆錯題嗎？（刪除後別忘了點「同步更新至 GitHub」同步給小孩喔）", () => {
+            showConfirmModal("確定要刪除這筆錯題嗎？", () => {
                 questionBank.splice(idx, 1);
                 if (currentBankIndex >= questionBank.length) currentBankIndex = 0;
                 saveQuestionBank();
                 renderBankCards();
+                autoSyncGitHubIfConfigured();
                 showToast("已刪除該筆錯題", "🗑️");
             });
         }
@@ -2153,6 +2040,7 @@
                         currentQuizMode = 'similar';
                         saveQuestionBank();
                         renderBankCards();
+                        autoSyncGitHubIfConfigured();
                         showToast("已清空所有錯題庫！", "🧹");
                     });
                 }
@@ -2160,13 +2048,15 @@
         }
 
         /**
-         * 新增錯題 Modal 與高對比拍照 OCR
+         * 新增錯題 Modal（純文字直接貼上與即時智慧題型判斷）
          */
         function openAddModal(bypassPassword = false) {
             const openFn = () => {
-                removeUploadedPhoto();
                 document.getElementById("addQuestionInput").value = "";
+                document.getElementById("addUnitSelect").value = "AUTO";
+                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並重新出題。</span>`;
                 document.getElementById("addModal").classList.remove("hidden");
+                setTimeout(() => document.getElementById("addQuestionInput").focus(), 60);
             };
             if (bypassPassword) {
                 openFn();
@@ -2174,7 +2064,7 @@
             }
             openPasswordModal(
                 "家長新增錯題驗證",
-                "拍照或新增錯題需輸入家長安全密碼：",
+                "新增錯題需輸入家長安全密碼：",
                 openFn
             );
         }
@@ -2183,35 +2073,30 @@
             document.getElementById("addModal").classList.add("hidden");
         }
 
-        function handlePhotoUpload(event) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => setUploadedPhoto(e.target.result);
-            reader.readAsDataURL(file);
+        async function pasteQuestionFromClipboard() {
+            const inputEl = document.getElementById("addQuestionInput");
+            try {
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    const clipText = await navigator.clipboard.readText();
+                    if (clipText && clipText.trim()) {
+                        inputEl.value = clipText.trim();
+                        onQuestionInputChange();
+                        showToast("已從剪貼簿貼上題目文字！", "📋");
+                        return;
+                    }
+                }
+            } catch (e) {
+                // 若瀏覽器權限限制讀取剪貼簿，聚焦輸入框讓使用者直接按貼上
+            }
+            inputEl.focus();
+            showToast("請在輸入框內長按選擇「貼上」或按 Ctrl+V！", "💡");
         }
 
-        // 支援 Ctrl+V 直接貼上截圖
-        document.addEventListener("paste", (event) => {
-            const addModal = document.getElementById("addModal");
-            if (addModal.classList.contains("hidden")) return;
-            const items = (event.clipboardData || event.originalEvent.clipboardData)?.items || [];
-            for (const item of items) {
-                if (item.type.indexOf("image") === 0) {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = (e) => setUploadedPhoto(e.target.result);
-                    reader.readAsDataURL(blob);
-                    break;
-                }
-            }
-        });
-
-        function autoMatchTopicByText(text) {
-            const select = document.getElementById("addUnitSelect");
-            if (!select || !text) return;
+        function detectTopicIdFromText(text) {
+            if (!text) return 1;
             const rules = [
-                { id: 11, re: /方陣|空心|實心|最外層|每邊/ },
+                { id: 1, re: /x\s*元|y\s*元|原子筆|筆記本|代數|方程式|未知數|聯立|下列哪個選項/i },
+                { id: 11, re: /方陣|空心|實心.*正方形|最外層.*每邊|每邊.*人/ },
                 { id: 2, re: /指數|次方|\^/ },
                 { id: 9, re: /植樹|種樹|間隔|路燈/ },
                 { id: 22, re: /追趕|追上|相遇|相向/ },
@@ -2225,15 +2110,122 @@
                 { id: 30, re: /巧算|999|125/ },
                 { id: 15, re: /圓周長|扇形周長|弧長/ },
                 { id: 16, re: /圓面積|扇形面積|圓環/ },
+                { id: 17, re: /長方體|正方體|表面積|體積/ },
+                { id: 18, re: /圓柱|角柱|容積/ },
                 { id: 19, re: /連比|比值|比例/ },
                 { id: 20, re: /比例尺|地圖/ },
-                { id: 23, re: /百分率|打.*折|%/ }
+                { id: 23, re: /百分率|打.*折|%/ },
+                { id: 12, re: /三角形|內角/ },
+                { id: 13, re: /梯形|菱形|平行四邊形|四邊形/ },
+                { id: 14, re: /線段|棋盤|幾何計數/ },
+                { id: 10, re: /數列|等差|規律/ },
+                { id: 8, re: /公里|公尺|公頃|公畝|單位換算/ },
+                { id: 7, re: /概數|四捨五入/ },
+                { id: 6, re: /小數/ },
+                { id: 5, re: /分數|幾分之幾/ },
+                { id: 4, re: /公因數|公倍數/ },
+                { id: 3, re: /因數|倍數/ }
             ];
             for (const r of rules) {
                 if (r.re.test(text)) {
-                    select.value = String(r.id);
-                    return;
+                    return r.id;
                 }
+            }
+            return 1;
+        }
+
+        function onQuestionInputChange() {
+            const text = document.getElementById("addQuestionInput").value.trim();
+            const banner = document.getElementById("detectedTopicBanner");
+            if (!text) {
+                banner.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並重新出題。</span>`;
+                return;
+            }
+            const detectedId = detectTopicIdFromText(text);
+            const topicObj = TOPICS.find(t => t.id === detectedId) || TOPICS[0];
+            banner.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>🎯 自動辨識題型為：【${topicObj.name}】</span>`;
+        }
+
+        async function saveNewWrongQuestion() {
+            const rawSelectVal = document.getElementById("addUnitSelect").value;
+            const qText = document.getElementById("addQuestionInput").value.trim();
+
+            if (!qText) {
+                showToast("請先貼上或輸入錯題文字！", "⚠️");
+                return;
+            }
+
+            const unitId = rawSelectVal === "AUTO" ? detectTopicIdFromText(qText) : (parseInt(rawSelectVal, 10) || detectTopicIdFromText(qText));
+            const topicObj = TOPICS.find(t => t.id === unitId) || TOPICS[0];
+
+            const btn = document.getElementById("saveNewQuestionBtn");
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在生成【類似題】與【進階題】...</span>`;
+
+            const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
+            let variants = null;
+
+            if (geminiKey) {
+                try {
+                    const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長貼上的錯題內容（單元：${topicObj.name}，原題目：「${qText}」），設計 1 題高度相關的「類似題 (similarProblem)」與 1 題加深難度的「進階題 (advancedProblem)」，皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3，不要每次都放 0）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
+                    請嚴格回傳 JSON 格式（不要有 markdown 標記）：
+                    {
+                      "similarProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
+                      "advancedProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"}
+                    }`;
+
+                    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+                        const parsed = JSON.parse(rawJson);
+                        variants = {
+                            similarProblem: shuffleProblemOptions(parsed.similarProblem),
+                            advancedProblem: shuffleProblemOptions(parsed.advancedProblem)
+                        };
+                    }
+                } catch (e) {
+                    console.log("Gemini fallback to local generator:", e);
+                }
+            }
+
+            if (!variants) {
+                variants = generateVariantProblems(unitId, qText);
+            }
+
+            const newItem = {
+                id: "q_" + Date.now(),
+                unitId: topicObj.id,
+                unitTitle: topicObj.name,
+                originalQuestion: qText,
+                photoUrl: "",
+                similarProblem: variants.similarProblem,
+                advancedProblem: variants.advancedProblem,
+                createdDate: new Date().toISOString().split('T')[0]
+            };
+
+            questionBank.unshift(newItem);
+            currentBankIndex = 0;
+            currentQuizMode = 'similar';
+            saveQuestionBank();
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>一鍵生成【類似題】與【進階題】並儲存</span>`;
+            closeAddModal();
+            activateTab('bank');
+            showToast(`✅ 已依【${topicObj.name}】生成類似題與進階題並加入錯題庫！`, "🎉");
+            autoSyncGitHubIfConfigured();
+        }
+
+        function autoSyncGitHubIfConfigured() {
+            const repo = (localStorage.getItem("conan_gh_repo") || "").trim();
+            const token = (localStorage.getItem("conan_gh_token") || "").trim();
+            if (repo && token) {
+                pushToGitHub();
             }
         }
 
@@ -2521,6 +2513,7 @@
             saveQuestionBank();
             closeEditModal();
             renderBankCards();
+            autoSyncGitHubIfConfigured();
             showToast("題組修訂已儲存！", "✅");
         }
 
@@ -2775,6 +2768,12 @@
         function populateTopicSelects() {
             const addSel = document.getElementById("addUnitSelect");
             const filterSel = document.getElementById("bankUnitFilter");
+
+            const autoOpt = document.createElement("option");
+            autoOpt.value = "AUTO";
+            autoOpt.innerText = "✨ 智慧自動判斷題型（依貼上題目自動分析）";
+            addSel.appendChild(autoOpt);
+
             TOPICS.forEach(t => {
                 const opt1 = document.createElement("option");
                 opt1.value = String(t.id);
@@ -2786,7 +2785,7 @@
                 opt2.innerText = t.name;
                 filterSel.appendChild(opt2);
             });
-            addSel.value = "11";
+            addSel.value = "AUTO";
         }
 
         document.addEventListener("keydown", (e) => {
