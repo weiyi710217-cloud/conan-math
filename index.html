@@ -99,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.3</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.4</span></p>
                 </div>
             </div>
 
@@ -418,10 +418,10 @@
                         <span>📋 一鍵貼上剪貼簿文字</span>
                     </button>
                 </div>
-                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：某次評量，數學不及格人數佔了全班的3成，及格但不到80分的人數佔了全班的一半又2人，80分以上的只有6人，那麼這次考試中該班不及格有多少人？"></textarea>
+                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：上午10點20分到11點之間，長短針成60度時，是在什麼時刻？"></textarea>
                 <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>貼上題目或選擇幾何單元後，系統會自動生成包含幾何示意圖的 2 類似題與 2 進階題。</span>
+                    <span>貼上題目或選擇幾何單元後，系統會自動生成包含示意圖的 2 類似題與 2 進階題。</span>
                 </div>
             </div>
 
@@ -1157,6 +1157,106 @@
         }
 
         /**
+         * 針對「時鐘問題：長短針夾角／重合／成直角／成一直線」生成同構類似題與進階題
+         */
+        function formatFraction11Minutes(numerator) {
+            const whole = Math.floor(numerator / 11);
+            const rem = numerator % 11;
+            if (rem === 0) return `${whole}`;
+            if (whole === 0) return `\\frac{${rem}}{11}`;
+            return `${whole}\\frac{${rem}}{11}`;
+        }
+
+        function tryBuildClockAnglePair(originalText, c1, c2, c3) {
+            if (!originalText) return null;
+            const isClockProblem = /長短針|時針|分針|鐘面/.test(originalText)
+                || (/\d+\s*點/.test(originalText) && /成\s*\d+\s*度|重合|成一直線|直角/.test(originalText));
+            if (!isClockProblem) return null;
+
+            // 預設精選「H點之後，分針追過時針成 targetDeg 度」的標準題型（如 10點20分到11點之間成 60度 -> 300+60=360, 360*2/11 = 720/11 = 65又5/11? 不，10點整時時針在 300度，分針追上還差 300-60=240度 -> 240*2/11 = 480/11 = 43又7/11分！若已過20分則追過超過60度 -> (300+60)*2/11 = 720/11 = 65又5/11分超過11點，題目若問 10點到11點成60度有兩次：43又7/11分 與 65又5/11分；若問 10點20分後到11點成30度則是 (300+30)*2/11 = 660/11 = 60分；若成60度在 10點到11點之間則是 43又7/11分！）
+            const clockPresets = [
+                {
+                    hour: 10,
+                    afterMinText: "10點20分到11點之間",
+                    deg: 30,
+                    // 10點整時時針領先分針 300 度；在 10:20 分針在 120 度、時針在 310 度（相差 190 度），要追到「分針落後時針 30 度」，分針需比時針多走 300 - 30 = 270 度 -> 270 ÷ 5.5 = 540/11 = 49又1/11 分
+                    num: 540,
+                    calcDesc: `10點整時，時針在 $10 \\times 30^{\\circ} = 300^{\\circ}$ 處，領先分針 $300^{\\circ}$。要使長短針夾角為 $30^{\\circ}$（且在 10點20分之後），分針必須追到只落後時針 $30^{\\circ}$，也就是分針要比時針多走 $300^{\\circ} - 30^{\\circ} = 270^{\\circ}$。`
+                },
+                {
+                    hour: 8,
+                    afterMinText: "8點15分到9點之間",
+                    deg: 60,
+                    // 8點整時時針領先 240 度，追到落後 60 度需多走 240 - 60 = 180 度 -> 180 ÷ 5.5 = 360/11 = 32又8/11 分（確實介於 15 分到 60 分之間！）
+                    num: 360,
+                    calcDesc: `8點整時，時針在 $8 \\times 30^{\\circ} = 240^{\\circ}$ 處，領先分針 $240^{\\circ}$。要使長短針成 $60^{\\circ}$（且在 8點15分之後），分針需比時針多走 $240^{\\circ} - 60^{\\circ} = 180^{\\circ}$。`
+                },
+                {
+                    hour: 9,
+                    afterMinText: "9點20分到10點之間",
+                    deg: 60,
+                    // 9點整時時針領先 270 度，追到落後 60 度需多走 270 - 60 = 210 度 -> 210 ÷ 5.5 = 420/11 = 38又2/11 分（確實介於 20 分到 60 分之間！）
+                    num: 420,
+                    calcDesc: `9點整時，時針在 $9 \\times 30^{\\circ} = 270^{\\circ}$ 處，領先分針 $270^{\\circ}$。要使長短針成 $60^{\\circ}$（且在 9點20分之後），分針需比時針多走 $270^{\\circ} - 60^{\\circ} = 210^{\\circ}$。`
+                },
+                {
+                    hour: 7,
+                    afterMinText: "7點10分到8點之間",
+                    deg: 90,
+                    // 7點整時時針領先 210 度，追到落後 90 度需多走 210 - 90 = 120 度 -> 120 ÷ 5.5 = 240/11 = 21又9/11 分
+                    num: 240,
+                    calcDesc: `7點整時，時針在 $7 \\times 30^{\\circ} = 210^{\\circ}$ 處，領先分針 $210^{\\circ}$。要使長短針成 $90^{\\circ}$（且在 7點10分之後），分針需比時針多走 $210^{\\circ} - 90^{\\circ} = 120^{\\circ}$。`
+                }
+            ];
+
+            const p = clockPresets[randInt(0, clockPresets.length - 1)];
+            const ansFrac = formatFraction11Minutes(p.num);
+            const wrong1 = formatFraction11Minutes(p.num + 120);
+            const wrong2 = formatFraction11Minutes(Math.max(11, p.num - 60));
+            const wrong3 = formatFraction11Minutes(p.num + 22);
+
+            const sim = {
+                question: `${c1}在鐘錶店調查案發時間線索：請問在上午 $${p.afterMinText}$，時鐘的長短針成 $${p.deg}^{\\circ}$ 時，是在什麼時刻？`,
+                svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><circle cx="110" cy="72" r="56" fill="#0f172a" stroke="#60a5fa" stroke-width="3"/><circle cx="110" cy="72" r="3" fill="#fbbf24"/><text x="110" y="29" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="bold">12</text><text x="155" y="76" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="bold">3</text><text x="110" y="122" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="bold">6</text><text x="65" y="76" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="bold">9</text><line x1="110" y1="72" x2="78" y2="48" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"/><line x1="110" y1="72" x2="96" y2="116" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><text x="110" y="141" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="bold">分針每分走 6°｜時針每分走 0.5°</text></svg>`,
+                options: [
+                    `$${p.hour}$ 點 $${ansFrac}$ 分`,
+                    `$${p.hour}$ 點 $${wrong1}$ 分`,
+                    `$${p.hour}$ 點 $${wrong2}$ 分`,
+                    `$${p.hour}$ 點 $${wrong3}$ 分`
+                ],
+                answerIndex: 0,
+                clue: `分針每分鐘走 $6^{\\circ}$，時針每分鐘走 $0.5^{\\circ}$，分針每分鐘比時針多追 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$！先算出整點時兩針相差幾度，扣掉目標夾角 $${p.deg}^{\\circ}$ 後再除以 $\\frac{11}{2}$。`,
+                explanation: `${p.calcDesc}\n分針每分鐘比時針多走 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n所需時間 $= ${p.num / 2} \\div \\frac{11}{2} = \\frac{${p.num}}{11} = ${ansFrac}$ 分。\n所以時刻為 $${p.hour}$ 點 $${ansFrac}$ 分。`
+            };
+
+            // 進階題：長短針「重合」或「成一直線 (180度)」
+            const advHour = randInt(4, 8);
+            const advNum = advHour * 60; // 重合需追 advHour * 30 度 -> (advHour*30) / (11/2) = advHour*60 / 11
+            const advAnsFrac = formatFraction11Minutes(advNum);
+            const advW1 = formatFraction11Minutes(advNum + 60);
+            const advW2 = formatFraction11Minutes(Math.max(11, advNum - 40));
+            const advW3 = formatFraction11Minutes(advNum + 15);
+
+            const adv = {
+                question: `${c2}與${c3}核對不在場證明：請問在下午 $${advHour}$ 點到 $${advHour + 1}$ 點之間，時鐘的長針（分針）與短針（時針）「完全重合」是在什麼時刻？`,
+                options: [
+                    `$${advHour}$ 點 $${advAnsFrac}$ 分`,
+                    `$${advHour}$ 點 $${advW1}$ 分`,
+                    `$${advHour}$ 點 $${advW2}$ 分`,
+                    `$${advHour}$ 點 $${advW3}$ 分`
+                ],
+                answerIndex: 0,
+                clue: `$${advHour}$ 點整時，時針領先分針 $${advHour} \\times 30^{\\circ} = ${advHour * 30}^{\\circ}$。兩針完全重合代表追及距離為 $${advHour * 30}^{\\circ}$，除以速度差 $\\frac{11}{2}^{\\circ}/\\text{分}$ 即可！`,
+                explanation: `$${advHour}$ 點整時，時針在 $${advHour} \\times 30^{\\circ} = ${advHour * 30}^{\\circ}$ 處。\n分針每分鐘追上 $6^{\\circ} - 0.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n重合所需時間 $= ${advHour * 30} \\div \\frac{11}{2} = \\frac{${advNum}}{11} = ${advAnsFrac}$ 分，即 $${advHour}$ 點 $${advAnsFrac}$ 分。`
+            };
+
+            return {
+                sim: shuffleProblemOptions(sim),
+                adv: shuffleProblemOptions(adv)
+            };
+        }
+
+        /**
          * 針對「基準量與比較量：部分佔幾成＋一半又幾人＋剩下幾人」逆推全體量，生成同構類似題與進階題
          */
         function tryBuildBaseRateRemainderPair(originalText, c1, c2, c3) {
@@ -1166,10 +1266,9 @@
                 || (/一半又\s*\d+/.test(originalText) && /只有\s*\d+|剩下\s*\d+/.test(originalText));
             if (!isBaseRateRemainder) return null;
 
-            // 設計乾淨整數解：全班 total 人，不及格佔 failCheng 成（10*failCheng %），及格不到80分佔一半(50%)又 extra 人，80分以上 highCount 人
-            const failCheng = [2, 3, 4][randInt(0, 2)]; // 2成(20%)、3成(30%)、4成(40%)
-            const remRatePct = 50 - failCheng * 10;      // 30%、20%、10%
-            const totalClass = remRatePct === 30 ? 40 : (remRatePct === 20 ? randInt(3, 5) * 10 : randInt(3, 5) * 10);
+            const failCheng = [2, 3, 4][randInt(0, 2)];
+            const remRatePct = 50 - failCheng * 10;
+            const totalClass = remRatePct === 30 ? 40 : randInt(3, 5) * 10;
             const sumExtraAndHigh = (totalClass * remRatePct) / 100;
             const extraPeople = randInt(2, Math.max(3, Math.floor(sumExtraAndHigh / 2)));
             const highScorePeople = sumExtraAndHigh - extraPeople;
@@ -1188,11 +1287,10 @@
                 explanation: `「$${failCheng}$ 成」$= ${failCheng * 10}\\%$，「一半」$= 50\\%$。\n多出來的 $${extraPeople}$ 人與 $80$ 分以上的 $${highScorePeople}$ 人合計 $${extraPeople} + ${highScorePeople} = ${sumExtraAndHigh}$ 人，佔全班的 $1 - ${failCheng * 10}\\% - 50\\% = ${remRatePct}\\%$。\n全班總人數 $= ${sumExtraAndHigh} \\div ${remRatePct}\\% = ${totalClass}$ 人。\n不及格人數 $= ${totalClass} \\times ${failCheng * 10}\\% = ${failPeople}$ 人。`
             };
 
-            // 進階題：改為「剩餘量再分」或「閱讀頁數/偵探經費佔幾成＋一半少幾頁＋剩下幾頁」
-            const pCheng = [2, 3][randInt(0, 1)]; // 20% 或 30%
-            const pRemPct = 50 - pCheng * 10;      // 30% 或 20%
+            const pCheng = [2, 3][randInt(0, 1)];
+            const pRemPct = 50 - pCheng * 10;
             const totalPages = pRemPct === 30 ? 120 : 150;
-            const part2Less = randInt(4, 8); // 一半少 part2Less 頁 -> 剩下 = totalPages * pRemPct% + part2Less
+            const part2Less = randInt(4, 8);
             const leftPages = (totalPages * pRemPct) / 100 + part2Less;
             const day1Pages = (totalPages * pCheng) / 10;
 
@@ -1280,7 +1378,12 @@
         function generateSinglePair(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
 
-            // 1. 優先比對特定結構題型（基準量與成數逆推、二元一次買賣消去法）
+            // 1. 優先比對特定結構題型（時鐘長短針夾角追趕、基準量與成數逆推、二元一次買賣消去法）
+            const clockPair = tryBuildClockAnglePair(originalText, c1, c2, c3);
+            if (clockPair) {
+                return clockPair;
+            }
+
             const baseRatePair = tryBuildBaseRateRemainderPair(originalText, c1, c2, c3);
             if (baseRatePair) {
                 return baseRatePair;
@@ -2313,7 +2416,7 @@
                 svgBox.innerHTML = problem.svgCode;
                 svgBox.classList.remove("hidden");
                 fallbackImg.classList.add("hidden");
-                captionEl.innerText = "📐 偵探現場幾何示意圖";
+                captionEl.innerText = "📐 偵探現場推理示意圖";
                 diagramBox.classList.remove("hidden");
             } else if (item.photoUrl) {
                 svgBox.innerHTML = "";
@@ -2774,7 +2877,7 @@
                 document.getElementById("addQuestionInput").value = "";
                 document.getElementById("addUnitSelect").value = "AUTO";
                 clearAddDiagram();
-                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目或選擇幾何單元後，系統會自動生成包含幾何示意圖的 2 類似題與 2 進階題。</span>`;
+                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目或選擇幾何單元後，系統會自動生成包含示意圖的 2 類似題與 2 進階題。</span>`;
                 document.getElementById("addModal").classList.remove("hidden");
                 setTimeout(() => document.getElementById("addQuestionInput").focus(), 60);
             };
@@ -2870,13 +2973,13 @@
         function detectTopicIdFromText(text) {
             if (!text) return 1;
             const rules = [
+                { id: 22, re: /長短針|時針|分針|鐘面|重合|成一直線|追趕|追上|相遇|相向/ },
                 { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
                 { id: 10, re: /數列|等差|循環|第\s*\d+\s*個數|重複出現|規律/ },
                 { id: 23, re: /佔了.*([一二三四五六七八九1-9]成|一半|百分之|\d+%)|不及格.*成|一半又\s*\d+|百分率|打.*折|%/ },
                 { id: 1, re: /x\s*元|y\s*元|原子筆|筆記本|代數|方程式|未知數|聯立|下列哪個選項/i },
                 { id: 11, re: /方陣|空心|實心.*正方形|最外層.*每邊|每邊.*人/ },
                 { id: 2, re: /指數|次方|\^/ },
-                { id: 22, re: /追趕|追上|相遇|相向/ },
                 { id: 21, re: /速率|時速|分速|秒速/ },
                 { id: 24, re: /雞兔|得.*分.*扣|倒扣/ },
                 { id: 25, re: /年齡|歲|盈|虧|每人分/ },
