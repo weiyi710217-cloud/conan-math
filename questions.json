@@ -1,6 +1,78 @@
 {
-  "updatedAt": "2026-11-22T13:28:08.513Z",
+  "updatedAt": "2026-11-22T13:41:07.932Z",
   "questions": [
+    {
+      "id": "q_1795354867106",
+      "unitId": 1,
+      "unitTitle": "1. 代數的式與運算",
+      "originalQuestion": "14. 晴子在飲料店打工，從3月3號開始一直做到4月20號結束，若已知3月3號為星期天，那麼4月30號為星期幾呢？\n(A) 一　(B) 二　(C) 三　(D)",
+      "photoUrl": "",
+      "similarProblems": [
+        {
+          "question": "工藤新一破解密碼盒時發現代數線索：若 $x = 8$，則代數式 $7x + 7$ 的值是多少？",
+          "options": [
+            "$70$",
+            "$63$",
+            "$49$",
+            "$22$"
+          ],
+          "answerIndex": 1,
+          "clue": "將 $x = 8$ 代入 $7x + 7$，先算乘法 $7 \\times 8$ 再加上 $7$。",
+          "explanation": "$7 \\times 8 + 7 = 56 + 7 = 63$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "小嶋元太破解密碼盒時發現代數線索：若 $x = 12$，則代數式 $6x + 10$ 的值是多少？",
+          "options": [
+            "$62$",
+            "$28$",
+            "$82$",
+            "$88$"
+          ],
+          "answerIndex": 2,
+          "clue": "將 $x = 12$ 代入 $6x + 10$，先算乘法 $6 \\times 12$ 再加上 $10$。",
+          "explanation": "$6 \\times 12 + 10 = 72 + 10 = 82$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "advancedProblems": [
+        {
+          "question": "赤井秀一在現場找到一張方程式紙條：$4(x + 4) = 36$，請幫工藤新一求出未知數 $x$ 是多少？",
+          "options": [
+            "$7$",
+            "$9$",
+            "$32$",
+            "$5$"
+          ],
+          "answerIndex": 3,
+          "clue": "兩邊先同時除以 $4$，得到 $x + 4 = 9$。",
+          "explanation": "$x + 4 = 36 \\div 4 = 9$，所以 $x = 9 - 4 = 5$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "安室透在現場找到一張方程式紙條：$6(x + 8) = 102$，請幫小嶋元太求出未知數 $x$ 是多少？",
+          "options": [
+            "$17$",
+            "$9$",
+            "$94$",
+            "$11$"
+          ],
+          "answerIndex": 1,
+          "clue": "兩邊先同時除以 $6$，得到 $x + 8 = 17$。",
+          "explanation": "$x + 8 = 102 \\div 6 = 17$，所以 $x = 17 - 8 = 9$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "stats": {
+        "right": 0,
+        "wrong": 0
+      },
+      "createdDate": "2026-11-22"
+    },
     {
       "id": "q_1795354087935",
       "unitId": 25,
