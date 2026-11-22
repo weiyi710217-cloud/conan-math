@@ -97,7 +97,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v2.5</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v2.6</span></p>
                 </div>
             </div>
 
@@ -2561,9 +2561,10 @@
         async function pullFromGitHub(silent = false) {
             const repo = (localStorage.getItem("conan_gh_repo") || "").trim();
             const branch = (localStorage.getItem("conan_gh_branch") || "main").trim();
+            const token = (localStorage.getItem("conan_gh_token") || "").trim();
             const syncIcon = document.getElementById("syncIcon");
 
-            if (!repo) {
+            if (!repo && !window.location.hostname.endsWith(".github.io")) {
                 if (!silent) {
                     showToast("尚未綁定 GitHub 倉庫！請家長先透過連結分享或至設定中填寫倉庫名稱。", "⚠️");
                 }
@@ -2572,22 +2573,57 @@
 
             if (syncIcon) syncIcon.classList.add("fa-spin");
             try {
-                const rawUrl = `https://raw.githubusercontent.com/${repo}/${encodeURIComponent(branch)}/questions.json?t=${Date.now()}`;
                 let parsedData = null;
 
-                const rawResp = await fetch(rawUrl, { cache: "no-store" });
-                if (rawResp.ok) {
-                    parsedData = await rawResp.json();
-                } else {
-                    const apiResp = await fetch(`https://api.github.com/repos/${repo}/contents/questions.json?ref=${encodeURIComponent(branch)}`, {
-                        headers: { "Accept": "application/vnd.github+json" }
-                    });
-                    if (apiResp.ok) {
-                        const meta = await apiResp.json();
-                        parsedData = JSON.parse(base64ToUtf8(meta.content));
-                    } else {
-                        throw new Error("倉庫中尚未建立 questions.json（請家長先在錯題庫按一次「☁️ 同步更新至 GitHub」）");
+                // 1. 優先向 GitHub Contents API 讀取即時無快取的最新版本（若家長端有 Token 則帶上 Token 突破速率限制）
+                if (repo) {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 5000);
+                    try {
+                        const headers = { "Accept": "application/vnd.github+json" };
+                        if (token) headers["Authorization"] = `Bearer ${token}`;
+                        const apiResp = await fetch(
+                            `https://api.github.com/repos/${repo}/contents/questions.json?ref=${encodeURIComponent(branch)}&t=${Date.now()}`,
+                            { headers, cache: "no-store", signal: controller.signal }
+                        );
+                        if (apiResp.ok) {
+                            const meta = await apiResp.json();
+                            if (meta && meta.content) {
+                                parsedData = JSON.parse(base64ToUtf8(meta.content));
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("GitHub API pull fallback:", e);
+                    } finally {
+                        clearTimeout(timer);
                     }
+                }
+
+                // 2. 備援：透過 raw.githubusercontent.com 或同網域相對路徑讀取
+                if (!parsedData) {
+                    const fallbackUrls = [];
+                    if (repo) {
+                        fallbackUrls.push(`https://raw.githubusercontent.com/${repo}/${encodeURIComponent(branch)}/questions.json?t=${Date.now()}`);
+                    }
+                    if (window.location.protocol.startsWith("http")) {
+                        fallbackUrls.push(`./questions.json?t=${Date.now()}`);
+                    }
+
+                    for (const url of fallbackUrls) {
+                        try {
+                            const resp = await fetch(url, { cache: "no-store" });
+                            if (resp.ok) {
+                                parsedData = await resp.json();
+                                break;
+                            }
+                        } catch (e) {
+                            // 繼續嘗試下一個備援網址
+                        }
+                    }
+                }
+
+                if (!parsedData) {
+                    throw new Error("倉庫中尚未建立 questions.json（請家長先在錯題庫按一次「☁️ 同步更新至 GitHub」）");
                 }
 
                 const remoteList = Array.isArray(parsedData) ? parsedData : parsedData?.questions;
@@ -2687,6 +2723,10 @@
                 updateTimeAndStreakUI();
                 updateGitHubStatusUI();
                 renderQuizView();
+                // 背景非阻塞式自動從 GitHub 抓取最新題庫（其他電腦/瀏覽器開啟即自動更新）
+                setTimeout(() => {
+                    pullFromGitHub(true);
+                }, 200);
             } catch (e) {
                 console.error("Initialization error:", e);
             }
