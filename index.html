@@ -99,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.0</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.2</span></p>
                 </div>
             </div>
 
@@ -266,6 +266,12 @@
                     <div id="quizQuestionText" class="math-rendered text-lg md:text-xl font-medium text-white leading-relaxed bg-slate-950/60 p-5 rounded-xl border border-slate-800">
                         題目加載中...
                     </div>
+                    <!-- 衍生題專屬幾何圖形 / 考卷附圖顯示區 -->
+                    <div id="quizProblemDiagramContainer" class="hidden bg-slate-950/85 border border-blue-800/60 rounded-xl p-4 flex flex-col items-center justify-center space-y-2">
+                        <div id="quizProblemSvgBox" class="w-full flex justify-center"></div>
+                        <img id="quizProblemFallbackImg" src="" alt="題目附圖" class="hidden max-h-56 rounded-lg border border-slate-700 object-contain bg-white/95 p-1">
+                        <span id="quizProblemDiagramCaption" class="text-[11px] text-blue-300 font-bold">📐 偵探現場幾何示意圖</span>
+                    </div>
                 </div>
 
                 <!-- 四選一按鈕 -->
@@ -323,6 +329,9 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="openAdjustMinutesModal()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-amber-400/50 text-amber-300 font-bold text-xs rounded-xl shadow transition">
+                        ✏️ 校正時間
+                    </button>
                     <button onclick="openRedeemModal()" class="px-4 py-2.5 bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black text-xs rounded-xl shadow transition">
                         🎬 核銷兌換短劇時間
                     </button>
@@ -389,13 +398,13 @@
 
     <!-- ===== 模態框 MODALS ===== -->
 
-    <!-- 1. 新增錯題 Modal（純文字直接貼上） -->
+    <!-- 1. 新增錯題 Modal（支援純文字貼上 ＋ 幾何圖形附圖上傳） -->
     <div id="addModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-2xl p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 class="text-lg font-black text-amber-300 flex items-center space-x-2">
-                    <i class="fa-solid fa-paste"></i>
-                    <span>貼上新錯題文字（自動生成 2 題類似題 ＋ 2 題進階題）</span>
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>新增錯題（支援文字貼上 ＋ 幾何圖形附圖上傳）</span>
                 </h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
             </div>
@@ -403,22 +412,65 @@
             <!-- 題目文字直接貼上區 -->
             <div class="space-y-2">
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                    <label class="block text-xs font-bold text-slate-300">1. 直接貼上或輸入錯題文字內容：</label>
+                    <label class="block text-xs font-bold text-slate-300">1. 貼上或輸入錯題文字（若有附圖，只需輸入題幹或關鍵字即可）：</label>
                     <button type="button" onclick="pasteQuestionFromClipboard()" class="bg-blue-600/30 hover:bg-blue-600/50 border border-blue-400/50 text-blue-200 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5">
                         <i class="fa-solid fa-clipboard"></i>
                         <span>📋 一鍵貼上剪貼簿文字</span>
                     </button>
                 </div>
-                <textarea id="addQuestionInput" rows="4" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="請直接貼上題目文字，例如：有一數列 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, ...，第一個數起到第1000個數的和是多少？"></textarea>
+                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：求下圖塗色扇形的面積是多少？（圓周率≒3.14），或直接拍照上傳幾何圖形！"></textarea>
                 <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>貼上題目後，系統會自動判斷對應的私中數學題型並生成 2 題類似題與 2 題進階題。</span>
+                    <span>貼上題目或選擇幾何單元後，系統會自動生成包含幾何示意圖的 2 類似題與 2 進階題。</span>
+                </div>
+            </div>
+
+            <!-- 幾何圖形 / 考卷附圖上傳區 -->
+            <div class="bg-slate-950/85 border border-blue-800/60 rounded-xl p-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <div class="text-xs font-black text-blue-300 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-image"></i>
+                            <span>2. 上傳幾何圖形／考卷附圖（有圖案的題目必用，選填）</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-0.5">
+                            不再依賴易亂碼的離線文字辨識！附圖會完整保存供對照；若有設定 Gemini API Key，AI 會直接看圖生成全新幾何題與 SVG 圖形。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <input type="file" id="addCameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleAddDiagramUpload(event)">
+                    <input type="file" id="addAlbumInput" accept="image/*" class="hidden" onchange="handleAddDiagramUpload(event)">
+
+                    <button type="button" onclick="document.getElementById('addCameraInput').click()" class="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/50 text-amber-200 font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>📷 拍攝圖形</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('addAlbumInput').click()" class="px-3.5 py-2 bg-blue-600/25 hover:bg-blue-600/45 border border-blue-400/50 text-blue-200 font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-images"></i>
+                        <span>🖼️ 從相簿選圖</span>
+                    </button>
+                    <span class="text-[11px] text-slate-400">（電腦也可直接按 Ctrl+V 貼上截圖）</span>
+                </div>
+
+                <div id="addDiagramPreviewBox" class="hidden relative bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <img id="addDiagramPreviewImg" src="" alt="附圖預覽" class="max-h-28 rounded-lg border border-slate-600 bg-white object-contain">
+                        <div class="text-xs text-emerald-300 font-bold">
+                            ✅ 已附加錯題圖形！<br>
+                            <span class="text-[11px] text-slate-400 font-normal">系統已自動最佳化壓縮，可隨題庫同步至 GitHub。</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="clearAddDiagram()" class="px-2.5 py-1.5 bg-red-950/90 hover:bg-red-900 text-red-300 text-xs font-bold rounded-lg">
+                        移除附圖
+                    </button>
                 </div>
             </div>
 
             <!-- 選擇單元 -->
             <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">2. 對應六升私中 30 大數學主題（預設智慧自動判斷，亦可手動指定）：</label>
+                <label class="block text-xs font-bold text-slate-300 mb-1">3. 對應六升私中 30 大數學主題（有幾何圖形時可在此直接指定單元，如「16. 圓、扇形面積」）：</label>
                 <select id="addUnitSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400">
                 </select>
             </div>
@@ -673,7 +725,32 @@
     </div>
 
 
-    <!-- 7. 柯南訊息提示 Toast 與確認 Modal -->
+    <!-- 7. 家長校正時間 Modal -->
+    <div id="adjustMinutesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-black text-amber-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>✏️ 家長校正本週紅果短劇時間</span>
+                </h3>
+                <button onclick="closeAdjustMinutesModal()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <p class="text-xs text-slate-300">
+                系統已自動保留跨版本與跨週期的時間紀錄。若需手動補登或調整分鐘數，請直接輸入正確的目前可用分鐘數：
+            </p>
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-300">設定目前可用觀看時間（分鐘）：</label>
+                <input type="number" id="adjustMinutesInput" min="0" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-center text-xl font-black text-yellow-300 focus:outline-none focus:border-amber-400">
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeAdjustMinutesModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl">取消</button>
+                <button onclick="saveAdjustedMinutes()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow">確認更新時間</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 8. 柯南訊息提示 Toast 與確認 Modal -->
     <div id="conanToast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-conanNavy border border-amber-400/80 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
         <span id="conanToastIcon" class="text-xl">🕵️</span>
         <span id="conanToastMsg" class="text-xs font-bold leading-relaxed"></span>
@@ -791,6 +868,7 @@
         let isClueUnlockedForCurrentQuestion = false;
         let isAnsweringLocked = false;
         let lastQuizWasCorrect = false;
+        let currentAddDiagramDataUrl = "";
 
         function randInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -873,7 +951,7 @@
         }
 
         /**
-         * 本週紅果短劇觀看時間與 5 連勝狀態管理（每週一自動歸檔新週期）
+         * 本週紅果短劇觀看時間與 5 連勝狀態管理（永久保留跨版本紀錄，絕不因更新網頁而歸零）
          */
         function getCurrentWeekKey() {
             const now = new Date();
@@ -899,16 +977,81 @@
             return `統計週期：${fmt(monday)} (一) ～ ${fmt(sunday)} (日)`;
         }
 
+        // 啟動時自動檢測並遷移任何舊版或歷史累積的時間紀錄，確保版本更新後時間不會被清除
+        function migrateAndProtectSavedMinutes() {
+            const curKey = getCurrentWeekKey();
+            const curRaw = localStorage.getItem(curKey);
+            if (curRaw !== null && !isNaN(parseInt(curRaw, 10))) {
+                const validVal = Math.max(0, parseInt(curRaw, 10));
+                localStorage.setItem("conan_weekly_minutes_backup", String(validVal));
+                return;
+            }
+
+            // 若目前週期鍵尚未寫入，依序從備援鍵、舊版固定鍵或歷史週期鍵自動繼承保留時間
+            let inherited = null;
+            const backupRaw = localStorage.getItem("conan_weekly_minutes_backup");
+            if (backupRaw !== null && !isNaN(parseInt(backupRaw, 10))) {
+                inherited = Math.max(0, parseInt(backupRaw, 10));
+            }
+
+            if (inherited === null) {
+                const legacyKeys = ["conan_weekly_minutes", "conan_total_minutes", "hongguo_minutes"];
+                for (const lk of legacyKeys) {
+                    const v = localStorage.getItem(lk);
+                    if (v !== null && !isNaN(parseInt(v, 10))) {
+                        inherited = Math.max(0, parseInt(v, 10));
+                        break;
+                    }
+                }
+            }
+
+            if (inherited === null) {
+                const weekKeys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k && k.startsWith("conan_weekly_minutes_20")) {
+                        weekKeys.push(k);
+                    }
+                }
+                weekKeys.sort();
+                if (weekKeys.length > 0) {
+                    const latestVal = parseInt(localStorage.getItem(weekKeys[weekKeys.length - 1]) || "0", 10);
+                    if (!isNaN(latestVal)) {
+                        inherited = Math.max(0, latestVal);
+                    }
+                }
+            }
+
+            const finalMins = inherited !== null ? inherited : 0;
+            localStorage.setItem(curKey, String(finalMins));
+            localStorage.setItem("conan_weekly_minutes_backup", String(finalMins));
+        }
+
         function getWeeklyMinutes() {
-            const val = parseInt(localStorage.getItem(getCurrentWeekKey()) || "0", 10);
-            return isNaN(val) ? 0 : Math.max(0, val);
+            const curKey = getCurrentWeekKey();
+            const raw = localStorage.getItem(curKey);
+            if (raw !== null && !isNaN(parseInt(raw, 10))) {
+                return Math.max(0, parseInt(raw, 10));
+            }
+            const backup = parseInt(localStorage.getItem("conan_weekly_minutes_backup") || "0", 10);
+            return isNaN(backup) ? 0 : Math.max(0, backup);
         }
 
         function setWeeklyMinutes(mins) {
             const safeMins = Math.max(0, Math.round(Number(mins) || 0));
             localStorage.setItem(getCurrentWeekKey(), String(safeMins));
+            localStorage.setItem("conan_weekly_minutes_backup", String(safeMins));
             updateTimeAndStreakUI();
             return safeMins;
+        }
+
+        function loadSavedStreak() {
+            const saved = parseInt(localStorage.getItem("conan_current_streak") || "0", 10);
+            currentStreak = isNaN(saved) ? 0 : Math.max(0, saved);
+        }
+
+        function saveCurrentStreak() {
+            localStorage.setItem("conan_current_streak", String(currentStreak));
         }
 
         function updateTimeAndStreakUI() {
@@ -927,7 +1070,7 @@
             }
             const parentWeekLabel = document.getElementById("parentViewWeekLabel");
             if (parentWeekLabel) {
-                parentWeekLabel.innerText = `紅果短劇時間銀行（${getCurrentWeekDisplayText()}）`;
+                parentWeekLabel.innerText = `紅果短劇時間銀行（${getCurrentWeekDisplayText()}｜跨版本自動保留累計）`;
             }
 
             const streakContainer = document.getElementById("bowtieStreakContainer");
@@ -941,6 +1084,27 @@
                 }
                 streakContainer.innerHTML = html;
             }
+        }
+
+        function openAdjustMinutesModal() {
+            document.getElementById("adjustMinutesInput").value = getWeeklyMinutes();
+            document.getElementById("adjustMinutesModal").classList.remove("hidden");
+        }
+
+        function closeAdjustMinutesModal() {
+            document.getElementById("adjustMinutesModal").classList.add("hidden");
+        }
+
+        function saveAdjustedMinutes() {
+            const val = parseInt(document.getElementById("adjustMinutesInput").value, 10);
+            if (isNaN(val) || val < 0) {
+                showToast("請輸入大於或等於 0 的正確分鐘數！", "⚠️");
+                return;
+            }
+            setWeeklyMinutes(val);
+            closeAdjustMinutesModal();
+            playSound("unlock");
+            showToast(`✅ 已更新本週紅果短劇時間為 ${val} 分鐘！`, "🍎");
         }
 
         /**
@@ -1289,6 +1453,7 @@
                 const total3 = l1 + l2 + l3;
                 sim = {
                     question: `${c1}在博物館展覽廳外觀察一個空心正方形警衛方陣，最外層每邊有 $${outer}$ 人，共有 $3$ 層，請問這個空心方陣總共有多少人？`,
+                    svgCode: `<svg viewBox="0 0 220 150" class="w-52 h-36"><rect x="45" y="10" width="130" height="130" fill="none" stroke="#60a5fa" stroke-width="4" stroke-dasharray="6,4"/><rect x="61" y="26" width="98" height="98" fill="none" stroke="#93c5fd" stroke-width="3" stroke-dasharray="5,4"/><rect x="77" y="42" width="66" height="66" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="4,4"/><text x="110" y="79" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="bold">共 3 層空心</text><text x="110" y="148" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="bold">最外層每邊 ${outer} 人</text></svg>`,
                     options: [`$${total3}$ 人`, `$${total3 + 12}$ 人`, `$${outer * 4 * 3}$ 人`, `$${total3 - 16}$ 人`],
                     answerIndex: 0,
                     clue: `正方形每層人數 $= (\\text{單邊人數} - 1) \\times 4$，往內一層單邊人數少 $2$ 人。`,
@@ -1301,6 +1466,7 @@
                 const remainHollow = totalSolid - removed;
                 adv = {
                     question: `${c2}與${c3}協助排列體操隊形，原本排成每邊 $${bigSide}$ 人的實心正方形方陣，後來中間拿掉一個實心正方形變為空心方陣，使得最內層每邊有 $${holeSide + 1}$ 人，請問剩餘空心方陣有多少人？`,
+                    svgCode: `<svg viewBox="0 0 220 150" class="w-52 h-36"><rect x="45" y="10" width="130" height="130" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><rect x="82" y="47" width="56" height="56" fill="#081220" stroke="#f87171" stroke-width="2.5" stroke-dasharray="4,3"/><text x="110" y="79" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="bold">拿掉中空</text><text x="110" y="148" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="bold">外每邊 ${bigSide} 人 / 內層每邊 ${holeSide + 1} 人</text></svg>`,
                     options: [`$${remainHollow}$ 人`, `$${totalSolid - (holeSide + 1) * (holeSide + 1)}$ 人`, `$${remainHollow + 20}$ 人`, `$${totalSolid}$ 人`],
                     answerIndex: 0,
                     clue: `最內層每邊有 $${holeSide + 1}$ 人，代表中間被拿掉的實心正方形單邊為 $${holeSide}$ 人。`,
@@ -1310,7 +1476,8 @@
                 const a1 = randInt(40, 65), a2 = randInt(50, 75);
                 const a3 = 180 - a1 - a2;
                 sim = {
-                    question: `${c1}在犯罪現場發現一塊三角形玻璃碎片，測得其中兩個內角分別是 $${a1}^{\\circ}$ 與 $${a2}^{\\circ}$，第三個內角是多少度？`,
+                    question: `${c1}在犯罪現場發現一塊三角形玻璃碎片（如圖），測得其中兩個內角分別是 $${a1}^{\\circ}$ 與 $${a2}^{\\circ}$，第三個內角是多少度？`,
+                    svgCode: `<svg viewBox="0 0 220 140" class="w-52 h-32"><polygon points="35,118 185,118 130,22" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><text x="58" y="110" fill="#fbbf24" font-size="12" font-weight="bold">${a1}°</text><text x="148" y="110" fill="#fbbf24" font-size="12" font-weight="bold">${a2}°</text><text x="122" y="48" fill="#f87171" font-size="13" font-weight="bold">?</text></svg>`,
                     options: [`$${a3}^{\\circ}$`, `$${180 - a1}^{\\circ}$`, `$${a3 + 10}^{\\circ}$`, `$${90 - a1}^{\\circ}$`],
                     answerIndex: 0,
                     clue: `三角形三個內角和永遠等於 $180^{\\circ}$。`,
@@ -1319,7 +1486,8 @@
                 const base = randInt(12, 20), h = randInt(8, 14);
                 const area = (base * h) / 2;
                 adv = {
-                    question: `${c2}製作了一面三角形偵探團團旗，底邊長 $${base}$ 公分，面積為 $${area}$ 平方公分，請問這面旗子的高是多少公分？`,
+                    question: `${c2}製作了一面三角形偵探團團旗（如圖），底邊長 $${base}$ 公分，面積為 $${area}$ 平方公分，請問這面旗子的高是多少公分？`,
+                    svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><polygon points="30,115 190,115 125,22" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><line x1="125" y1="22" x2="125" y2="115" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4,3"/><text x="132" y="72" fill="#fbbf24" font-size="12" font-weight="bold">高 = ? cm</text><text x="110" y="134" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">底 = ${base} cm（面積 ${area} cm²）</text></svg>`,
                     options: [`$${h}$ 公分`, `$${h / 2}$ 公分`, `$${h * 2}$ 公分`, `$${area / base}$ 公分`],
                     answerIndex: 0,
                     clue: `三角形面積 $= \\text{底} \\times \\text{高} \\div 2$，求高時記得先把面積乘以 $2$。`,
@@ -1329,7 +1497,8 @@
                 const top = randInt(6, 12), bot = randInt(14, 22), h = randInt(6, 10);
                 const area = ((top + bot) * h) / 2;
                 sim = {
-                    question: `${c1}檢視一張梯形藏寶圖，上底為 $${top}$ 公分、下底為 $${bot}$ 公分、高為 $${h}$ 公分，這張藏寶圖的面積是多少平方公分？`,
+                    question: `${c1}檢視一張梯形藏寶圖（如圖），上底為 $${top}$ 公分、下底為 $${bot}$ 公分、高為 $${h}$ 公分，這張藏寶圖的面積是多少平方公分？`,
+                    svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><polygon points="65,28 155,28 190,112 30,112" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><line x1="65" y1="28" x2="65" y2="112" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4,3"/><text x="110" y="21" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">上底 ${top} cm</text><text x="110" y="130" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">下底 ${bot} cm</text><text x="72" y="75" fill="#fbbf24" font-size="12" font-weight="bold">高 ${h} cm</text></svg>`,
                     options: [`$${area}$ 平方公分`, `$${(top + bot) * h}$ 平方公分`, `$${area + 10}$ 平方公分`, `$${top * bot}$ 平方公分`],
                     answerIndex: 0,
                     clue: `梯形面積公式：$\\frac{(\\text{上底} + \\text{下底}) \\times \\text{高}}{2}$。`,
@@ -1338,7 +1507,8 @@
                 const d1 = randInt(10, 16), d2 = randInt(12, 20);
                 const rArea = (d1 * d2) / 2;
                 adv = {
-                    question: `怪盜基德留下一張菱形預告函，已知兩條對角線長度分別為 $${d1}$ 公分與 $${d2}$ 公分，這張預告函的面積是多少平方公分？`,
+                    question: `怪盜基德留下一張菱形預告函（如圖），已知兩條對角線長度分別為 $${d1}$ 公分與 $${d2}$ 公分，這張預告函的面積是多少平方公分？`,
+                    svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><polygon points="110,15 185,72 110,129 35,72" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><line x1="110" y1="15" x2="110" y2="129" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4,3"/><line x1="35" y1="72" x2="185" y2="72" stroke="#f87171" stroke-width="2" stroke-dasharray="4,3"/><text x="116" y="45" fill="#fbbf24" font-size="11" font-weight="bold">${d1} cm</text><text x="52" y="66" fill="#fca5a5" font-size="11" font-weight="bold">${d2} cm</text></svg>`,
                     options: [`$${rArea}$ 平方公分`, `$${d1 * d2}$ 平方公分`, `$${rArea + 12}$ 平方公分`, `$${(d1 + d2) * 2}$ 平方公分`],
                     answerIndex: 0,
                     clue: `菱形面積 $= \\text{對角線}_1 \\times \\text{對角線}_2 \\div 2$。`,
@@ -1369,7 +1539,8 @@
                 const r = randInt(5, 10);
                 const circ = +(2 * r * 3.14).toFixed(2);
                 sim = {
-                    question: `${c1}的麻醉手錶錶面是一個半徑為 $${r}$ 公分的圓形（圓周率 $\\pi \\approx 3.14$），請問錶面的圓周長是多少公分？`,
+                    question: `${c1}的麻醉手錶錶面是一個半徑為 $${r}$ 公分的圓形（如圖，圓周率 $\\pi \\approx 3.14$），請問錶面的圓周長是多少公分？`,
+                    svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><circle cx="110" cy="72" r="52" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><line x1="110" y1="72" x2="162" y2="72" stroke="#fbbf24" stroke-width="2.5"/><circle cx="110" cy="72" r="3" fill="#fbbf24"/><text x="136" y="65" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="bold">r = ${r} cm</text></svg>`,
                     options: [`$${circ}$ 公分`, `$${+(r * 3.14).toFixed(2)}$ 公分`, `$${+(r * r * 3.14).toFixed(2)}$ 公分`, `$${+(circ + 6.28).toFixed(2)}$ 公分`],
                     answerIndex: 0,
                     clue: `圓周長 $= \\text{直徑} \\times 3.14 = 2 \\times \\text{半徑} \\times 3.14$。`,
@@ -1378,7 +1549,8 @@
                 const sr = 10;
                 const sectorPerim = +(2 * sr * 3.14 * 0.25 + 2 * sr).toFixed(2);
                 adv = {
-                    question: `${c2}打開一把半徑為 $10$ 公分的 $\\frac{1}{4}$ 圓扇形密碼盤（圓周率 $\\approx 3.14$），請問這塊扇形的「周長」是多少公分？`,
+                    question: `${c2}打開一把半徑為 $10$ 公分的 $\\frac{1}{4}$ 圓扇形密碼盤（如圖，圓周率 $\\approx 3.14$），請問這塊扇形的「周長」是多少公分？`,
+                    svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><path d="M 65 120 L 65 30 A 90 90 0 0 1 155 120 Z" fill="#1e3a8a" stroke="#60a5fa" stroke-width="3"/><path d="M 65 104 L 81 104 L 81 120" fill="none" stroke="#fbbf24" stroke-width="2"/><text x="110" y="136" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="bold">半徑 10 cm（1/4 圓扇形）</text></svg>`,
                     options: [`$${sectorPerim}$ 公分`, `$15.7$ 公分`, `$78.5$ 公分`, `$25.7$ 公分`],
                     answerIndex: 0,
                     clue: `扇形周長除了「弧長」之外，千萬別忘記加上「兩條半徑」！`,
@@ -1388,7 +1560,8 @@
                 const r = randInt(4, 8);
                 const area = +(r * r * 3.14).toFixed(2);
                 sim = {
-                    question: `${c1}在現場發現一個半徑為 $${r}$ 公分的圓形水漬（圓周率 $\\approx 3.14$），請問這個圓形水漬的面積是多少平方公分？`,
+                    question: `${c1}在現場發現一個半徑為 $${r}$ 公分的圓形水漬（如圖，圓周率 $\\approx 3.14$），請問這個圓形水漬的面積是多少平方公分？`,
+                    svgCode: `<svg viewBox="0 0 220 145" class="w-52 h-36"><circle cx="110" cy="72" r="52" fill="#2563eb" fill-opacity="0.45" stroke="#60a5fa" stroke-width="3"/><line x1="110" y1="72" x2="162" y2="72" stroke="#fbbf24" stroke-width="2.5"/><circle cx="110" cy="72" r="3" fill="#fbbf24"/><text x="136" y="65" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="bold">半徑 ${r} cm</text></svg>`,
                     options: [`$${area}$ 平方公分`, `$${+(2 * r * 3.14).toFixed(2)}$ 平方公分`, `$${+(area * 2).toFixed(2)}$ 平方公分`, `$${+(r * 3.14).toFixed(2)}$ 平方公分`],
                     answerIndex: 0,
                     clue: `圓面積公式：$\\text{半徑} \\times \\text{半徑} \\times 3.14$。`,
@@ -1397,7 +1570,8 @@
                 const bigR = 10, smallR = 6;
                 const ringArea = +((bigR * bigR - smallR * smallR) * 3.14).toFixed(2);
                 adv = {
-                    question: `鈴木美術館展出一枚外圓半徑 $10$ 公分、內圓半徑 $6$ 公分的圓環形古玉（圓周率 $\\approx 3.14$），請問古玉有玉石部分的面積是多少平方公分？`,
+                    question: `鈴木美術館展出一枚外圓半徑 $10$ 公分、內圓半徑 $6$ 公分的圓環形古玉（如圖，圓周率 $\\approx 3.14$），請問古玉塗色部分的面積是多少平方公分？`,
+                    svgCode: `<svg viewBox="0 0 220 150" class="w-52 h-36"><circle cx="110" cy="72" r="56" fill="#2563eb" fill-opacity="0.55" stroke="#60a5fa" stroke-width="3"/><circle cx="110" cy="72" r="32" fill="#081220" stroke="#f87171" stroke-width="2.5"/><line x1="110" y1="72" x2="166" y2="72" stroke="#fbbf24" stroke-width="2"/><line x1="110" y1="72" x2="110" y2="40" stroke="#fca5a5" stroke-width="2"/><text x="144" y="66" fill="#fbbf24" font-size="11" font-weight="bold">R=10</text><text x="114" y="56" fill="#fca5a5" font-size="11" font-weight="bold">r=6</text></svg>`,
                     options: [`$${ringArea}$ 平方公分`, `$314$ 平方公分`, `$113.04$ 平方公分`, `$12.56$ 平方公分`],
                     answerIndex: 0,
                     clue: `圓環面積 $= (R^2 - r^2) \\times 3.14$。`,
@@ -1840,14 +2014,12 @@
                 currentBankIndex = 0;
             }
 
-            // 檢查目前指向的題目是否尚未答對 2 次
             const curItem = questionBank[currentBankIndex];
             const curList = currentQuizMode === 'similar' ? curItem.similarProblems : curItem.advancedProblems;
             if (curList[currentSubIndex] && !isSubProblemMastered(curList[currentSubIndex])) {
                 return true;
             }
 
-            // 優先在同一個錯題組內找尚未答對 2 次的題目（先類似題 0,1 再進階題 0,1）
             for (const mode of ['similar', 'advanced']) {
                 const list = mode === 'similar' ? curItem.similarProblems : curItem.advancedProblems;
                 for (let s = 0; s < list.length; s++) {
@@ -1859,7 +2031,6 @@
                 }
             }
 
-            // 若目前錯題組的 4 道子題皆已答對 2 次，則依序搜尋其他錯題組
             for (let offset = 1; offset < questionBank.length; offset++) {
                 const idx = (currentBankIndex + offset) % questionBank.length;
                 const cand = questionBank[idx];
@@ -1876,7 +2047,7 @@
                 }
             }
 
-            return false; // 題庫內所有子題均已答對 2 次
+            return false;
         }
 
         /**
@@ -2070,6 +2241,31 @@
             qTextEl.innerText = problem.question;
             renderMathIn(qTextEl);
 
+            // 顯示衍生題專屬 SVG 幾何圖形，或顯示家長上傳的考卷幾何附圖
+            const diagramBox = document.getElementById("quizProblemDiagramContainer");
+            const svgBox = document.getElementById("quizProblemSvgBox");
+            const fallbackImg = document.getElementById("quizProblemFallbackImg");
+            const captionEl = document.getElementById("quizProblemDiagramCaption");
+
+            if (problem.svgCode) {
+                svgBox.innerHTML = problem.svgCode;
+                svgBox.classList.remove("hidden");
+                fallbackImg.classList.add("hidden");
+                captionEl.innerText = "📐 偵探現場幾何示意圖";
+                diagramBox.classList.remove("hidden");
+            } else if (item.photoUrl) {
+                svgBox.innerHTML = "";
+                svgBox.classList.add("hidden");
+                fallbackImg.src = item.photoUrl;
+                fallbackImg.classList.remove("hidden");
+                captionEl.innerText = "🖼️ 原錯題幾何附圖參考（請依題幹最新數據計算）";
+                diagramBox.classList.remove("hidden");
+            } else {
+                svgBox.innerHTML = "";
+                fallbackImg.src = "";
+                diagramBox.classList.add("hidden");
+            }
+
             isClueUnlockedForCurrentQuestion = false;
             isAnsweringLocked = false;
             document.getElementById("clueContentArea").classList.add("hidden");
@@ -2151,6 +2347,7 @@
 
             if (isCorrect) {
                 currentStreak += 1;
+                saveCurrentStreak();
                 const isFiveStreak = (currentStreak % 5 === 0);
                 const gained = isFiveStreak ? 4 : 1;
                 curMins = setWeeklyMinutes(curMins + gained);
@@ -2188,6 +2385,7 @@
                 totalEl.innerText = `目前本週累計可用觀看時間：${curMins} 分鐘`;
             } else {
                 currentStreak = 0;
+                saveCurrentStreak();
                 curMins = setWeeklyMinutes(curMins - 1);
 
                 problem.wrongCount = (problem.wrongCount || 0) + 1;
@@ -2219,12 +2417,10 @@
             const item = questionBank[currentBankIndex];
             if (lastQuizWasCorrect) {
                 if (currentQuizMode === 'similar') {
-                    // 類似題答對 -> 切換到進階題，優先選還沒答對 2 次的那一題
                     currentQuizMode = 'advanced';
                     const advIdx = item.advancedProblems.findIndex(p => !isSubProblemMastered(p));
                     currentSubIndex = advIdx !== -1 ? advIdx : 0;
                 } else {
-                    // 進階題答對 -> 切換到下一組錯題的類似題
                     currentQuizMode = 'similar';
                     currentBankIndex = (currentBankIndex + 1) % questionBank.length;
                     const nextItem = questionBank[currentBankIndex];
@@ -2232,7 +2428,6 @@
                     currentSubIndex = simIdx !== -1 ? simIdx : 0;
                 }
             } else {
-                // 答錯 -> 留在同一組錯題繼續考類似題（若另一題類似題尚未畢業則切換過去增加變化）
                 currentQuizMode = 'similar';
                 const unmasteredSims = item.similarProblems
                     .map((p, idx) => ({ p, idx }))
@@ -2402,7 +2597,12 @@
                         </div>
                     </div>
 
-                    <!-- 2 題類似題 + 2 題進階題 4 宮格預覽 -->
+                    ${item.photoUrl ? `
+                        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+                            <img src="${item.photoUrl}" alt="錯題附圖" class="max-h-24 rounded-lg border border-slate-700 bg-white object-contain">
+                            <span class="text-xs text-blue-300 font-bold">🖼️ 已附帶考卷原圖（小孩作答可同步對照圖形）</span>
+                        </div>
+                    ` : ""}
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         ${renderSubProblemBox(item.id, realIdx, 'similar', 0, item.similarProblems[0], labels)}
                         ${renderSubProblemBox(item.id, realIdx, 'similar', 1, item.similarProblems[1], labels)}
@@ -2505,13 +2705,14 @@
         }
 
         /**
-         * 新增錯題 Modal（純文字直接貼上與即時智慧題型判斷）
+         * 新增錯題 Modal（純文字直接貼上 ＋ 幾何圖形附圖上傳）
          */
         function openAddModal(bypassPassword = false) {
             const openFn = () => {
                 document.getElementById("addQuestionInput").value = "";
                 document.getElementById("addUnitSelect").value = "AUTO";
-                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並生成 2 題類似題與 2 題進階題。</span>`;
+                clearAddDiagram();
+                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目或選擇幾何單元後，系統會自動生成包含幾何示意圖的 2 類似題與 2 進階題。</span>`;
                 document.getElementById("addModal").classList.remove("hidden");
                 setTimeout(() => document.getElementById("addQuestionInput").focus(), 60);
             };
@@ -2529,6 +2730,61 @@
         function closeAddModal() {
             document.getElementById("addModal").classList.add("hidden");
         }
+
+        function compressAndAttachDiagram(fileOrBlob) {
+            if (!fileOrBlob) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const maxW = 560;
+                    const scale = Math.min(1, maxW / img.width);
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    currentAddDiagramDataUrl = canvas.toDataURL("image/jpeg", 0.72);
+
+                    document.getElementById("addDiagramPreviewImg").src = currentAddDiagramDataUrl;
+                    document.getElementById("addDiagramPreviewBox").classList.remove("hidden");
+                    showToast("🖼️ 已成功附加錯題圖形！", "✅");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(fileOrBlob);
+        }
+
+        function handleAddDiagramUpload(event) {
+            const file = event.target?.files?.[0];
+            if (file) {
+                compressAndAttachDiagram(file);
+            }
+            event.target.value = "";
+        }
+
+        function clearAddDiagram() {
+            currentAddDiagramDataUrl = "";
+            const previewImg = document.getElementById("addDiagramPreviewImg");
+            const previewBox = document.getElementById("addDiagramPreviewBox");
+            if (previewImg) previewImg.src = "";
+            if (previewBox) previewBox.classList.add("hidden");
+        }
+
+        document.addEventListener("paste", (e) => {
+            if (document.getElementById("addModal").classList.contains("hidden")) return;
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (const item of items) {
+                if (item.type.indexOf("image") !== -1) {
+                    const blob = item.getAsFile();
+                    if (blob) {
+                        compressAndAttachDiagram(blob);
+                    }
+                    break;
+                }
+            }
+        });
 
         async function pasteQuestionFromClipboard() {
             const inputEl = document.getElementById("addQuestionInput");
@@ -2607,12 +2863,17 @@
             const rawSelectVal = document.getElementById("addUnitSelect").value;
             const qText = document.getElementById("addQuestionInput").value.trim();
 
-            if (!qText) {
-                showToast("請先貼上或輸入錯題文字！", "⚠️");
+            if (!qText && !currentAddDiagramDataUrl) {
+                showToast("請貼上錯題文字，或上傳一張幾何圖形照片！", "⚠️");
                 return;
             }
 
-            const unitId = rawSelectVal === "AUTO" ? detectTopicIdFromText(qText) : (parseInt(rawSelectVal, 10) || detectTopicIdFromText(qText));
+            const defaultGeoText = "【幾何圖形錯題】請觀察附圖中的幾何尺寸與塗色區域，計算出正確答案。";
+            const effectiveText = qText || defaultGeoText;
+            const fallbackUnit = currentAddDiagramDataUrl ? 16 : 1;
+            const unitId = rawSelectVal === "AUTO"
+                ? (qText ? detectTopicIdFromText(qText) : fallbackUnit)
+                : (parseInt(rawSelectVal, 10) || fallbackUnit);
             const topicObj = TOPICS.find(t => t.id === unitId) || TOPICS[0];
 
             const btn = document.getElementById("saveNewQuestionBtn");
@@ -2626,25 +2887,32 @@
                 if (geminiKey) {
                     try {
                         const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 14000);
-                        const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長貼上的錯題內容（單元：${topicObj.name}，原題目：「${qText}」），設計 2 題不同數據或問法的「類似題 (similarProblems)」與 2 題加深難度的「進階題 (advancedProblems)」，每題皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
+                        const timeoutId = setTimeout(() => controller.abort(), 16000);
+                        const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長提供的錯題（單元：${topicObj.name}，文字：「${qText || "請直接判讀附圖中的幾何圖形與文字"}」），設計 2 題不同數據或問法的「類似題 (similarProblems)」與 2 題加深難度的「進階題 (advancedProblems)」，每題皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。若原題包含幾何圖形，請為每題生成一個簡潔清晰的深色背景適配 SVG 向量圖程式碼（放在 svgCode 欄位，例如 <svg viewBox="0 0 220 145" class="w-52 h-36">...</svg>，線條用 #60a5fa 或 #fbbf24）；若無需圖形則 svgCode 留空字串 ""。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色。
                         請嚴格回傳 JSON 格式（不要有 markdown 標記）：
                         {
+                          "extractedQuestion": "若附圖有題目文字請辨識出完整原題文字，否則回傳空字串",
                           "similarProblems": [
-                            {"question":"類似題1","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
-                            {"question":"類似題2","options":["選項A","選項B","選項C","選項D"],"answerIndex":3,"clue":"破案線索","explanation":"詳細解析"}
+                            {"question":"類似題1","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
+                            {"question":"類似題2","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":3,"clue":"破案線索","explanation":"詳細解析"}
                           ],
                           "advancedProblems": [
-                            {"question":"進階題1","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"},
-                            {"question":"進階題2","options":["選項A","選項B","選項C","選項D"],"answerIndex":0,"clue":"破案線索","explanation":"詳細解析"}
+                            {"question":"進階題1","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"},
+                            {"question":"進階題2","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":0,"clue":"破案線索","explanation":"詳細解析"}
                           ]
                         }`;
+
+                        const parts = [{ text: prompt }];
+                        if (currentAddDiagramDataUrl) {
+                            const base64 = currentAddDiagramDataUrl.split(',')[1];
+                            parts.push({ inline_data: { mime_type: "image/jpeg", data: base64 } });
+                        }
 
                         const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             signal: controller.signal,
-                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                            body: JSON.stringify({ contents: [{ parts }] })
                         });
                         clearTimeout(timeoutId);
                         if (resp.ok) {
@@ -2654,6 +2922,7 @@
                             if (Array.isArray(parsed.similarProblems) && parsed.similarProblems.length >= 2 &&
                                 Array.isArray(parsed.advancedProblems) && parsed.advancedProblems.length >= 2) {
                                 variants = {
+                                    extractedQuestion: parsed.extractedQuestion || "",
                                     similarProblems: parsed.similarProblems.slice(0, 2).map(shuffleProblemOptions),
                                     advancedProblems: parsed.advancedProblems.slice(0, 2).map(shuffleProblemOptions)
                                 };
@@ -2665,15 +2934,15 @@
                 }
 
                 if (!variants) {
-                    variants = generateVariantProblems(unitId, qText);
+                    variants = generateVariantProblems(unitId, effectiveText);
                 }
 
                 const newItem = {
                     id: "q_" + Date.now(),
                     unitId: topicObj.id,
                     unitTitle: topicObj.name,
-                    originalQuestion: qText,
-                    photoUrl: "",
+                    originalQuestion: qText || variants.extractedQuestion || defaultGeoText,
+                    photoUrl: currentAddDiagramDataUrl || "",
                     similarProblems: variants.similarProblems,
                     advancedProblems: variants.advancedProblems,
                     stats: { right: 0, wrong: 0 },
@@ -2686,9 +2955,10 @@
                 currentSubIndex = 0;
                 saveQuestionBank();
 
+                clearAddDiagram();
                 closeAddModal();
                 activateTab('bank');
-                showToast(`✅ 已依【${topicObj.name}】生成 2 類似題與 2 進階題並加入錯題庫！`, "🎉");
+                showToast(`✅ 已依【${topicObj.name}】生成題組並保存附圖！`, "🎉");
                 autoSyncGitHubIfConfigured();
             } catch (err) {
                 showToast(`生成題組時發生異常：${err.message}`, "❌");
@@ -2998,7 +3268,35 @@
 
                 const remoteList = Array.isArray(parsedData) ? parsedData : parsedData?.questions;
                 if (Array.isArray(remoteList)) {
-                    questionBank = remoteList.map(normalizeBankItem);
+                    // 同步題庫時保留本機小孩已累積的答對/答錯進度，絕不覆蓋掉小朋友的答題紀錄
+                    const localProgressMap = new Map();
+                    questionBank.forEach(localItem => {
+                        localProgressMap.set(localItem.id, {
+                            sim: (localItem.similarProblems || []).map(p => ({ q: p.question, r: p.rightCount || 0, w: p.wrongCount || 0 })),
+                            adv: (localItem.advancedProblems || []).map(p => ({ q: p.question, r: p.rightCount || 0, w: p.wrongCount || 0 }))
+                        });
+                    });
+
+                    questionBank = remoteList.map(rItem => {
+                        const norm = normalizeBankItem(rItem);
+                        const saved = localProgressMap.get(norm.id);
+                        if (saved) {
+                            norm.similarProblems.forEach((p, idx) => {
+                                if (saved.sim[idx] && saved.sim[idx].q === p.question) {
+                                    p.rightCount = Math.max(p.rightCount || 0, saved.sim[idx].r);
+                                    p.wrongCount = Math.max(p.wrongCount || 0, saved.sim[idx].w);
+                                }
+                            });
+                            norm.advancedProblems.forEach((p, idx) => {
+                                if (saved.adv[idx] && saved.adv[idx].q === p.question) {
+                                    p.rightCount = Math.max(p.rightCount || 0, saved.adv[idx].r);
+                                    p.wrongCount = Math.max(p.wrongCount || 0, saved.adv[idx].w);
+                                }
+                            });
+                        }
+                        return norm;
+                    });
+
                     if (currentBankIndex >= questionBank.length) {
                         currentBankIndex = 0;
                         currentQuizMode = 'similar';
@@ -3075,7 +3373,7 @@
         document.addEventListener("keydown", (e) => {
             const activeTag = document.activeElement?.tagName;
             if (activeTag === "INPUT" || activeTag === "TEXTAREA" || activeTag === "SELECT") return;
-            const anyModalOpen = ["addModal", "editModal", "passwordModal", "resultModal", "redeemModal", "settingsModal", "confirmModal"]
+            const anyModalOpen = ["addModal", "editModal", "passwordModal", "resultModal", "redeemModal", "settingsModal", "adjustMinutesModal", "confirmModal"]
                 .some(id => !document.getElementById(id).classList.contains("hidden"));
             if (anyModalOpen || document.getElementById("quizView").classList.contains("hidden")) return;
 
@@ -3088,6 +3386,8 @@
 
         window.onload = function() {
             try {
+                migrateAndProtectSavedMinutes();
+                loadSavedStreak();
                 autoDetectGitHubRepoFromLocation();
                 populateTopicSelects();
                 loadQuestionBankFromStorage();
