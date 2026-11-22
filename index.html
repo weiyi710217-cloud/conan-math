@@ -99,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.2</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.3</span></p>
                 </div>
             </div>
 
@@ -418,7 +418,7 @@
                         <span>📋 一鍵貼上剪貼簿文字</span>
                     </button>
                 </div>
-                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：求下圖塗色扇形的面積是多少？（圓周率≒3.14），或直接拍照上傳幾何圖形！"></textarea>
+                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：某次評量，數學不及格人數佔了全班的3成，及格但不到80分的人數佔了全班的一半又2人，80分以上的只有6人，那麼這次考試中該班不及格有多少人？"></textarea>
                 <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     <span>貼上題目或選擇幾何單元後，系統會自動生成包含幾何示意圖的 2 類似題與 2 進階題。</span>
@@ -977,7 +977,6 @@
             return `統計週期：${fmt(monday)} (一) ～ ${fmt(sunday)} (日)`;
         }
 
-        // 啟動時自動檢測並遷移任何舊版或歷史累積的時間紀錄，確保版本更新後時間不會被清除
         function migrateAndProtectSavedMinutes() {
             const curKey = getCurrentWeekKey();
             const curRaw = localStorage.getItem(curKey);
@@ -987,7 +986,6 @@
                 return;
             }
 
-            // 若目前週期鍵尚未寫入，依序從備援鍵、舊版固定鍵或歷史週期鍵自動繼承保留時間
             let inherited = null;
             const backupRaw = localStorage.getItem("conan_weekly_minutes_backup");
             if (backupRaw !== null && !isNaN(parseInt(backupRaw, 10))) {
@@ -1159,6 +1157,65 @@
         }
 
         /**
+         * 針對「基準量與比較量：部分佔幾成＋一半又幾人＋剩下幾人」逆推全體量，生成同構類似題與進階題
+         */
+        function tryBuildBaseRateRemainderPair(originalText, c1, c2, c3) {
+            if (!originalText) return null;
+            const isBaseRateRemainder = /佔了.*([一二三四五六七八九1-9]成|一半|百分之|\d+%)/.test(originalText)
+                || (/不及格/.test(originalText) && /成/.test(originalText) && /一半/.test(originalText))
+                || (/一半又\s*\d+/.test(originalText) && /只有\s*\d+|剩下\s*\d+/.test(originalText));
+            if (!isBaseRateRemainder) return null;
+
+            // 設計乾淨整數解：全班 total 人，不及格佔 failCheng 成（10*failCheng %），及格不到80分佔一半(50%)又 extra 人，80分以上 highCount 人
+            const failCheng = [2, 3, 4][randInt(0, 2)]; // 2成(20%)、3成(30%)、4成(40%)
+            const remRatePct = 50 - failCheng * 10;      // 30%、20%、10%
+            const totalClass = remRatePct === 30 ? 40 : (remRatePct === 20 ? randInt(3, 5) * 10 : randInt(3, 5) * 10);
+            const sumExtraAndHigh = (totalClass * remRatePct) / 100;
+            const extraPeople = randInt(2, Math.max(3, Math.floor(sumExtraAndHigh / 2)));
+            const highScorePeople = sumExtraAndHigh - extraPeople;
+            const failPeople = (totalClass * failCheng) / 10;
+
+            const sim = {
+                question: `帝丹小學六年級某次數學評量，${c1}統計成績發現：不及格人數佔了全班的 $${failCheng}$ 成，及格但不到 $80$ 分的人數佔了全班的一半又 $${extraPeople}$ 人，$80$ 分以上的只有 $${highScorePeople}$ 人，請問這次考試中該班「不及格」有多少人？`,
+                options: [
+                    `$${failPeople}$ 人`,
+                    `$${totalClass}$ 人`,
+                    `$${failPeople + 2}$ 人`,
+                    `$${Math.max(3, failPeople - 3)}$ 人`
+                ],
+                answerIndex: 0,
+                clue: `把全班人數當作基準量 $1$：「$${failCheng}$ 成」$= ${failCheng * 10}\\%$，「一半」$= 50\\%$。先算出「$${extraPeople} + ${highScorePeople} = ${sumExtraAndHigh}$ 人」佔全班的 $(1 - ${failCheng * 10}\\% - 50\\%) = ${remRatePct}\\%$，即可反推全班總人數！`,
+                explanation: `「$${failCheng}$ 成」$= ${failCheng * 10}\\%$，「一半」$= 50\\%$。\n多出來的 $${extraPeople}$ 人與 $80$ 分以上的 $${highScorePeople}$ 人合計 $${extraPeople} + ${highScorePeople} = ${sumExtraAndHigh}$ 人，佔全班的 $1 - ${failCheng * 10}\\% - 50\\% = ${remRatePct}\\%$。\n全班總人數 $= ${sumExtraAndHigh} \\div ${remRatePct}\\% = ${totalClass}$ 人。\n不及格人數 $= ${totalClass} \\times ${failCheng * 10}\\% = ${failPeople}$ 人。`
+            };
+
+            // 進階題：改為「剩餘量再分」或「閱讀頁數/偵探經費佔幾成＋一半少幾頁＋剩下幾頁」
+            const pCheng = [2, 3][randInt(0, 1)]; // 20% 或 30%
+            const pRemPct = 50 - pCheng * 10;      // 30% 或 20%
+            const totalPages = pRemPct === 30 ? 120 : 150;
+            const part2Less = randInt(4, 8); // 一半少 part2Less 頁 -> 剩下 = totalPages * pRemPct% + part2Less
+            const leftPages = (totalPages * pRemPct) / 100 + part2Less;
+            const day1Pages = (totalPages * pCheng) / 10;
+
+            const adv = {
+                question: `${c2}與${c3}查閱一本推理檔案冊，第一天看了全冊的 $${pCheng}$ 成，第二天看了全冊的一半「少」$${part2Less}$ 頁，最後還剩下 $${leftPages}$ 頁沒看，請問這本推理檔案冊總共有多少頁？`,
+                options: [
+                    `$${totalPages}$ 頁`,
+                    `$${totalPages - 20}$ 頁`,
+                    `$${totalPages + 30}$ 頁`,
+                    `$${day1Pages}$ 頁`
+                ],
+                answerIndex: 0,
+                clue: `第二天看了「一半少 $${part2Less}$ 頁」，代表剩下的 $${leftPages}$ 頁裡面多包含了這 $${part2Less}$ 頁！先用 $${leftPages} - ${part2Less}$ 算出剛好佔 $(1 - ${pCheng * 10}\\% - 50\\%) = ${pRemPct}\\%$ 的頁數。`,
+                explanation: `第一天看 $${pCheng * 10}\\%$，第二天看「$50\\%$ 少 $${part2Less}$ 頁」。\n若第二天看滿 $50\\%$，剩下的頁數會變成 $${leftPages} - ${part2Less} = ${leftPages - part2Less}$ 頁，剛好佔全冊的 $1 - ${pCheng * 10}\\% - 50\\% = ${pRemPct}\\%$。\n全冊總頁數 $= ${leftPages - part2Less} \\div ${pRemPct}\\% = ${totalPages}$ 頁。`
+            };
+
+            return {
+                sim: shuffleProblemOptions(sim),
+                adv: shuffleProblemOptions(adv)
+            };
+        }
+
+        /**
          * 針對貼上的「二元一次聯立買賣應用題」自動解析物品名稱與結構，生成 1 組（1類似 + 1進階）同構題
          */
         function tryBuildSingleLinearSystemPair(originalText, c1, c2, c3) {
@@ -1222,6 +1279,12 @@
          */
         function generateSinglePair(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
+
+            // 1. 優先比對特定結構題型（基準量與成數逆推、二元一次買賣消去法）
+            const baseRatePair = tryBuildBaseRateRemainderPair(originalText, c1, c2, c3);
+            if (baseRatePair) {
+                return baseRatePair;
+            }
 
             const linearPair = tryBuildSingleLinearSystemPair(originalText, c1, c2, c3);
             if (linearPair) {
@@ -2241,7 +2304,6 @@
             qTextEl.innerText = problem.question;
             renderMathIn(qTextEl);
 
-            // 顯示衍生題專屬 SVG 幾何圖形，或顯示家長上傳的考卷幾何附圖
             const diagramBox = document.getElementById("quizProblemDiagramContainer");
             const svgBox = document.getElementById("quizProblemSvgBox");
             const fallbackImg = document.getElementById("quizProblemFallbackImg");
@@ -2810,6 +2872,7 @@
             const rules = [
                 { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
                 { id: 10, re: /數列|等差|循環|第\s*\d+\s*個數|重複出現|規律/ },
+                { id: 23, re: /佔了.*([一二三四五六七八九1-9]成|一半|百分之|\d+%)|不及格.*成|一半又\s*\d+|百分率|打.*折|%/ },
                 { id: 1, re: /x\s*元|y\s*元|原子筆|筆記本|代數|方程式|未知數|聯立|下列哪個選項/i },
                 { id: 11, re: /方陣|空心|實心.*正方形|最外層.*每邊|每邊.*人/ },
                 { id: 2, re: /指數|次方|\^/ },
@@ -2828,7 +2891,6 @@
                 { id: 18, re: /圓柱|角柱|容積/ },
                 { id: 19, re: /連比|比值|比例/ },
                 { id: 20, re: /比例尺|地圖/ },
-                { id: 23, re: /百分率|打.*折|%/ },
                 { id: 12, re: /三角形|內角/ },
                 { id: 13, re: /梯形|菱形|平行四邊形|四邊形/ },
                 { id: 14, re: /線段|棋盤|幾何計數/ },
@@ -3268,7 +3330,6 @@
 
                 const remoteList = Array.isArray(parsedData) ? parsedData : parsedData?.questions;
                 if (Array.isArray(remoteList)) {
-                    // 同步題庫時保留本機小孩已累積的答對/答錯進度，絕不覆蓋掉小朋友的答題紀錄
                     const localProgressMap = new Map();
                     questionBank.forEach(localItem => {
                         localProgressMap.set(localItem.id, {
