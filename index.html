@@ -45,10 +45,13 @@
             min-height: 100vh;
         }
 
-        /* 經典鑰匙孔與偵探點陣背景圖紋 */
+        /* 經典鑰匙孔與柯南角色背景圖紋 */
         .conan-pattern {
-            background-image: radial-gradient(rgba(245, 158, 11, 0.08) 1px, transparent 1px);
-            background-size: 24px 24px;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'%3E%3Cg fill='none' stroke='%233b82f6' stroke-width='1.2' opacity='0.14'%3E%3Cpath d='M0 90h360M0 180h360M0 270h360M90 0v90M270 0v90M180 90v90M90 180v90M270 180v90M180 270v90'/%3E%3C/g%3E%3Cg opacity='0.16'%3E%3Cpath fill='%2393c5fd' d='M68 42 L56 34 L63 48 C54 52 50 61 50 70 C50 85 62 96 76 96 C90 96 102 85 102 70 C102 60 97 51 89 47 L96 34 L83 42 L76 33 Z'/%3E%3Crect x='56' y='63' width='16' height='11' rx='3' fill='%23081220' stroke='%2360a5fa' stroke-width='2'/%3E%3Crect x='80' y='63' width='16' height='11' rx='3' fill='%23081220' stroke='%2360a5fa' stroke-width='2'/%3E%3Cpath d='M72 68 h8' stroke='%2360a5fa' stroke-width='2'/%3E%3Ccircle cx='61' cy='68' r='2' fill='%23ef4444'/%3E%3Cpolygon points='76,104 61,96 61,112' fill='%23ef4444'/%3E%3Cpolygon points='76,104 91,96 91,112' fill='%23ef4444'/%3E%3Ccircle cx='76' cy='104' r='3' fill='%23fbbf24'/%3E%3Crect x='232' y='26' width='44' height='30' rx='3' fill='%23e2e8f0'/%3E%3Crect x='232' y='49' width='44' height='6' fill='%233b82f6'/%3E%3Cellipse cx='254' cy='57' rx='34' ry='6' fill='%23e2e8f0'/%3E%3Ccircle cx='264' cy='74' r='9' fill='none' stroke='%23fbbf24' stroke-width='2.2'/%3E%3Cpath d='M273 74 Q282 84 276 96' fill='none' stroke='%23fbbf24' stroke-width='1.5' stroke-dasharray='2,2'/%3E%3Crect x='294' y='44' width='16' height='22' rx='2' transform='rotate(15 294 44)' fill='%23f8fafc' stroke='%23ef4444' stroke-width='1.5'/%3E%3Ccircle cx='80' cy='228' r='20' fill='%2394a3b8'/%3E%3Cpath d='M62 222 Q80 205 98 222 L95 212 Q80 202 65 212 Z' fill='%2364748b'/%3E%3Cpath d='M52 276 C52 256 64 248 80 248 C96 248 108 256 108 276 Z' fill='%2394a3b8'/%3E%3Cpolygon points='80,250 76,272 80,276 84,272' fill='%23ef4444'/%3E%3Ctext x='104' y='214' fill='%23fbbf24' font-family='sans-serif' font-weight='bold' font-size='13'%3EZzz%3C/text%3E%3Cpath d='M254 202 L276 212 L272 238 C270 250 254 258 254 258 C254 258 238 250 236 238 L232 212 Z' fill='%23f59e0b' stroke='%23fef08a' stroke-width='2'/%3E%3Ctext x='241' y='237' fill='%230b192c' font-family='sans-serif' font-weight='900' font-size='16'%3EDB%3C/text%3E%3Ccircle cx='178' cy='135' r='11' fill='%2360a5fa'/%3E%3Cpath d='M171 143 L185 143 L189 168 L167 168 Z' fill='%2360a5fa'/%3E%3Cg transform='translate(172, 295) rotate(-28)'%3E%3Crect x='0' y='0' width='18' height='12' rx='6' fill='%23ef4444'/%3E%3Crect x='14' y='0' width='18' height='12' rx='6' fill='%23f8fafc'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+                radial-gradient(rgba(245, 158, 11, 0.08) 1px, transparent 1px);
+            background-size: 360px 360px, 24px 24px;
+            background-attachment: fixed;
         }
 
         /* 密碼錯誤震動特效 */
@@ -61,7 +64,6 @@
             animation: shake 0.4s ease-in-out;
         }
 
-        /* 自訂滾動條 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -97,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v2.7</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.0</span></p>
                 </div>
             </div>
 
@@ -205,6 +207,25 @@
                 </div>
             </div>
 
+            <!-- 全部精熟過關提示 (All Mastered State) -->
+            <div id="quizAllMasteredState" class="hidden bg-gradient-to-br from-emerald-950/90 via-conanNavy to-slate-900 border-2 border-emerald-500/60 rounded-2xl p-10 text-center space-y-4 shadow-2xl">
+                <div class="text-6xl mb-2">🏆</div>
+                <h3 class="text-2xl font-black text-emerald-300">太厲害了！目前題庫裡的所有衍生題都已答對 2 次完全精熟！</h3>
+                <p class="text-slate-300 max-w-lg mx-auto text-sm leading-relaxed">
+                    每一題的「類似題 (2題)」與「進階題 (2題)」都已經各答對 2 次畢業囉！請家長進入「家長錯題庫管理」新增新的錯題，或為舊題目重新產生新題目。
+                </p>
+                <div class="pt-2 flex flex-wrap justify-center gap-3">
+                    <button onclick="switchTab('bank')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl shadow-lg transition flex items-center space-x-2">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>前往家長錯題庫管理</span>
+                    </button>
+                    <button onclick="pullFromGitHub(false)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl transition flex items-center space-x-2">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>同步家長最新錯題</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- 題目主要卡片 Card -->
             <div id="quizCard" class="bg-gradient-to-b from-conanNavy to-slate-900 border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-hidden">
                 
@@ -236,6 +257,9 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <span id="quizTierTag" class="bg-conanRed text-white font-extrabold text-xs px-2.5 py-0.5 rounded shadow-sm">
                             類似題模式
+                        </span>
+                        <span id="quizSubMasteryTag" class="bg-slate-800 text-amber-300 border border-amber-500/40 font-bold text-xs px-2.5 py-0.5 rounded">
+                            本題精熟進度：0 / 2 次
                         </span>
                         <h2 class="text-sm font-bold text-slate-400">請根據推理邏輯選出正確答案（4選1）：</h2>
                     </div>
@@ -279,15 +303,41 @@
         <!-- 2. 📸 家長錯題庫管理 (BANK VIEW) -->
         <section id="bankView" class="hidden space-y-6">
 
+            <!-- 家長專屬：小朋友目前紅果短劇分數／分鐘數總覽橫幅 -->
+            <div class="bg-gradient-to-r from-red-950 via-conanNavy to-slate-900 border-2 border-amber-400/70 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl bg-red-600/30 border border-red-400/50 flex items-center justify-center text-3xl shrink-0">
+                        🍎
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-amber-300 tracking-wider uppercase">小朋友目前戰績與紅果短劇分數看板</div>
+                        <div class="flex flex-wrap items-baseline gap-3 mt-1">
+                            <span class="text-2xl md:text-3xl font-black text-yellow-300">
+                                目前累計：<span id="parentViewMinutes">0</span> 分（分鐘）
+                            </span>
+                            <span class="text-xs text-slate-300 bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-700">
+                                🔥 目前連勝：<strong id="parentViewStreak" class="text-amber-400">0</strong> 題
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1" id="parentViewWeekLabel">本週統計週期</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="openRedeemModal()" class="px-4 py-2.5 bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black text-xs rounded-xl shadow transition">
+                        🎬 核銷兌換短劇時間
+                    </button>
+                </div>
+            </div>
+
             <!-- 錯題庫頂部統計與操作列 -->
             <div class="bg-conanNavy/90 border border-slate-700/80 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
                 <div>
                     <h2 class="text-xl font-black text-white flex items-center space-x-2">
                         <i class="fa-solid fa-database text-conanGold"></i>
-                        <span>家長錯題庫中心</span>
+                        <span>家長錯題庫中心（每題 2 類似題 ＋ 2 進階題）</span>
                     </h2>
                     <p class="text-xs text-slate-400 mt-1">
-                        每筆錯題均已為您自動衍生 <strong class="text-blue-300">【類似題】</strong> 與 <strong class="text-red-300">【進階題】</strong>，並追蹤答對／答錯次數。
+                        每道衍生子題<strong class="text-emerald-300">答對 2 次即自動隱藏不再出現</strong>；家長可在此查看各子題精熟狀態並一鍵重新產生新題目。
                     </p>
                 </div>
 
@@ -345,7 +395,7 @@
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 class="text-lg font-black text-amber-300 flex items-center space-x-2">
                     <i class="fa-solid fa-paste"></i>
-                    <span>貼上新錯題文字（自動分析題型並生成類似題與進階題）</span>
+                    <span>貼上新錯題文字（自動生成 2 題類似題 ＋ 2 題進階題）</span>
                 </h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
             </div>
@@ -359,10 +409,10 @@
                         <span>📋 一鍵貼上剪貼簿文字</span>
                     </button>
                 </div>
-                <textarea id="addQuestionInput" rows="4" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="請直接貼上題目文字，例如：買4支原子筆和7本筆記本，共用去270元，買同樣的1支原子筆和2本筆記本共用去75元，若一支原子筆是x元，一本筆記本是y元，請問下列哪個選項是錯誤的？"></textarea>
+                <textarea id="addQuestionInput" rows="4" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="請直接貼上題目文字，例如：有一數列 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, ...，第一個數起到第1000個數的和是多少？"></textarea>
                 <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>貼上題目後，系統會自動判斷對應的私中數學題型並重新出題。</span>
+                    <span>貼上題目後，系統會自動判斷對應的私中數學題型並生成 2 題類似題與 2 題進階題。</span>
                 </div>
             </div>
 
@@ -377,20 +427,20 @@
                 <button onclick="closeAddModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl">取消</button>
                 <button id="saveNewQuestionBtn" onclick="saveNewWrongQuestion()" class="px-5 py-2.5 bg-gradient-to-r from-conanRed to-red-600 hover:from-red-500 hover:to-red-700 text-white font-black text-xs rounded-xl shadow-lg flex items-center space-x-2">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>一鍵生成【類似題】與【進階題】並儲存</span>
+                    <span>一鍵生成【2類似題 + 2進階題】並儲存</span>
                 </button>
             </div>
         </div>
     </div>
 
 
-    <!-- 2. 編輯題組 Modal -->
+    <!-- 2. 編輯題組 Modal（支援編輯類似題1、類似題2、進階題1、進階題2） -->
     <div id="editModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-3xl p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-4xl p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 class="text-lg font-black text-amber-300 flex items-center space-x-2">
                     <i class="fa-solid fa-pen-to-square"></i>
-                    <span>✏️ 手動編輯題組（原始錯題 / 類似題 / 進階題）</span>
+                    <span>✏️ 手動編輯題組（原始錯題 / 類似題 1 & 2 / 進階題 1 & 2）</span>
                 </h3>
                 <button onclick="closeEditModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
             </div>
@@ -403,57 +453,77 @@
                 <textarea id="editOriginalText" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100"></textarea>
             </div>
 
-            <!-- 📘 類似題 區塊 -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-blue-900/50 space-y-3">
-                <div class="text-xs font-black text-blue-400 uppercase tracking-wider flex items-center space-x-1">
-                    <i class="fa-solid fa-book"></i>
-                    <span>📘 專屬類似題內容設定</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 📘 類似題 1 -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-blue-900/50 space-y-2.5">
+                    <div class="text-xs font-black text-blue-400">📘 類似題 #1</div>
+                    <textarea id="editSim0Q" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100"></textarea>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <input id="editSim0Opt0" type="text" placeholder="選項 A" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editSim0Opt1" type="text" placeholder="選項 B" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editSim0Opt2" type="text" placeholder="選項 C" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editSim0Opt3" type="text" placeholder="選項 D" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-slate-300 font-bold">正解：</label>
+                        <select id="editSim0Ans" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-yellow-400">
+                            <option value="0">選項 A</option><option value="1">選項 B</option><option value="2">選項 C</option><option value="3">選項 D</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-[11px] text-slate-400">題目文字：</label>
-                    <textarea id="editSimilarQuestion" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100"></textarea>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div><label class="text-[10px] text-slate-400">選項 A:</label><input id="editSimilarOpt0" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                    <div><label class="text-[10px] text-slate-400">選項 B:</label><input id="editSimilarOpt1" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                    <div><label class="text-[10px] text-slate-400">選項 C:</label><input id="editSimilarOpt2" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                    <div><label class="text-[10px] text-slate-400">選項 D:</label><input id="editSimilarOpt3" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <label class="text-xs text-slate-300 font-bold">正確答案：</label>
-                    <select id="editSimilarAns" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-yellow-400">
-                        <option value="0">選項 A</option>
-                        <option value="1">選項 B</option>
-                        <option value="2">選項 C</option>
-                        <option value="3">選項 D</option>
-                    </select>
-                </div>
-            </div>
 
-            <!-- 🔥 進階題 區塊 -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-red-900/50 space-y-3">
-                <div class="text-xs font-black text-red-400 uppercase tracking-wider flex items-center space-x-1">
-                    <i class="fa-solid fa-fire"></i>
-                    <span>🔥 專屬進階題內容設定</span>
+                <!-- 📘 類似題 2 -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-blue-900/50 space-y-2.5">
+                    <div class="text-xs font-black text-blue-400">📘 類似題 #2</div>
+                    <textarea id="editSim1Q" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100"></textarea>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <input id="editSim1Opt0" type="text" placeholder="選項 A" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editSim1Opt1" type="text" placeholder="選項 B" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editSim1Opt2" type="text" placeholder="選項 C" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editSim1Opt3" type="text" placeholder="選項 D" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-slate-300 font-bold">正解：</label>
+                        <select id="editSim1Ans" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-yellow-400">
+                            <option value="0">選項 A</option><option value="1">選項 B</option><option value="2">選項 C</option><option value="3">選項 D</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-[11px] text-slate-400">題目文字：</label>
-                    <textarea id="editAdvancedQuestion" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100"></textarea>
+
+                <!-- 🔥 進階題 1 -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-red-900/50 space-y-2.5">
+                    <div class="text-xs font-black text-red-400">🔥 進階題 #1</div>
+                    <textarea id="editAdv0Q" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100"></textarea>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <input id="editAdv0Opt0" type="text" placeholder="選項 A" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editAdv0Opt1" type="text" placeholder="選項 B" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editAdv0Opt2" type="text" placeholder="選項 C" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editAdv0Opt3" type="text" placeholder="選項 D" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-slate-300 font-bold">正解：</label>
+                        <select id="editAdv0Ans" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-yellow-400">
+                            <option value="0">選項 A</option><option value="1">選項 B</option><option value="2">選項 C</option><option value="3">選項 D</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div><label class="text-[10px] text-slate-400">選項 A:</label><input id="editAdvancedOpt0" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                    <div><label class="text-[10px] text-slate-400">選項 B:</label><input id="editAdvancedOpt1" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                    <div><label class="text-[10px] text-slate-400">選項 C:</label><input id="editAdvancedOpt2" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                    <div><label class="text-[10px] text-slate-400">選項 D:</label><input id="editAdvancedOpt3" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs"></div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <label class="text-xs text-slate-300 font-bold">正確答案：</label>
-                    <select id="editAdvancedAns" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-yellow-400">
-                        <option value="0">選項 A</option>
-                        <option value="1">選項 B</option>
-                        <option value="2">選項 C</option>
-                        <option value="3">選項 D</option>
-                    </select>
+
+                <!-- 🔥 進階題 2 -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-red-900/50 space-y-2.5">
+                    <div class="text-xs font-black text-red-400">🔥 進階題 #2</div>
+                    <textarea id="editAdv1Q" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100"></textarea>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <input id="editAdv1Opt0" type="text" placeholder="選項 A" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editAdv1Opt1" type="text" placeholder="選項 B" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editAdv1Opt2" type="text" placeholder="選項 C" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                        <input id="editAdv1Opt3" type="text" placeholder="選項 D" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-slate-300 font-bold">正解：</label>
+                        <select id="editAdv1Ans" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-yellow-400">
+                            <option value="0">選項 A</option><option value="1">選項 B</option><option value="2">選項 C</option><option value="3">選項 D</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -565,7 +635,7 @@
             <div class="space-y-2">
                 <label class="block text-xs font-bold text-slate-300">Google Gemini API Key（可選，用於 AI 智慧衍生專屬題目）：</label>
                 <input type="password" id="geminiApiKeyInput" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-mono text-white focus:outline-none focus:border-amber-400" placeholder="AIzaSy...">
-                <p class="text-[11px] text-slate-400">若未設定 Gemini API Key，系統將預設使用內建「30 大私中數學題目生成器」自動產生類似題與進階題。</p>
+                <p class="text-[11px] text-slate-400">若未設定 Gemini API Key，系統將預設使用內建「30 大私中數學題目生成器」自動產生 2 題類似題與 2 題進階題。</p>
             </div>
 
             <!-- GitHub 跨裝置雲端題庫同步設定 -->
@@ -626,6 +696,7 @@
     <!-- JavaScript 核心邏輯 -->
     <script>
         const PARENT_PASSWORD = "19820217";
+        const MASTERY_TARGET = 2; // 同一題被答對 2 次即不再出現
 
         // 自訂 Toast 訊息提示
         let toastTimer = null;
@@ -637,10 +708,10 @@
             if (toastTimer) clearTimeout(toastTimer);
             toastTimer = setTimeout(() => {
                 toast.classList.add("hidden");
-            }, 3200);
+            }, 3400);
         }
 
-        // 自訂確認對話框（取代原生 confirm）
+        // 自訂確認對話框
         function showConfirmModal(msg, onConfirm) {
             document.getElementById("confirmModalMsg").innerText = msg;
             const okBtn = document.getElementById("confirmModalOkBtn");
@@ -713,6 +784,7 @@
         let questionBank = [];
         let currentBankIndex = 0;
         let currentQuizMode = 'similar'; // 'similar' | 'advanced'
+        let currentSubIndex = 0;         // 0 或 1（對應第 1 題或第 2 題）
         let currentStreak = 0;
         let soundEnabled = true;
         let pendingPasswordAction = null;
@@ -748,8 +820,56 @@
             return {
                 ...problem,
                 options: paired.map(p => p.text),
-                answerIndex: Math.max(0, paired.findIndex(p => p.isCorrect))
+                answerIndex: Math.max(0, paired.findIndex(p => p.isCorrect)),
+                rightCount: typeof problem.rightCount === "number" ? problem.rightCount : 0,
+                wrongCount: typeof problem.wrongCount === "number" ? problem.wrongCount : 0
             };
+        }
+
+        /**
+         * 將舊版單題結構自動升級為「2 題類似題 + 2 題進階題」並保留統計計數
+         */
+        function normalizeBankItem(item) {
+            if (!item) return item;
+            if (!Array.isArray(item.similarProblems) || item.similarProblems.length < 2) {
+                const extra = generateVariantProblems(item.unitId, item.originalQuestion);
+                const firstSim = item.similarProblem
+                    ? { ...item.similarProblem, rightCount: item.similarProblem.rightCount || 0, wrongCount: item.similarProblem.wrongCount || 0 }
+                    : extra.similarProblems[0];
+                item.similarProblems = [firstSim, extra.similarProblems[1]];
+            } else {
+                item.similarProblems = item.similarProblems.slice(0, 2).map(p => ({
+                    ...p,
+                    rightCount: p.rightCount || 0,
+                    wrongCount: p.wrongCount || 0
+                }));
+            }
+
+            if (!Array.isArray(item.advancedProblems) || item.advancedProblems.length < 2) {
+                const extra = generateVariantProblems(item.unitId, item.originalQuestion);
+                const firstAdv = item.advancedProblem
+                    ? { ...item.advancedProblem, rightCount: item.advancedProblem.rightCount || 0, wrongCount: item.advancedProblem.wrongCount || 0 }
+                    : extra.advancedProblems[0];
+                item.advancedProblems = [firstAdv, extra.advancedProblems[1]];
+            } else {
+                item.advancedProblems = item.advancedProblems.slice(0, 2).map(p => ({
+                    ...p,
+                    rightCount: p.rightCount || 0,
+                    wrongCount: p.wrongCount || 0
+                }));
+            }
+
+            item.stats = item.stats || { right: 0, wrong: 0 };
+            return item;
+        }
+
+        function isSubProblemMastered(subProb) {
+            return (subProb?.rightCount || 0) >= MASTERY_TARGET;
+        }
+
+        function isBankItemFullyMastered(item) {
+            normalizeBankItem(item);
+            return item.similarProblems.every(isSubProblemMastered) && item.advancedProblems.every(isSubProblemMastered);
         }
 
         /**
@@ -767,6 +887,18 @@
             return `conan_weekly_minutes_${y}-${m}-${d}`;
         }
 
+        function getCurrentWeekDisplayText() {
+            const now = new Date();
+            const day = now.getDay();
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+            const monday = new Date(now);
+            monday.setDate(now.getDate() + diffToMonday);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            const fmt = (dt) => `${dt.getFullYear()}/${String(dt.getMonth() + 1).padStart(2, "0")}/${String(dt.getDate()).padStart(2, "0")}`;
+            return `統計週期：${fmt(monday)} (一) ～ ${fmt(sunday)} (日)`;
+        }
+
         function getWeeklyMinutes() {
             const val = parseInt(localStorage.getItem(getCurrentWeekKey()) || "0", 10);
             return isNaN(val) ? 0 : Math.max(0, val);
@@ -780,10 +912,24 @@
         }
 
         function updateTimeAndStreakUI() {
+            const mins = getWeeklyMinutes();
             const headerMins = document.getElementById("headerMinutes");
             if (headerMins) {
-                headerMins.innerText = getWeeklyMinutes();
+                headerMins.innerText = mins;
             }
+            const parentMins = document.getElementById("parentViewMinutes");
+            if (parentMins) {
+                parentMins.innerText = mins;
+            }
+            const parentStreak = document.getElementById("parentViewStreak");
+            if (parentStreak) {
+                parentStreak.innerText = currentStreak;
+            }
+            const parentWeekLabel = document.getElementById("parentViewWeekLabel");
+            if (parentWeekLabel) {
+                parentWeekLabel.innerText = `紅果短劇時間銀行（${getCurrentWeekDisplayText()}）`;
+            }
+
             const streakContainer = document.getElementById("bowtieStreakContainer");
             if (streakContainer) {
                 const filled = currentStreak % 5 === 0 && currentStreak > 0 ? 5 : (currentStreak % 5);
@@ -849,9 +995,9 @@
         }
 
         /**
-         * 針對貼上的「二元一次聯立買賣應用題」自動解析物品名稱與結構，生成同構類似題與進階題
+         * 針對貼上的「二元一次聯立買賣應用題」自動解析物品名稱與結構，生成 1 組（1類似 + 1進階）同構題
          */
-        function tryBuildLinearSystemVariants(originalText, c1, c2, c3) {
+        function tryBuildSingleLinearSystemPair(originalText, c1, c2, c3) {
             if (!originalText) return null;
             const buyMatch = originalText.match(/買\s*(\d+)\s*[支枝本個顆張瓶份件]\s*([^\d，,、和與跟]+?)\s*[和與跟]\s*(\d+)\s*[支枝本個顆張瓶份件]\s*([^\d，,、共]+?)[，,]?\s*共用去\s*(\d+)\s*元/);
             const isLinearAlgebra = buyMatch || (/x\s*元/i.test(originalText) && /y\s*元/i.test(originalText)) || (/原子筆|筆記本/.test(originalText) && /共用去|共花/.test(originalText));
@@ -902,20 +1048,20 @@
             };
 
             return {
-                similarProblem: shuffleProblemOptions(sim),
-                advancedProblem: shuffleProblemOptions(adv)
+                sim: shuffleProblemOptions(sim),
+                adv: shuffleProblemOptions(adv)
             };
         }
 
         /**
-         * 30 大私中數學題目生成器 Engine
+         * 生成單一組（1 題類似題 + 1 題進階題）
          */
-        function generateVariantProblems(unitId, originalText = "") {
+        function generateSinglePair(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
 
-            const linearSystemResult = tryBuildLinearSystemVariants(originalText, c1, c2, c3);
-            if (linearSystemResult) {
-                return linearSystemResult;
+            const linearPair = tryBuildSingleLinearSystemPair(originalText, c1, c2, c3);
+            if (linearPair) {
+                return linearPair;
             }
 
             const id = Number(unitId) || detectTopicIdFromText(originalText);
@@ -1074,7 +1220,6 @@
                     explanation: `$${ha} \\times 10000 = ${ha * 10000}$ 平方公尺。`
                 };
             } else if (id === 9) {
-                // 9. 植樹問題（含公尺與公分混用單位換算，貼合外牆/步道裝燈泡或種樹真題）
                 const stepCmOptions = [200, 250, 400, 500];
                 const stepCm = stepCmOptions[randInt(0, stepCmOptions.length - 1)];
                 const intervals = randInt(180, 360);
@@ -1102,24 +1247,39 @@
                     explanation: `統一單位：$${roadM}$ 公尺 $= ${roadCm}$ 公分。\n單側間隔數 $= ${roadCm} \\div ${stepCm2} = ${intervals2}$ 個，單側兩端都裝需 $${intervals2} + 1 = ${intervals2 + 1}$ 盞。\n橋的兩側共需 $${intervals2 + 1} \\times 2 = ${bothSidesAns}$ 盞。`
                 };
             } else if (id === 10) {
-                const a1 = randInt(3, 8), d = randInt(4, 7), n = randInt(10, 15);
-                const an = a1 + (n - 1) * d;
+                const maxDigit = [7, 8, 9][randInt(0, 2)];
+                const cycleSum = (maxDigit * (maxDigit + 1)) / 2;
+                const fullGroups = randInt(80, 130);
+                const remCount = randInt(1, 3);
+                const totalTerms = fullGroups * maxDigit + remCount;
+                const remSum = (remCount * (remCount + 1)) / 2;
+                const totalSum = fullGroups * cycleSum + remSum;
+                const seqExample = maxDigit === 9
+                    ? `1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, \\dots`
+                    : maxDigit === 8
+                        ? `1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, \\dots`
+                        : `1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, \\dots`;
+
                 sim = {
-                    question: `${c1}發現暗號數列：$ ${a1}, ${a1 + d}, ${a1 + 2 * d}, ${a1 + 3 * d}, \\dots $，按照這個等差規律，第 $${n}$ 個數字是多少？`,
-                    options: [`$${an}$`, `$${an + d}$`, `$${an - d}$`, `$${a1 + n * d}$`],
+                    question: `${c1}破解暗號紙條時發現一組循環數列：$ ${seqExample} $，請問從第 $1$ 個數起到第 $${totalTerms}$ 個數的和是多少？`,
+                    options: [`$${totalSum}$`, `$${totalSum - remSum}$`, `$${totalSum + 1}$`, `$${totalSum + 3}$`],
                     answerIndex: 0,
-                    clue: `等差數列第 $n$ 項公式：$a_n = a_1 + (n - 1) \\times d$。`,
-                    explanation: `首項 $a_1 = ${a1}$，公差 $d = ${d}$，第 $${n}$ 項為 $${a1} + (${n}-1) \\times ${d} = ${an}$。`
+                    clue: `觀察數列每 $${maxDigit}$ 個數字（$1$ 到 $${maxDigit}$）循環一次，每組的和是 $${cycleSum}$。用 $${totalTerms} \\div ${maxDigit}$ 算出有幾組完整循環，再加上剩下餘數個數字的和！`,
+                    explanation: `每 $${maxDigit}$ 個數為一循環，一組和 $= 1 + 2 + \\dots + ${maxDigit} = ${cycleSum}$。\n$${totalTerms} \\div ${maxDigit} = ${fullGroups}$ 組 $\\dots$ 餘 $${remCount}$ 個數。\n總和 $= ${fullGroups} \\times ${cycleSum} + (${Array.from({ length: remCount }, (_, i) => i + 1).join(' + ')}) = ${fullGroups * cycleSum} + ${remSum} = ${totalSum}$。`
                 };
-                const terms = 10;
-                const last = 2 + (terms - 1) * 3;
-                const sum = ((2 + last) * terms) / 2;
+
+                const pLen = 4;
+                const pSum = 18;
+                const advGroups = randInt(110, 160);
+                const advRem = 3;
+                const advN = advGroups * pLen + advRem;
+                const advAns = advGroups * pSum + 15;
                 adv = {
-                    question: `${c3}將數字依序累加：$2 + 5 + 8 + 11 + \\dots + 29$（共 $10$ 項），請問這個等差級數的總和是多少？`,
-                    options: [`$${sum}$`, `$${sum + 15}$`, `$${sum - 10}$`, `$310$`],
+                    question: `${c2}與${c3}在密碼鎖上發現重複循環數列：$ 2, 5, 8, 3, 2, 5, 8, 3, 2, 5, \\dots $，請問從第 $1$ 個數起到第 $${advN}$ 個數的總和是多少？`,
+                    options: [`$${advAns}$`, `$${advGroups * pSum}$`, `$${advAns + 3}$`, `$${advAns - 8}$`],
                     answerIndex: 0,
-                    clue: `等差級數總和公式：$\\frac{(\\text{首項} + \\text{末項}) \\times \\text{項數}}{2}$。`,
-                    explanation: `$\\frac{(2 + 29) \\times 10}{2} = \\frac{31 \\times 10}{2} = ${sum}$。`
+                    clue: `找出重複循環節「$2, 5, 8, 3$」（每 $4$ 個數一組，每組和為 $2 + 5 + 8 + 3 = 18$），再用 $${advN} \\div 4$ 求商數與餘數！`,
+                    explanation: `每 $4$ 個數（$2, 5, 8, 3$）為一循環，每組總和 $= 2 + 5 + 8 + 3 = 18$。\n$${advN} \\div 4 = ${advGroups}$ 組 $\\dots$ 餘 $3$ 個數（即 $2, 5, 8$）。\n總和 $= ${advGroups} \\times 18 + (2 + 5 + 8) = ${advGroups * pSum} + 15 = ${advAns}$。`
                 };
             } else if (id === 11) {
                 const outer = randInt(15, 25);
@@ -1488,16 +1648,37 @@
             }
 
             return {
-                similarProblem: shuffleProblemOptions(sim),
-                advancedProblem: shuffleProblemOptions(adv)
+                sim: shuffleProblemOptions(sim),
+                adv: shuffleProblemOptions(adv)
             };
         }
 
         /**
-         * 預設 3 題六升私中模擬錯題
+         * 為每道錯題一次生成「2 題類似題 + 2 題進階題」（確保題目內容不重複）
+         */
+        function generateVariantProblems(unitId, originalText = "") {
+            const pair1 = generateSinglePair(unitId, originalText);
+            let pair2 = generateSinglePair(unitId, originalText);
+            let guard = 0;
+            while (pair2.sim.question === pair1.sim.question && guard < 8) {
+                pair2 = generateSinglePair(unitId, originalText);
+                guard++;
+            }
+            return {
+                similarProblems: [pair1.sim, pair2.sim],
+                advancedProblems: [pair1.adv, pair2.adv]
+            };
+        }
+
+        /**
+         * 預設 3 題六升私中模擬錯題（每題含 2 類似題 + 2 進階題）
          */
         function getDefaultWrongQuestions() {
             const now = new Date().toISOString().split('T')[0];
+            const extra1 = generateSinglePair(11, "空心正方形方陣");
+            const extra2 = generateSinglePair(2, "指數律");
+            const extra3 = generateSinglePair(22, "追趕與相遇");
+
             const rawList = [
                 {
                     id: "default_1",
@@ -1505,26 +1686,36 @@
                     unitTitle: "11. 數與形（含空心與實心正方形方陣問題）",
                     originalQuestion: "【私中入學考真題】把士兵排成一空心正方形方陣，最外層每邊21人，共3層，則士兵共多少人？",
                     photoUrl: "",
-                    similarProblem: {
-                        question: "怪盜基德在寶石展廳外佈置了一個空心正方形警衛方陣，最外層每邊有 $21$ 人，共有 $3$ 層，江戶川柯南需要算出總人數才能潛入，請問這個空心方陣總共有多少人？",
-                        options: ["$216$ 人", "$228$ 人", "$240$ 人", "$256$ 人"],
-                        answerIndex: 0,
-                        clue: "每層人數 $= (單邊人數 - 1) \\times 4$。往內一層時，單邊人數比外層少 $2$ 人。",
-                        explanation: "第 1 層人數 $= (21-1) \\times 4 = 80$ 人。\n第 2 層每邊 $19$ 人，人數 $= (19-1) \\times 4 = 72$ 人。\n第 3 層每邊 $17$ 人，人數 $= (17-1) \\times 4 = 64$ 人。\n總人數 $= 80 + 72 + 64 = 216$ 人。"
-                    },
-                    advancedProblem: {
-                        question: "毛利蘭與圓谷光彥協助指揮帝丹小學體操隊形，原本排成一個每邊 $25$ 人的實心正方形方陣，後來中間拿掉一個實心正方形變為空心方陣，使得最內層每邊有 $11$ 人，請問拿掉了多少人？剩餘空心方陣有多少人？",
-                        options: [
-                            "拿掉 $100$ 人，剩餘 $525$ 人",
-                            "拿掉 $144$ 人，剩餘 $481$ 人",
-                            "拿掉 $81$ 人，剩餘 $544$ 人",
-                            "拿掉 $121$ 人，剩餘 $504$ 人"
-                        ],
-                        answerIndex: 0,
-                        clue: "中間拿掉的也是實心正方形，單邊人數為 $10$，人數為 $10 \\times 10 = 100$ 人。",
-                        explanation: "原本實心人數 $= 25 \\times 25 = 625$ 人。\n拿掉的中空邊長為 $10$，拿掉人數 $= 10 \\times 10 = 100$ 人。\n剩餘空心人數 $= 625 - 100 = 525$ 人。"
-                    },
-                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
+                    similarProblems: [
+                        {
+                            question: "怪盜基德在寶石展廳外佈置了一個空心正方形警衛方陣，最外層每邊有 $21$ 人，共有 $3$ 層，江戶川柯南需要算出總人數才能潛入，請問這個空心方陣總共有多少人？",
+                            options: ["$216$ 人", "$228$ 人", "$240$ 人", "$256$ 人"],
+                            answerIndex: 0,
+                            clue: "每層人數 $= (單邊人數 - 1) \\times 4$。往內一層時，單邊人數比外層少 $2$ 人。",
+                            explanation: "第 1 層人數 $= (21-1) \\times 4 = 80$ 人。\n第 2 層每邊 $19$ 人，人數 $= (19-1) \\times 4 = 72$ 人。\n第 3 層每邊 $17$ 人，人數 $= (17-1) \\times 4 = 64$ 人。\n總人數 $= 80 + 72 + 64 = 216$ 人。",
+                            rightCount: 0,
+                            wrongCount: 0
+                        },
+                        extra1.sim
+                    ],
+                    advancedProblems: [
+                        {
+                            question: "毛利蘭與圓谷光彥協助指揮帝丹小學體操隊形，原本排成一個每邊 $25$ 人的實心正方形方陣，後來中間拿掉一個實心正方形變為空心方陣，使得最內層每邊有 $11$ 人，請問拿掉了多少人？剩餘空心方陣有多少人？",
+                            options: [
+                                "拿掉 $100$ 人，剩餘 $525$ 人",
+                                "拿掉 $144$ 人，剩餘 $481$ 人",
+                                "拿掉 $81$ 人，剩餘 $544$ 人",
+                                "拿掉 $121$ 人，剩餘 $504$ 人"
+                            ],
+                            answerIndex: 0,
+                            clue: "中間拿掉的也是實心正方形，單邊人數為 $10$，人數為 $10 \\times 10 = 100$ 人。",
+                            explanation: "原本實心人數 $= 25 \\times 25 = 625$ 人。\n拿掉的中空邊長為 $10$，拿掉人數 $= 10 \\times 10 = 100$ 人。\n剩餘空心人數 $= 625 - 100 = 525$ 人。",
+                            rightCount: 0,
+                            wrongCount: 0
+                        },
+                        extra1.adv
+                    ],
+                    stats: { right: 0, wrong: 0 },
                     createdDate: now
                 },
                 {
@@ -1533,21 +1724,31 @@
                     unitTitle: "2. 運算方法與指數律",
                     originalQuestion: "計算 $2^{3} \\times 2^{2}$ 的結果為多少？",
                     photoUrl: "",
-                    similarProblem: {
-                        question: "灰原哀在阿笠博士的實驗室觀察細胞分裂倍率，先後兩次測試分別放大了 $2^{3}$ 倍與 $2^{2}$ 倍，請計算同底數冪的乘法：$2^{3} \\times 2^{2} = ?$",
-                        options: ["$2^{5} = 32$", "$2^{6} = 64$", "$4^{5} = 1024$", "$32 + 2 = 34$"],
-                        answerIndex: 0,
-                        clue: "同底數相乘，底數不變，指數相加：$a^m \\times a^n = a^{m+n}$。",
-                        explanation: "$2^3 \\times 2^2 = 2^{3+2} = 2^5 = 32$。"
-                    },
-                    advancedProblem: {
-                        question: "工藤新一與服部平次聯手破解黑衣組織的電子密碼鎖，密碼為算式 $(2^{3})^{2} \\div 2^{2}$ 的計算結果，請問密碼是多少？",
-                        options: ["$2^{4} = 16$", "$2^{5} = 32$", "$2^{6} = 64$", "$2^{3} = 8$"],
-                        answerIndex: 0,
-                        clue: "$(a^m)^n = a^{m \\times n}$，同底數相除指數相減。",
-                        explanation: "$(2^3)^2 = 2^{3 \\times 2} = 2^6$。\n$2^6 \\div 2^2 = 2^{6-2} = 2^4 = 16$。"
-                    },
-                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
+                    similarProblems: [
+                        {
+                            question: "灰原哀在阿笠博士的實驗室觀察細胞分裂倍率，先後兩次測試分別放大了 $2^{3}$ 倍與 $2^{2}$ 倍，請計算同底數冪的乘法：$2^{3} \\times 2^{2} = ?$",
+                            options: ["$2^{5} = 32$", "$2^{6} = 64$", "$4^{5} = 1024$", "$32 + 2 = 34$"],
+                            answerIndex: 0,
+                            clue: "同底數相乘，底數不變，指數相加：$a^m \\times a^n = a^{m+n}$。",
+                            explanation: "$2^3 \\times 2^2 = 2^{3+2} = 2^5 = 32$。",
+                            rightCount: 0,
+                            wrongCount: 0
+                        },
+                        extra2.sim
+                    ],
+                    advancedProblems: [
+                        {
+                            question: "工藤新一與服部平次聯手破解黑衣組織的電子密碼鎖，密碼為算式 $(2^{3})^{2} \\div 2^{2}$ 的計算結果，請問密碼是多少？",
+                            options: ["$2^{4} = 16$", "$2^{5} = 32$", "$2^{6} = 64$", "$2^{3} = 8$"],
+                            answerIndex: 0,
+                            clue: "$(a^m)^n = a^{m \\times n}$，同底數相除指數相減。",
+                            explanation: "$(2^3)^2 = 2^{3 \\times 2} = 2^6$。\n$2^6 \\div 2^2 = 2^{6-2} = 2^4 = 16$。",
+                            rightCount: 0,
+                            wrongCount: 0
+                        },
+                        extra2.adv
+                    ],
+                    stats: { right: 0, wrong: 0 },
                     createdDate: now
                 },
                 {
@@ -1556,29 +1757,39 @@
                     unitTitle: "22. 追趕與相遇問題",
                     originalQuestion: "柯南與嫌犯相距 400 公尺，柯南速 60m/min，嫌犯速 40m/min，幾分鐘追上？",
                     photoUrl: "",
-                    similarProblem: {
-                        question: "江戶川柯南發現嫌犯在他前方 $400$ 公尺處，嫌犯以每分鐘 $40$ 公尺逃跑，柯南騎著太陽能滑板以每分鐘 $60$ 公尺追趕，請問柯南需要多少分鐘才能追上嫌犯？",
-                        options: ["$20$ 分鐘", "$10$ 分鐘", "$15$ 分鐘", "$25$ 分鐘"],
-                        answerIndex: 0,
-                        clue: "追趕時間 $= \\text{距離} \\div (v_1 - v_2)$。",
-                        explanation: "每分鐘追近 $60 - 40 = 20$ 公尺。\n追上時間 $= 400 \\div 20 = 20$ 分鐘。"
-                    },
-                    advancedProblem: {
-                        question: "安室透與赤井秀一分別從甲、乙兩地同時出發相向而行，安室透分速 $70$ 公尺，赤井秀一分速 $50$ 公尺，兩人在 $10$ 分鐘後相遇。請問甲、乙兩地相距多少公尺？",
-                        options: ["$1200$ 公尺", "$1000$ 公尺", "$1400$ 公尺", "$800$ 公尺"],
-                        answerIndex: 0,
-                        clue: "相遇問題：總距離 $= (v_A + v_B) \\times \\text{時間}$。",
-                        explanation: "兩人每分鐘相向走 $70 + 50 = 120$ 公尺。\n總距離 $= 120 \\times 10 = 1200$ 公尺。"
-                    },
-                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
+                    similarProblems: [
+                        {
+                            question: "江戶川柯南發現嫌犯在他前方 $400$ 公尺處，嫌犯以每分鐘 $40$ 公尺逃跑，柯南騎著太陽能滑板以每分鐘 $60$ 公尺追趕，請問柯南需要多少分鐘才能追上嫌犯？",
+                            options: ["$20$ 分鐘", "$10$ 分鐘", "$15$ 分鐘", "$25$ 分鐘"],
+                            answerIndex: 0,
+                            clue: "追趕時間 $= \\text{距離} \\div (v_1 - v_2)$。",
+                            explanation: "每分鐘追近 $60 - 40 = 20$ 公尺。\n追上時間 $= 400 \\div 20 = 20$ 分鐘。",
+                            rightCount: 0,
+                            wrongCount: 0
+                        },
+                        extra3.sim
+                    ],
+                    advancedProblems: [
+                        {
+                            question: "安室透與赤井秀一分別從甲、乙兩地同時出發相向而行，安室透分速 $70$ 公尺，赤井秀一分速 $50$ 公尺，兩人在 $10$ 分鐘後相遇。請問甲、乙兩地相距多少公尺？",
+                            options: ["$1200$ 公尺", "$1000$ 公尺", "$1400$ 公尺", "$800$ 公尺"],
+                            answerIndex: 0,
+                            clue: "相遇問題：總距離 $= (v_A + v_B) \\times \\text{時間}$。",
+                            explanation: "兩人每分鐘相向走 $70 + 50 = 120$ 公尺。\n總距離 $= 120 \\times 10 = 1200$ 公尺。",
+                            rightCount: 0,
+                            wrongCount: 0
+                        },
+                        extra3.adv
+                    ],
+                    stats: { right: 0, wrong: 0 },
                     createdDate: now
                 }
             ];
 
             return rawList.map(item => ({
                 ...item,
-                similarProblem: shuffleProblemOptions(item.similarProblem),
-                advancedProblem: shuffleProblemOptions(item.advancedProblem)
+                similarProblems: item.similarProblems.map(shuffleProblemOptions),
+                advancedProblems: item.advancedProblems.map(shuffleProblemOptions)
             }));
         }
 
@@ -1593,7 +1804,8 @@
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed)) {
-                        questionBank = parsed;
+                        questionBank = parsed.map(normalizeBankItem);
+                        saveQuestionBank();
                     }
                 } else {
                     questionBank = getDefaultWrongQuestions();
@@ -1610,10 +1822,61 @@
             questionBank = getDefaultWrongQuestions();
             currentBankIndex = 0;
             currentQuizMode = 'similar';
+            currentSubIndex = 0;
             saveQuestionBank();
             renderQuizView();
             renderBankCards();
-            showToast("已載入 3 題六升私中柯南模擬錯題！", "📥");
+            showToast("已載入 3 題六升私中柯南模擬錯題（每題含 2 類似題 + 2 進階題）！", "📥");
+        }
+
+        /**
+         * 尋找下一道「尚未被答對 2 次」的可練習題目
+         */
+        function ensureAvailableQuizPointer() {
+            if (!questionBank || questionBank.length === 0) return false;
+            questionBank.forEach(normalizeBankItem);
+
+            if (currentBankIndex >= questionBank.length) {
+                currentBankIndex = 0;
+            }
+
+            // 檢查目前指向的題目是否尚未答對 2 次
+            const curItem = questionBank[currentBankIndex];
+            const curList = currentQuizMode === 'similar' ? curItem.similarProblems : curItem.advancedProblems;
+            if (curList[currentSubIndex] && !isSubProblemMastered(curList[currentSubIndex])) {
+                return true;
+            }
+
+            // 優先在同一個錯題組內找尚未答對 2 次的題目（先類似題 0,1 再進階題 0,1）
+            for (const mode of ['similar', 'advanced']) {
+                const list = mode === 'similar' ? curItem.similarProblems : curItem.advancedProblems;
+                for (let s = 0; s < list.length; s++) {
+                    if (!isSubProblemMastered(list[s])) {
+                        currentQuizMode = mode;
+                        currentSubIndex = s;
+                        return true;
+                    }
+                }
+            }
+
+            // 若目前錯題組的 4 道子題皆已答對 2 次，則依序搜尋其他錯題組
+            for (let offset = 1; offset < questionBank.length; offset++) {
+                const idx = (currentBankIndex + offset) % questionBank.length;
+                const cand = questionBank[idx];
+                for (const mode of ['similar', 'advanced']) {
+                    const list = mode === 'similar' ? cand.similarProblems : cand.advancedProblems;
+                    for (let s = 0; s < list.length; s++) {
+                        if (!isSubProblemMastered(list[s])) {
+                            currentBankIndex = idx;
+                            currentQuizMode = mode;
+                            currentSubIndex = s;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false; // 題庫內所有子題均已答對 2 次
         }
 
         /**
@@ -1706,7 +1969,7 @@
             if (tab === 'bank') {
                 openPasswordModal(
                     "家長錯題庫管理驗證",
-                    "進入錯題庫檢視與編輯題組需輸入家長安全密碼：",
+                    "進入錯題庫檢視分數、精熟狀態與重新出題需輸入家長安全密碼：",
                     () => activateTab('bank')
                 );
                 return;
@@ -1731,49 +1994,61 @@
                 bankView.classList.remove("hidden");
                 tabBankBtn.className = "px-4 py-2.5 font-bold border-b-2 border-conanGold text-conanGold flex items-center space-x-2 whitespace-nowrap";
                 tabQuizBtn.className = "px-4 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap";
+                updateTimeAndStreakUI();
                 updateGitHubStatusUI();
                 renderBankCards();
             }
         }
 
         /**
-         * 答題畫面渲染（類似題 ➔ 進階題循環）
+         * 答題畫面渲染（類似題 ➔ 進階題循環，且答對 2 次自動隱藏不再出現）
          */
         function renderQuizView() {
             const emptyState = document.getElementById("quizEmptyState");
+            const allMasteredState = document.getElementById("quizAllMasteredState");
             const quizCard = document.getElementById("quizCard");
 
             if (!questionBank || questionBank.length === 0) {
                 emptyState.classList.remove("hidden");
+                allMasteredState.classList.add("hidden");
                 quizCard.classList.add("hidden");
                 document.getElementById("quizProgressText").innerText = "第 0 / 0 組";
                 return;
             }
 
-            emptyState.classList.add("hidden");
-            quizCard.classList.remove("hidden");
-
-            if (currentBankIndex >= questionBank.length) {
-                currentBankIndex = 0;
+            const hasAvailable = ensureAvailableQuizPointer();
+            if (!hasAvailable) {
+                emptyState.classList.add("hidden");
+                allMasteredState.classList.remove("hidden");
+                quizCard.classList.add("hidden");
+                document.getElementById("quizProgressText").innerText = `全部 ${questionBank.length} 組已精熟`;
+                return;
             }
 
+            emptyState.classList.add("hidden");
+            allMasteredState.classList.add("hidden");
+            quizCard.classList.remove("hidden");
+
             const item = questionBank[currentBankIndex];
-            const problem = currentQuizMode === 'similar' ? item.similarProblem : item.advancedProblem;
+            const list = currentQuizMode === 'similar' ? item.similarProblems : item.advancedProblems;
+            const problem = list[currentSubIndex];
+            const subNum = currentSubIndex + 1;
 
             const modeBadge = document.getElementById("quizModeBadge");
             const tierTag = document.getElementById("quizTierTag");
             if (currentQuizMode === 'similar') {
                 modeBadge.className = "px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-600/30 border border-blue-400 text-blue-300";
-                modeBadge.innerText = "📘 專屬類似題";
+                modeBadge.innerText = `📘 類似題 #${subNum}`;
                 tierTag.className = "bg-blue-600 text-white font-extrabold text-xs px-2.5 py-0.5 rounded shadow-sm";
-                tierTag.innerText = "第一階段：類似題熱身（答對解鎖進階題）";
+                tierTag.innerText = `第一階段：類似題 #${subNum}（答對進階）`;
             } else {
                 modeBadge.className = "px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-600/30 border border-red-400 text-red-300";
-                modeBadge.innerText = "🔥 專屬進階題";
+                modeBadge.innerText = `🔥 進階題 #${subNum}`;
                 tierTag.className = "bg-conanRed text-white font-extrabold text-xs px-2.5 py-0.5 rounded shadow-sm";
-                tierTag.innerText = "第二階段：進階題挑戰（突破盲點）";
+                tierTag.innerText = `第二階段：進階題 #${subNum}（突破盲點）`;
             }
 
+            document.getElementById("quizSubMasteryTag").innerText = `本題過關進度：${problem.rightCount || 0} / ${MASTERY_TARGET} 次`;
             document.getElementById("quizUnitBadge").innerText = item.unitTitle || `主題 ${item.unitId}`;
             document.getElementById("quizProgressText").innerText = `第 ${currentBankIndex + 1} / ${questionBank.length} 組`;
             document.getElementById("quizItemDate").innerText = item.createdDate || "";
@@ -1834,19 +2109,21 @@
             if (questionBank.length === 0) return;
             currentBankIndex = (currentBankIndex + 1) % questionBank.length;
             currentQuizMode = 'similar';
+            currentSubIndex = 0;
             renderQuizView();
-            showToast("已切換至下一組錯題（類似題熱身）！", "➡️");
+            showToast("已切換至下一組尚未精熟的錯題！", "➡️");
         }
 
         /**
-         * 處理四選一作答判分與紅果短劇時間計算
+         * 處理四選一作答判分、累計單題答對次數（達 2 次畢業隱藏）與紅果短劇時間計算
          */
         function handleOptionSelect(selectedIndex) {
             if (isAnsweringLocked || questionBank.length === 0) return;
             isAnsweringLocked = true;
 
             const item = questionBank[currentBankIndex];
-            const problem = currentQuizMode === 'similar' ? item.similarProblem : item.advancedProblem;
+            const list = currentQuizMode === 'similar' ? item.similarProblems : item.advancedProblems;
+            const problem = list[currentSubIndex];
             const labels = ["A", "B", "C", "D"];
             const isCorrect = selectedIndex === problem.answerIndex;
             lastQuizWasCorrect = isCorrect;
@@ -1878,11 +2155,12 @@
                 const gained = isFiveStreak ? 4 : 1;
                 curMins = setWeeklyMinutes(curMins + gained);
 
-                item.stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
+                problem.rightCount = (problem.rightCount || 0) + 1;
+                item.stats = item.stats || { right: 0, wrong: 0 };
                 item.stats.right = (item.stats.right || 0) + 1;
-                item.stats.consecutiveRight = (item.stats.consecutiveRight || 0) + 1;
                 saveQuestionBank();
 
+                const retiredNow = problem.rightCount >= MASTERY_TARGET;
                 playSound(isFiveStreak ? 'streak' : 'correct');
 
                 iconBox.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl bg-emerald-500/20 text-emerald-400 border-2 border-emerald-400";
@@ -1892,11 +2170,15 @@
                     ? `連續答對 ${currentStreak} 題大滿貫！`
                     : "真相只有一個！推理完全正確！";
 
+                const retireNote = retiredNow
+                    ? `🎓 此題已累計答對 ${problem.rightCount} 次，正式畢業不再出現！`
+                    : `📌 此題目前答對 ${problem.rightCount} / ${MASTERY_TARGET} 次（再答對 1 次即畢業隱藏）。`;
+
                 if (currentQuizMode === 'similar') {
-                    subEl.innerText = "類似題破關成功！下一題將自動晉級挑戰同題型的【進階題】！";
+                    subEl.innerText = `${retireNote} 下一題將晉級挑戰同題型的【進階題】！`;
                     nextBtn.innerText = "挑戰進階題 🔥 ➔";
                 } else {
-                    subEl.innerText = "進階題制霸！下一題將切換至下一個錯題組的【類似題】！";
+                    subEl.innerText = `${retireNote} 下一題將切換至下一個錯題組的【類似題】！`;
                     nextBtn.innerText = "進入下一組錯題 ➔";
                 }
 
@@ -1908,9 +2190,9 @@
                 currentStreak = 0;
                 curMins = setWeeklyMinutes(curMins - 1);
 
-                item.stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
+                problem.wrongCount = (problem.wrongCount || 0) + 1;
+                item.stats = item.stats || { right: 0, wrong: 0 };
                 item.stats.wrong = (item.stats.wrong || 0) + 1;
-                item.stats.consecutiveRight = 0;
                 saveQuestionBank();
 
                 playSound('wrong');
@@ -1919,10 +2201,10 @@
                 iconBox.innerHTML = "💦";
                 titleEl.className = "text-2xl font-black text-rose-400";
                 titleEl.innerText = `推理失誤！正確答案是 (${labels[problem.answerIndex]})`;
-                subEl.innerText = "別灰心！系統將針對同一題型重新產生一道新的【類似題】讓你再練一次！";
+                subEl.innerText = "別灰心！系統將繼續針對這組錯題安排【類似題】讓你再練習一次！";
                 deltaEl.innerText = "-1 分鐘（連勝歸零）";
                 totalEl.innerText = `扣分後目前本週累計可用觀看時間：${curMins} 分鐘`;
-                nextBtn.innerText = "再練一題類似題 💪 ➔";
+                nextBtn.innerText = "繼續挑戰類似題 💪 ➔";
             }
 
             expEl.innerText = problem.explanation || `正確選項為 (${labels[problem.answerIndex]}) ${problem.options[problem.answerIndex]}`;
@@ -1937,16 +2219,30 @@
             const item = questionBank[currentBankIndex];
             if (lastQuizWasCorrect) {
                 if (currentQuizMode === 'similar') {
+                    // 類似題答對 -> 切換到進階題，優先選還沒答對 2 次的那一題
                     currentQuizMode = 'advanced';
+                    const advIdx = item.advancedProblems.findIndex(p => !isSubProblemMastered(p));
+                    currentSubIndex = advIdx !== -1 ? advIdx : 0;
                 } else {
+                    // 進階題答對 -> 切換到下一組錯題的類似題
                     currentQuizMode = 'similar';
                     currentBankIndex = (currentBankIndex + 1) % questionBank.length;
+                    const nextItem = questionBank[currentBankIndex];
+                    const simIdx = nextItem.similarProblems.findIndex(p => !isSubProblemMastered(p));
+                    currentSubIndex = simIdx !== -1 ? simIdx : 0;
                 }
             } else {
-                const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
-                item.similarProblem = fresh.similarProblem;
+                // 答錯 -> 留在同一組錯題繼續考類似題（若另一題類似題尚未畢業則切換過去增加變化）
                 currentQuizMode = 'similar';
-                saveQuestionBank();
+                const unmasteredSims = item.similarProblems
+                    .map((p, idx) => ({ p, idx }))
+                    .filter(x => !isSubProblemMastered(x.p));
+                if (unmasteredSims.length > 1) {
+                    const other = unmasteredSims.find(x => x.idx !== currentSubIndex);
+                    if (other) currentSubIndex = other.idx;
+                } else if (unmasteredSims.length === 1) {
+                    currentSubIndex = unmasteredSims[0].idx;
+                }
             }
 
             renderQuizView();
@@ -1990,8 +2286,47 @@
         }
 
         /**
-         * 家長錯題庫卡片渲染、重新衍生、編輯與清空
+         * 家長錯題庫卡片渲染（顯示 2 類似題 ＋ 2 進階題、各自答對/答錯次數、已答對 2 次畢業標記與重新產生按鈕）
          */
+        function renderSubProblemBox(itemId, realIdx, mode, subIdx, prob, labels) {
+            const isSim = mode === 'similar';
+            const title = isSim ? `📘 類似題 #${subIdx + 1}` : `🔥 進階題 #${subIdx + 1}`;
+            const borderCol = isSim ? 'border-blue-900/60' : 'border-red-900/60';
+            const titleCol = isSim ? 'text-blue-400' : 'text-red-400';
+            const rCount = prob.rightCount || 0;
+            const wCount = prob.wrongCount || 0;
+            const retired = rCount >= MASTERY_TARGET;
+
+            return `
+                <div class="bg-slate-950/85 border ${retired ? 'border-emerald-500/60' : borderCol} rounded-xl p-4 space-y-2.5 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-1.5">
+                            <span class="text-xs font-black ${titleCol}">${title}</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded ${retired ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/50' : 'bg-slate-800 text-slate-300'}">
+                                    ${retired ? `✅ 已答對 ${rCount} 次（不再出現）` : `對 ${rCount}/${MASTERY_TARGET} 次・錯 ${wCount} 次`}
+                                </span>
+                                <button onclick="regenerateSingleSubProblem(${realIdx}, '${mode}', ${subIdx})" title="重新產生此題並重置次數"
+                                    class="px-2 py-0.5 bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/40 text-amber-300 text-[11px] font-bold rounded transition">
+                                    🔄 重出此題
+                                </button>
+                            </div>
+                        </div>
+                        <p class="math-rendered text-xs text-slate-200 leading-relaxed">${prob.question}</p>
+                    </div>
+                    <div class="space-y-1.5 pt-1">
+                        <div class="grid grid-cols-2 gap-1.5 text-[11px] text-slate-300">
+                            ${prob.options.map((o, i) => `
+                                <div class="math-rendered px-2 py-1 rounded ${i === prob.answerIndex ? 'bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 font-bold' : 'bg-slate-900/90 text-slate-400'}">
+                                    (${labels[i]}) ${o}
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderBankCards() {
             const container = document.getElementById("bankCardsContainer");
             const filterVal = document.getElementById("bankUnitFilter").value;
@@ -2010,17 +2345,17 @@
 
             const labels = ["A", "B", "C", "D"];
             filtered.forEach((item) => {
+                normalizeBankItem(item);
                 const realIdx = questionBank.findIndex(q => q.id === item.id);
-                const sim = item.similarProblem;
-                const adv = item.advancedProblem;
-                const stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
-                const rightCount = stats.right || 0;
-                const wrongCount = stats.wrong || 0;
-                const streakRight = stats.consecutiveRight || 0;
-                const isMastered = rightCount >= 2 && streakRight >= 2;
+                const allFourRetired = isBankItemFullyMastered(item);
+
+                const totalRight = item.similarProblems.reduce((s, p) => s + (p.rightCount || 0), 0)
+                    + item.advancedProblems.reduce((s, p) => s + (p.rightCount || 0), 0);
+                const totalWrong = item.similarProblems.reduce((s, p) => s + (p.wrongCount || 0), 0)
+                    + item.advancedProblems.reduce((s, p) => s + (p.wrongCount || 0), 0);
 
                 const card = document.createElement("div");
-                card.className = `bg-slate-900/95 border ${isMastered ? 'border-emerald-500/70 shadow-emerald-950/30' : 'border-slate-700/90'} rounded-2xl p-5 shadow-xl space-y-4`;
+                card.className = `bg-slate-900/95 border ${allFourRetired ? 'border-emerald-500/80 shadow-emerald-950/30' : 'border-slate-700/90'} rounded-2xl p-5 shadow-xl space-y-4`;
                 card.innerHTML = `
                     <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-800 pb-3">
                         <div class="space-y-1.5 flex-1 min-w-[220px]">
@@ -2029,18 +2364,23 @@
                                     ${item.unitTitle || `主題 ${item.unitId}`}
                                 </span>
                                 <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200">
-                                    📊 戰績：答對 <strong class="text-emerald-400">${rightCount}</strong> 次 ／ 答錯 <strong class="text-rose-400">${wrongCount}</strong> 次
+                                    📊 總累計：答對 <strong class="text-emerald-400">${totalRight}</strong> 次 ／ 答錯 <strong class="text-rose-400">${totalWrong}</strong> 次
                                 </span>
                                 <span class="text-[11px] text-slate-500 font-mono">${item.createdDate || ""}</span>
                             </div>
-                            ${isMastered ? `
-                                <div class="bg-emerald-950/80 border border-emerald-500/50 rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+                            ${allFourRetired ? `
+                                <div class="bg-emerald-950/85 border border-emerald-500/60 rounded-xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
                                     <span class="text-xs font-bold text-emerald-300">
-                                        🏆 已精熟此題型（最近連續答對 ${streakRight} 次不再出錯），建議可移除這類題目！
+                                        🎓 本組 4 題（2類似題＋2進階題）均已答對 2 次畢業不再出現！您可以重新產生新題目或移除此錯題。
                                     </span>
-                                    <button onclick="deleteBankItem(${realIdx})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-lg shadow transition">
-                                        🗑️ 採納建議並移除
-                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="regenerateBankItem(${realIdx})" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-lg shadow transition">
+                                            🔄 全部重新產生
+                                        </button>
+                                        <button onclick="deleteBankItem(${realIdx})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-lg shadow transition">
+                                            🗑️ 移除此錯題
+                                        </button>
+                                    </div>
                                 </div>
                             ` : ""}
                             <p class="math-rendered text-sm font-bold text-slate-100 pt-1">${item.originalQuestion}</p>
@@ -2051,7 +2391,7 @@
                                 ▶ 立即測驗
                             </button>
                             <button onclick="regenerateBankItem(${realIdx})" class="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/50 text-blue-200 text-xs font-bold rounded-lg transition">
-                                🔄 重新衍生
+                                🔄 全部重新產生 (4題)
                             </button>
                             <button onclick="openEditModal('${item.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold rounded-lg transition">
                                 ✏️ 編輯
@@ -2062,44 +2402,12 @@
                         </div>
                     </div>
 
-                    ${item.photoUrl ? `
-                        <div class="bg-slate-950/70 p-2.5 rounded-xl border border-slate-800 inline-block">
-                            <img src="${item.photoUrl}" alt="錯題原圖" class="max-h-32 rounded-lg object-contain">
-                        </div>
-                    ` : ""}
-
+                    <!-- 2 題類似題 + 2 題進階題 4 宮格預覽 -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <!-- 類似題預覽 -->
-                        <div class="bg-slate-950/80 border border-blue-900/60 rounded-xl p-4 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-black text-blue-400">📘 衍生類似題</span>
-                                <span class="text-[11px] font-bold text-emerald-400">正解：(${labels[sim.answerIndex]})</span>
-                            </div>
-                            <p class="math-rendered text-xs text-slate-200 leading-relaxed">${sim.question}</p>
-                            <div class="grid grid-cols-2 gap-1.5 pt-1 text-[11px] text-slate-300">
-                                ${sim.options.map((o, i) => `
-                                    <div class="math-rendered px-2 py-1 rounded ${i === sim.answerIndex ? 'bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 font-bold' : 'bg-slate-900/90 text-slate-400'}">
-                                        (${labels[i]}) ${o}
-                                    </div>
-                                `).join("")}
-                            </div>
-                        </div>
-
-                        <!-- 進階題預覽 -->
-                        <div class="bg-slate-950/80 border border-red-900/60 rounded-xl p-4 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-black text-red-400">🔥 衍生進階題</span>
-                                <span class="text-[11px] font-bold text-emerald-400">正解：(${labels[adv.answerIndex]})</span>
-                            </div>
-                            <p class="math-rendered text-xs text-slate-200 leading-relaxed">${adv.question}</p>
-                            <div class="grid grid-cols-2 gap-1.5 pt-1 text-[11px] text-slate-300">
-                                ${adv.options.map((o, i) => `
-                                    <div class="math-rendered px-2 py-1 rounded ${i === adv.answerIndex ? 'bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 font-bold' : 'bg-slate-900/90 text-slate-400'}">
-                                        (${labels[i]}) ${o}
-                                    </div>
-                                `).join("")}
-                            </div>
-                        </div>
+                        ${renderSubProblemBox(item.id, realIdx, 'similar', 0, item.similarProblems[0], labels)}
+                        ${renderSubProblemBox(item.id, realIdx, 'similar', 1, item.similarProblems[1], labels)}
+                        ${renderSubProblemBox(item.id, realIdx, 'advanced', 0, item.advancedProblems[0], labels)}
+                        ${renderSubProblemBox(item.id, realIdx, 'advanced', 1, item.advancedProblems[1], labels)}
                     </div>
                 `;
                 container.appendChild(card);
@@ -2110,15 +2418,47 @@
 
         function practiceBankItem(idx) {
             currentBankIndex = idx;
-            currentQuizMode = 'similar';
+            const item = questionBank[idx];
+            if (item) {
+                const simIdx = item.similarProblems.findIndex(p => !isSubProblemMastered(p));
+                if (simIdx !== -1) {
+                    currentQuizMode = 'similar';
+                    currentSubIndex = simIdx;
+                } else {
+                    const advIdx = item.advancedProblems.findIndex(p => !isSubProblemMastered(p));
+                    currentQuizMode = 'advanced';
+                    currentSubIndex = advIdx !== -1 ? advIdx : 0;
+                }
+            }
             activateTab('quiz');
             showToast("已切換至此錯題開始挑戰！", "🔍");
+        }
+
+        function regenerateSingleSubProblem(realIdx, mode, subIdx) {
+            const item = questionBank[realIdx];
+            if (!item) return;
+            normalizeBankItem(item);
+            const correctedUnitId = detectTopicIdFromText(item.originalQuestion) || item.unitId;
+            const topicObj = TOPICS.find(t => t.id === correctedUnitId);
+            if (topicObj) {
+                item.unitId = topicObj.id;
+                item.unitTitle = topicObj.name;
+            }
+            const freshPair = generateSinglePair(item.unitId, item.originalQuestion);
+            if (mode === 'similar') {
+                item.similarProblems[subIdx] = freshPair.sim;
+            } else {
+                item.advancedProblems[subIdx] = freshPair.adv;
+            }
+            saveQuestionBank();
+            renderBankCards();
+            autoSyncGitHubIfConfigured();
+            showToast(`已重新產生「${mode === 'similar' ? '類似題' : '進階題'} #${subIdx + 1}」並重新開放出題！`, "🔄");
         }
 
         function regenerateBankItem(idx) {
             const item = questionBank[idx];
             if (!item) return;
-            // 重新衍生時也自動重新校正題型，避免舊題被誤分類
             const correctedUnitId = detectTopicIdFromText(item.originalQuestion) || item.unitId;
             const topicObj = TOPICS.find(t => t.id === correctedUnitId);
             if (topicObj) {
@@ -2126,12 +2466,12 @@
                 item.unitTitle = topicObj.name;
             }
             const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
-            item.similarProblem = fresh.similarProblem;
-            item.advancedProblem = fresh.advancedProblem;
+            item.similarProblems = fresh.similarProblems;
+            item.advancedProblems = fresh.advancedProblems;
             saveQuestionBank();
             renderBankCards();
             autoSyncGitHubIfConfigured();
-            showToast("已依原題題型重新生成全新數據與隨機選項！", "🔄");
+            showToast("已重新產生全新的【2 類似題 ＋ 2 進階題】並重置過關次數！", "🔄");
         }
 
         function deleteBankItem(idx) {
@@ -2154,6 +2494,7 @@
                         questionBank = [];
                         currentBankIndex = 0;
                         currentQuizMode = 'similar';
+                        currentSubIndex = 0;
                         saveQuestionBank();
                         renderBankCards();
                         autoSyncGitHubIfConfigured();
@@ -2170,7 +2511,7 @@
             const openFn = () => {
                 document.getElementById("addQuestionInput").value = "";
                 document.getElementById("addUnitSelect").value = "AUTO";
-                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並重新出題。</span>`;
+                document.getElementById("detectedTopicBanner").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並生成 2 題類似題與 2 題進階題。</span>`;
                 document.getElementById("addModal").classList.remove("hidden");
                 setTimeout(() => document.getElementById("addQuestionInput").focus(), 60);
             };
@@ -2212,6 +2553,7 @@
             if (!text) return 1;
             const rules = [
                 { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
+                { id: 10, re: /數列|等差|循環|第\s*\d+\s*個數|重複出現|規律/ },
                 { id: 1, re: /x\s*元|y\s*元|原子筆|筆記本|代數|方程式|未知數|聯立|下列哪個選項/i },
                 { id: 11, re: /方陣|空心|實心.*正方形|最外層.*每邊|每邊.*人/ },
                 { id: 2, re: /指數|次方|\^/ },
@@ -2222,7 +2564,7 @@
                 { id: 26, re: /工程|合作|獨自|完工/ },
                 { id: 27, re: /濃度|食鹽水|糖水|加.*成|利潤/ },
                 { id: 28, re: /文氏圖|都喜歡|都不喜歡|排容/ },
-                { id: 29, re: /餘數|餘|不足|一數/ },
+                { id: 29, re: /餘數|餘|不足|每\s*\d+\s*[顆個支本張人]\s*一數/ },
                 { id: 30, re: /巧算|999|125/ },
                 { id: 15, re: /圓周長|扇形周長|弧長/ },
                 { id: 16, re: /圓面積|扇形面積|圓環/ },
@@ -2234,7 +2576,6 @@
                 { id: 12, re: /三角形|內角/ },
                 { id: 13, re: /梯形|菱形|平行四邊形|四邊形/ },
                 { id: 14, re: /線段|棋盤|幾何計數/ },
-                { id: 10, re: /數列|等差|規律/ },
                 { id: 8, re: /公里|公尺|公分|公頃|公畝|單位換算/ },
                 { id: 7, re: /概數|四捨五入/ },
                 { id: 6, re: /小數/ },
@@ -2254,7 +2595,7 @@
             const text = document.getElementById("addQuestionInput").value.trim();
             const banner = document.getElementById("detectedTopicBanner");
             if (!text) {
-                banner.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並重新出題。</span>`;
+                banner.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並生成 2 題類似題與 2 題進階題。</span>`;
                 return;
             }
             const detectedId = detectTopicIdFromText(text);
@@ -2276,7 +2617,7 @@
 
             const btn = document.getElementById("saveNewQuestionBtn");
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在生成【類似題】與【進階題】...</span>`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在生成【2類似題 + 2進階題】...</span>`;
 
             try {
                 const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
@@ -2285,12 +2626,18 @@
                 if (geminiKey) {
                     try {
                         const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 12000);
-                        const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長貼上的錯題內容（單元：${topicObj.name}，原題目：「${qText}」），設計 1 題高度相關的「類似題 (similarProblem)」與 1 題加深難度的「進階題 (advancedProblem)」，皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3，不要每次都放 0）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
+                        const timeoutId = setTimeout(() => controller.abort(), 14000);
+                        const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長貼上的錯題內容（單元：${topicObj.name}，原題目：「${qText}」），設計 2 題不同數據或問法的「類似題 (similarProblems)」與 2 題加深難度的「進階題 (advancedProblems)」，每題皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
                         請嚴格回傳 JSON 格式（不要有 markdown 標記）：
                         {
-                          "similarProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
-                          "advancedProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"}
+                          "similarProblems": [
+                            {"question":"類似題1","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
+                            {"question":"類似題2","options":["選項A","選項B","選項C","選項D"],"answerIndex":3,"clue":"破案線索","explanation":"詳細解析"}
+                          ],
+                          "advancedProblems": [
+                            {"question":"進階題1","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"},
+                            {"question":"進階題2","options":["選項A","選項B","選項C","選項D"],"answerIndex":0,"clue":"破案線索","explanation":"詳細解析"}
+                          ]
                         }`;
 
                         const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
@@ -2304,10 +2651,13 @@
                             const data = await resp.json();
                             const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
                             const parsed = JSON.parse(rawJson);
-                            variants = {
-                                similarProblem: shuffleProblemOptions(parsed.similarProblem),
-                                advancedProblem: shuffleProblemOptions(parsed.advancedProblem)
-                            };
+                            if (Array.isArray(parsed.similarProblems) && parsed.similarProblems.length >= 2 &&
+                                Array.isArray(parsed.advancedProblems) && parsed.advancedProblems.length >= 2) {
+                                variants = {
+                                    similarProblems: parsed.similarProblems.slice(0, 2).map(shuffleProblemOptions),
+                                    advancedProblems: parsed.advancedProblems.slice(0, 2).map(shuffleProblemOptions)
+                                };
+                            }
                         }
                     } catch (e) {
                         console.log("Gemini fallback to local generator:", e);
@@ -2324,51 +2674,55 @@
                     unitTitle: topicObj.name,
                     originalQuestion: qText,
                     photoUrl: "",
-                    similarProblem: variants.similarProblem,
-                    advancedProblem: variants.advancedProblem,
-                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
+                    similarProblems: variants.similarProblems,
+                    advancedProblems: variants.advancedProblems,
+                    stats: { right: 0, wrong: 0 },
                     createdDate: new Date().toISOString().split('T')[0]
                 };
 
                 questionBank.unshift(newItem);
                 currentBankIndex = 0;
                 currentQuizMode = 'similar';
+                currentSubIndex = 0;
                 saveQuestionBank();
 
                 closeAddModal();
                 activateTab('bank');
-                showToast(`✅ 已依【${topicObj.name}】生成類似題與進階題並加入錯題庫！`, "🎉");
+                showToast(`✅ 已依【${topicObj.name}】生成 2 類似題與 2 進階題並加入錯題庫！`, "🎉");
                 autoSyncGitHubIfConfigured();
             } catch (err) {
                 showToast(`生成題組時發生異常：${err.message}`, "❌");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>一鍵生成【類似題】與【進階題】並儲存</span>`;
+                btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>一鍵生成【2類似題 + 2進階題】並儲存</span>`;
             }
         }
 
         /**
-         * 編輯題組 Modal
+         * 編輯題組 Modal（支援 4 題完整編輯）
          */
         function openEditModal(itemId) {
             const item = questionBank.find(q => q.id === itemId);
             if (!item) return;
+            normalizeBankItem(item);
             document.getElementById("editItemId").value = item.id;
             document.getElementById("editOriginalText").value = item.originalQuestion || "";
 
-            const sim = item.similarProblem;
-            document.getElementById("editSimilarQuestion").value = sim.question;
-            for (let i = 0; i < 4; i++) {
-                document.getElementById(`editSimilarOpt${i}`).value = sim.options[i] || "";
-            }
-            document.getElementById("editSimilarAns").value = String(sim.answerIndex || 0);
+            [0, 1].forEach(sIdx => {
+                const sim = item.similarProblems[sIdx];
+                document.getElementById(`editSim${sIdx}Q`).value = sim.question;
+                for (let i = 0; i < 4; i++) {
+                    document.getElementById(`editSim${sIdx}Opt${i}`).value = sim.options[i] || "";
+                }
+                document.getElementById(`editSim${sIdx}Ans`).value = String(sim.answerIndex || 0);
 
-            const adv = item.advancedProblem;
-            document.getElementById("editAdvancedQuestion").value = adv.question;
-            for (let i = 0; i < 4; i++) {
-                document.getElementById(`editAdvancedOpt${i}`).value = adv.options[i] || "";
-            }
-            document.getElementById("editAdvancedAns").value = String(adv.answerIndex || 0);
+                const adv = item.advancedProblems[sIdx];
+                document.getElementById(`editAdv${sIdx}Q`).value = adv.question;
+                for (let i = 0; i < 4; i++) {
+                    document.getElementById(`editAdv${sIdx}Opt${i}`).value = adv.options[i] || "";
+                }
+                document.getElementById(`editAdv${sIdx}Ans`).value = String(adv.answerIndex || 0);
+            });
 
             document.getElementById("editModal").classList.remove("hidden");
         }
@@ -2381,15 +2735,18 @@
             const id = document.getElementById("editItemId").value;
             const item = questionBank.find(q => q.id === id);
             if (!item) return;
+            normalizeBankItem(item);
 
             item.originalQuestion = document.getElementById("editOriginalText").value.trim();
-            item.similarProblem.question = document.getElementById("editSimilarQuestion").value.trim();
-            item.similarProblem.options = [0, 1, 2, 3].map(i => document.getElementById(`editSimilarOpt${i}`).value.trim());
-            item.similarProblem.answerIndex = parseInt(document.getElementById("editSimilarAns").value, 10) || 0;
+            [0, 1].forEach(sIdx => {
+                item.similarProblems[sIdx].question = document.getElementById(`editSim${sIdx}Q`).value.trim();
+                item.similarProblems[sIdx].options = [0, 1, 2, 3].map(i => document.getElementById(`editSim${sIdx}Opt${i}`).value.trim());
+                item.similarProblems[sIdx].answerIndex = parseInt(document.getElementById(`editSim${sIdx}Ans`).value, 10) || 0;
 
-            item.advancedProblem.question = document.getElementById("editAdvancedQuestion").value.trim();
-            item.advancedProblem.options = [0, 1, 2, 3].map(i => document.getElementById(`editAdvancedOpt${i}`).value.trim());
-            item.advancedProblem.answerIndex = parseInt(document.getElementById("editAdvancedAns").value, 10) || 0;
+                item.advancedProblems[sIdx].question = document.getElementById(`editAdv${sIdx}Q`).value.trim();
+                item.advancedProblems[sIdx].options = [0, 1, 2, 3].map(i => document.getElementById(`editAdv${sIdx}Opt${i}`).value.trim());
+                item.advancedProblems[sIdx].answerIndex = parseInt(document.getElementById(`editAdv${sIdx}Ans`).value, 10) || 0;
+            });
 
             saveQuestionBank();
             closeEditModal();
@@ -2590,7 +2947,6 @@
             try {
                 let parsedData = null;
 
-                // 1. 優先向 GitHub Contents API 讀取即時無快取的最新版本
                 if (repo) {
                     const controller = new AbortController();
                     const timer = setTimeout(() => controller.abort(), 5000);
@@ -2614,7 +2970,6 @@
                     }
                 }
 
-                // 2. 備援：透過 raw.githubusercontent.com 或同網域相對路徑讀取
                 if (!parsedData) {
                     const fallbackUrls = [];
                     if (repo) {
@@ -2643,10 +2998,11 @@
 
                 const remoteList = Array.isArray(parsedData) ? parsedData : parsedData?.questions;
                 if (Array.isArray(remoteList)) {
-                    questionBank = remoteList;
+                    questionBank = remoteList.map(normalizeBankItem);
                     if (currentBankIndex >= questionBank.length) {
                         currentBankIndex = 0;
                         currentQuizMode = 'similar';
+                        currentSubIndex = 0;
                     }
                     saveQuestionBank();
                     renderQuizView();
@@ -2658,7 +3014,7 @@
                     updateGitHubStatusUI();
                     if (!silent) {
                         playSound('correct');
-                        showToast(`🔄 同步完成！已載入家長最新錯題庫（共 ${questionBank.length} 題）！`, "🎉");
+                        showToast(`🔄 同步完成！已載入家長最新錯題庫（共 ${questionBank.length} 組）！`, "🎉");
                     }
                 }
             } catch (err) {
