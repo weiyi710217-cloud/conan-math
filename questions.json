@@ -1,6 +1,152 @@
 {
-  "updatedAt": "2026-11-22T13:27:07.351Z",
+  "updatedAt": "2026-11-22T13:28:08.513Z",
   "questions": [
+    {
+      "id": "q_1795354087935",
+      "unitId": 25,
+      "unitTitle": "25. 應用問題 2（年齡與盈虧）",
+      "originalQuestion": "13. 阿金8年後的年齡，比其20年前年齡的2倍多10歲，問阿金今年幾歲？\n(A) 26　(B) 32　(C) 38　(D) 44歲",
+      "photoUrl": "",
+      "similarProblems": [
+        {
+          "question": "今年毛利蘭是 $9$ 歲，安室透是 $39$ 歲，請問幾年後安室透的年齡剛好是毛利蘭的 $3$ 倍？",
+          "options": [
+            "$6$ 年後",
+            "$11$ 年後",
+            "$9$ 年後",
+            "$10$ 年後"
+          ],
+          "answerIndex": 0,
+          "clue": "兩人的「年齡差」永遠不變（相差 $30$ 歲）。當安室透是 $3$ 倍時，年齡差剛好是毛利蘭當時年齡的 $2$ 倍。",
+          "explanation": "年齡差 $= 39 - 9 = 30$ 歲；當為 $3$ 倍時，毛利蘭為 $30 \\div (3 - 1) = 15$ 歲，故需 $15 - 9 = 6$ 年後。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "今年小嶋元太是 $9$ 歲，毛利小五郎是 $39$ 歲，請問幾年後毛利小五郎的年齡剛好是小嶋元太的 $3$ 倍？",
+          "options": [
+            "$11$ 年後",
+            "$10$ 年後",
+            "$9$ 年後",
+            "$6$ 年後"
+          ],
+          "answerIndex": 3,
+          "clue": "兩人的「年齡差」永遠不變（相差 $30$ 歲）。當毛利小五郎是 $3$ 倍時，年齡差剛好是小嶋元太當時年齡的 $2$ 倍。",
+          "explanation": "年齡差 $= 39 - 9 = 30$ 歲；當為 $3$ 倍時，小嶋元太為 $30 \\div (3 - 1) = 15$ 歲，故需 $15 - 9 = 6$ 年後。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "advancedProblems": [
+        {
+          "question": "安室透分巧克力給少年偵探團成員，如果每人分 $5$ 顆會剩下 $12$ 顆；如果每人分 $7$ 顆則不夠 $8$ 顆，請問巧克力總共有多少顆？",
+          "options": [
+            "$62$ 顆",
+            "$48$ 顆",
+            "$52$ 顆",
+            "$70$ 顆"
+          ],
+          "answerIndex": 0,
+          "clue": "盈虧問題公式：$\\text{人數} = (\\text{盈} + \\text{虧}) \\div \\text{每人分配差}$。",
+          "explanation": "人數 $= (12 + 8) \\div (7 - 5) = 20 \\div 2 = 10$ 人；巧克力 $= 10 \\times 5 + 12 = 62$ 顆。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "毛利小五郎分巧克力給少年偵探團成員，如果每人分 $5$ 顆會剩下 $12$ 顆；如果每人分 $7$ 顆則不夠 $8$ 顆，請問巧克力總共有多少顆？",
+          "options": [
+            "$62$ 顆",
+            "$70$ 顆",
+            "$52$ 顆",
+            "$48$ 顆"
+          ],
+          "answerIndex": 0,
+          "clue": "盈虧問題公式：$\\text{人數} = (\\text{盈} + \\text{虧}) \\div \\text{每人分配差}$。",
+          "explanation": "人數 $= (12 + 8) \\div (7 - 5) = 20 \\div 2 = 10$ 人；巧克力 $= 10 \\times 5 + 12 = 62$ 顆。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "stats": {
+        "right": 0,
+        "wrong": 0
+      },
+      "createdDate": "2026-11-22"
+    },
+    {
+      "id": "q_1795354059801",
+      "unitId": 22,
+      "unitTitle": "22. 追趕與相遇問題",
+      "originalQuestion": "12. 上午10點20分到11點之間，長短針成60度時，是在什麼時刻？\n(A) 10點$43\\frac{5}{11}分　(B) 10點43\\frac{7}{11}分　(C) 10點44\\frac{5}{11}分　(D) 10點44\\frac{7}{11}$分",
+      "photoUrl": "",
+      "similarProblems": [
+        {
+          "question": "工藤新一在鐘錶店調查案發時間線索：請問在上午 $10點20分到11點之間$，時鐘的長短針成 $30^{\\circ}$ 時，是在什麼時刻？",
+          "svgCode": "<svg viewBox=\"0 0 220 145\" class=\"w-52 h-36\"><circle cx=\"110\" cy=\"72\" r=\"56\" fill=\"#0f172a\" stroke=\"#60a5fa\" stroke-width=\"3\"/><circle cx=\"110\" cy=\"72\" r=\"3\" fill=\"#fbbf24\"/><text x=\"110\" y=\"29\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">12</text><text x=\"155\" y=\"76\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">3</text><text x=\"110\" y=\"122\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">6</text><text x=\"65\" y=\"76\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">9</text><line x1=\"110\" y1=\"72\" x2=\"78\" y2=\"48\" stroke=\"#fbbf24\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><line x1=\"110\" y1=\"72\" x2=\"96\" y2=\"116\" stroke=\"#38bdf8\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><text x=\"110\" y=\"141\" text-anchor=\"middle\" fill=\"#fbbf24\" font-size=\"11\" font-weight=\"bold\">分針每分走 6°｜時針每分走 0.5°</text></svg>",
+          "options": [
+            "$10$ 點 $51\\frac{1}{11}$ 分",
+            "$10$ 點 $49\\frac{1}{11}$ 分",
+            "$10$ 點 $60$ 分",
+            "$10$ 點 $43\\frac{7}{11}$ 分"
+          ],
+          "answerIndex": 1,
+          "clue": "分針每分鐘走 $6^{\\circ}$，時針每分鐘走 $0.5^{\\circ}$，分針每分鐘比時針多追 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$！先算出整點時兩針相差幾度，扣掉目標夾角 $30^{\\circ}$ 後再除以 $\\frac{11}{2}$。",
+          "explanation": "10點整時，時針在 $10 \\times 30^{\\circ} = 300^{\\circ}$ 處，領先分針 $300^{\\circ}$。要使長短針夾角為 $30^{\\circ}$（且在 10點20分之後），分針必須追到只落後時針 $30^{\\circ}$，也就是分針要比時針多走 $300^{\\circ} - 30^{\\circ} = 270^{\\circ}$。\n分針每分鐘比時針多走 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n所需時間 $= 270 \\div \\frac{11}{2} = \\frac{540}{11} = 49\\frac{1}{11}$ 分。\n所以時刻為 $10$ 點 $49\\frac{1}{11}$ 分。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "阿笠博士在鐘錶店調查案發時間線索：請問在上午 $8點15分到9點之間$，時鐘的長短針成 $60^{\\circ}$ 時，是在什麼時刻？",
+          "svgCode": "<svg viewBox=\"0 0 220 145\" class=\"w-52 h-36\"><circle cx=\"110\" cy=\"72\" r=\"56\" fill=\"#0f172a\" stroke=\"#60a5fa\" stroke-width=\"3\"/><circle cx=\"110\" cy=\"72\" r=\"3\" fill=\"#fbbf24\"/><text x=\"110\" y=\"29\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">12</text><text x=\"155\" y=\"76\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">3</text><text x=\"110\" y=\"122\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">6</text><text x=\"65\" y=\"76\" text-anchor=\"middle\" fill=\"#cbd5e1\" font-size=\"10\" font-weight=\"bold\">9</text><line x1=\"110\" y1=\"72\" x2=\"78\" y2=\"48\" stroke=\"#fbbf24\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><line x1=\"110\" y1=\"72\" x2=\"96\" y2=\"116\" stroke=\"#38bdf8\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><text x=\"110\" y=\"141\" text-anchor=\"middle\" fill=\"#fbbf24\" font-size=\"11\" font-weight=\"bold\">分針每分走 6°｜時針每分走 0.5°</text></svg>",
+          "options": [
+            "$8$ 點 $27\\frac{3}{11}$ 分",
+            "$8$ 點 $34\\frac{8}{11}$ 分",
+            "$8$ 點 $32\\frac{8}{11}$ 分",
+            "$8$ 點 $43\\frac{7}{11}$ 分"
+          ],
+          "answerIndex": 2,
+          "clue": "分針每分鐘走 $6^{\\circ}$，時針每分鐘走 $0.5^{\\circ}$，分針每分鐘比時針多追 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$！先算出整點時兩針相差幾度，扣掉目標夾角 $60^{\\circ}$ 後再除以 $\\frac{11}{2}$。",
+          "explanation": "8點整時，時針在 $8 \\times 30^{\\circ} = 240^{\\circ}$ 處，領先分針 $240^{\\circ}$。要使長短針成 $60^{\\circ}$（且在 8點15分之後），分針需比時針多走 $240^{\\circ} - 60^{\\circ} = 180^{\\circ}$。\n分針每分鐘比時針多走 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n所需時間 $= 180 \\div \\frac{11}{2} = \\frac{360}{11} = 32\\frac{8}{11}$ 分。\n所以時刻為 $8$ 點 $32\\frac{8}{11}$ 分。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "advancedProblems": [
+        {
+          "question": "安室透與灰原哀核對不在場證明：請問在下午 $4$ 點到 $5$ 點之間，時鐘的長針（分針）與短針（時針）「完全重合」是在什麼時刻？",
+          "options": [
+            "$4$ 點 $23\\frac{2}{11}$ 分",
+            "$4$ 點 $27\\frac{3}{11}$ 分",
+            "$4$ 點 $18\\frac{2}{11}$ 分",
+            "$4$ 點 $21\\frac{9}{11}$ 分"
+          ],
+          "answerIndex": 3,
+          "clue": "$4$ 點整時，時針領先分針 $4 \\times 30^{\\circ} = 120^{\\circ}$。兩針完全重合代表追及距離為 $120^{\\circ}$，除以速度差 $\\frac{11}{2}^{\\circ}/\\text{分}$ 即可！",
+          "explanation": "$4$ 點整時，時針在 $4 \\times 30^{\\circ} = 120^{\\circ}$ 處。\n分針每分鐘追上 $6^{\\circ} - 0.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n重合所需時間 $= 120 \\div \\frac{11}{2} = \\frac{240}{11} = 21\\frac{9}{11}$ 分，即 $4$ 點 $21\\frac{9}{11}$ 分。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "工藤新一與灰原哀核對不在場證明：請問在下午 $8$ 點到 $9$ 點之間，時鐘的長針（分針）與短針（時針）「完全重合」是在什麼時刻？",
+          "options": [
+            "$8$ 點 $40$ 分",
+            "$8$ 點 $49\\frac{1}{11}$ 分",
+            "$8$ 點 $43\\frac{7}{11}$ 分",
+            "$8$ 點 $45$ 分"
+          ],
+          "answerIndex": 2,
+          "clue": "$8$ 點整時，時針領先分針 $8 \\times 30^{\\circ} = 240^{\\circ}$。兩針完全重合代表追及距離為 $240^{\\circ}$，除以速度差 $\\frac{11}{2}^{\\circ}/\\text{分}$ 即可！",
+          "explanation": "$8$ 點整時，時針在 $8 \\times 30^{\\circ} = 240^{\\circ}$ 處。\n分針每分鐘追上 $6^{\\circ} - 0.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n重合所需時間 $= 240 \\div \\frac{11}{2} = \\frac{480}{11} = 43\\frac{7}{11}$ 分，即 $8$ 點 $43\\frac{7}{11}$ 分。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "stats": {
+        "right": 0,
+        "wrong": 0
+      },
+      "createdDate": "2026-11-22"
+    },
     {
       "id": "q_1795353338049",
       "unitId": 21,
