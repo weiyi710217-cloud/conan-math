@@ -99,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.5</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.6</span></p>
                 </div>
             </div>
 
@@ -210,9 +210,9 @@
             <!-- 全部精熟過關提示 (All Mastered State) -->
             <div id="quizAllMasteredState" class="hidden bg-gradient-to-br from-emerald-950/90 via-conanNavy to-slate-900 border-2 border-emerald-500/60 rounded-2xl p-10 text-center space-y-4 shadow-2xl">
                 <div class="text-6xl mb-2">🏆</div>
-                <h3 class="text-2xl font-black text-emerald-300">太厲害了！目前題庫裡的所有衍生題都已答對 2 次完全精熟！</h3>
+                <h3 class="text-2xl font-black text-emerald-300">太厲害了！目前題庫裡的所有衍生題都已答對過關！</h3>
                 <p class="text-slate-300 max-w-lg mx-auto text-sm leading-relaxed">
-                    每一題的「類似題 (2題)」與「進階題 (2題)」都已經各答對 2 次畢業囉！請家長進入「家長錯題庫管理」新增新的錯題，或為舊題目重新產生新題目。
+                    每一題的「類似題 (2題)」與「進階題 (2題)」都已經答對畢業不再出現囉！請家長進入「家長錯題庫管理」新增新的錯題，或為舊題目重新產生新題目。
                 </p>
                 <div class="pt-2 flex flex-wrap justify-center gap-3">
                     <button onclick="switchTab('bank')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl shadow-lg transition flex items-center space-x-2">
@@ -259,7 +259,7 @@
                             類似題模式
                         </span>
                         <span id="quizSubMasteryTag" class="bg-slate-800 text-amber-300 border border-amber-500/40 font-bold text-xs px-2.5 py-0.5 rounded">
-                            本題精熟進度：0 / 2 次
+                            答對即過關畢業
                         </span>
                         <h2 class="text-sm font-bold text-slate-400">請根據推理邏輯選出正確答案（4選1）：</h2>
                     </div>
@@ -346,7 +346,7 @@
                         <span>家長錯題庫中心（每題 2 類似題 ＋ 2 進階題）</span>
                     </h2>
                     <p class="text-xs text-slate-400 mt-1">
-                        每道衍生子題<strong class="text-emerald-300">答對 2 次即自動隱藏不再出現</strong>；家長可在此查看各子題精熟狀態並一鍵重新產生新題目。
+                        每道衍生子題<strong class="text-emerald-300">只要答對 1 次即自動隱藏不再出現</strong>；家長可在此查看各子題過關狀態並一鍵重新產生新題目。
                     </p>
                 </div>
 
@@ -418,7 +418,7 @@
                         <span>📋 一鍵貼上剪貼簿文字</span>
                     </button>
                 </div>
-                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：晴子在飲料店打工，從3月3號開始一直做到4月20號結束，若已知3月3號為星期天，那麼4月30號為星期幾呢？"></textarea>
+                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：14. 晴子在飲料店打工，從3月3號開始一直做到4月20號結束，若已知3月3號為星期天，那麼4月30號為星期幾呢？"></textarea>
                 <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     <span>貼上題目或選擇幾何單元後，系統會自動生成包含示意圖的 2 類似題與 2 進階題。</span>
@@ -607,7 +607,7 @@
     </div>
 
 
-    <!-- 4. 答題結果反饋 Modal (包含短劇觀看時間增減通知) -->
+    <!-- 4. 答題結果反饋 Modal (答對顯示解析，答錯不告知答案與解法) -->
     <div id="resultModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-conanNavy border border-slate-700 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl text-center">
             
@@ -626,8 +626,8 @@
                 <div id="resultTotalMinutes" class="text-xs text-slate-300 font-mono"></div>
             </div>
 
-            <!-- 解析與推理說法 -->
-            <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
+            <!-- 解析與推理說法（僅答對時顯示，答錯時隱藏） -->
+            <div id="resultExplanationBox" class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
                 <div class="font-bold text-amber-300 flex items-center space-x-1">
                     <i class="fa-solid fa-scroll"></i>
                     <span>名偵探推理詳細解析：</span>
@@ -773,7 +773,7 @@
     <!-- JavaScript 核心邏輯 -->
     <script>
         const PARENT_PASSWORD = "19820217";
-        const MASTERY_TARGET = 2; // 同一題被答對 2 次即不再出現
+        const MASTERY_TARGET = 1; // 只要答對 1 次即不再出現
 
         // 自訂 Toast 訊息提示
         let toastTimer = null;
@@ -1161,15 +1161,14 @@
          */
         function tryBuildDateWeekdayPair(originalText, c1, c2, c3) {
             if (!originalText) return null;
-            const isDateWeekday = /星期[一二三四五六日天幾]|禮拜[一二三四五六日天幾]/.test(originalText)
-                || (/\d+\s*月\s*\d+\s*[號日]/.test(originalText) && /星期|禮拜/.test(originalText));
+            const isDateWeekday = /星期|禮拜/.test(originalText)
+                || /\d+\s*月\s*\d+\s*[號日]/.test(originalText);
             if (!isDateWeekday) return null;
 
             const daysInMonth = { 1: 31, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31 };
             const weekNames = ["星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
             const shortWeek = ["日", "一", "二", "三", "四", "五", "六"];
 
-            // 隨機挑一個起點月（3~10月，避開2月閏年爭議）
             const startM = [3, 4, 5, 7, 8, 9, 10][randInt(0, 6)];
             const endM = startM + 1;
             const startD = randInt(2, 12);
@@ -1181,7 +1180,6 @@
             const rem = diffDays % 7;
             const ansW = (startW + rem) % 7;
 
-            // 挑三個不重複的錯誤星期選項
             const wrongIndices = [0, 1, 2, 3, 4, 5, 6].filter(w => w !== ansW).sort(() => Math.random() - 0.5).slice(0, 3);
 
             const sim = {
@@ -1197,8 +1195,7 @@
                 explanation: `$${startM}$ 月共有 $${daysInMonth[startM]}$ 天。\n從 $${startM}$ 月 $${startD}$ 號到 $${endM}$ 月 $${targetD}$ 號共經過：$(${daysInMonth[startM]} - ${startD}) + ${targetD} = ${diffDays}$ 天。\n每 $7$ 天一循環：$${diffDays} \\div 7 = ${Math.floor(diffDays / 7)}$ 週 $\\dots$ 餘 $${rem}$ 天。\n從「${weekNames[startW]}」往後推 $${rem}$ 天，即為「星期${shortWeek[ansW]}」。`
             };
 
-            // 進階題：跨兩個月（例如 5 月某日推算到 7 月某日，考驗大小月天數累計與逆推/順推）
-            const advStartM = [3, 5, 7, 8][randInt(0, 3)]; // 31天大月
+            const advStartM = [3, 5, 7, 8][randInt(0, 3)];
             const advMidM = advStartM + 1;
             const advEndM = advStartM + 2;
             const advStartD = randInt(10, 20);
@@ -1444,7 +1441,7 @@
         function generateSinglePair(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
 
-            // 1. 優先比對特定結構題型（跨月日期星期幾推算、時鐘長短針夾角追趕、基準量與成數逆推、二元一次買賣消去法）
+            // 1. 無條件優先比對特定結構題型（跨月日期星期幾推算、時鐘長短針夾角追趕、基準量與成數逆推、二元一次買賣消去法）
             const dateWeekdayPair = tryBuildDateWeekdayPair(originalText, c1, c2, c3);
             if (dateWeekdayPair) {
                 return dateWeekdayPair;
@@ -2241,7 +2238,7 @@
         }
 
         /**
-         * 尋找下一道「尚未被答對 2 次」的可練習題目
+         * 尋找下一道「尚未答對過」的可練習題目（答對 1 次即不再出現）
          */
         function ensureAvailableQuizPointer() {
             if (!questionBank || questionBank.length === 0) return false;
@@ -2409,7 +2406,7 @@
         }
 
         /**
-         * 答題畫面渲染（類似題 ➔ 進階題循環，且答對 2 次自動隱藏不再出現）
+         * 答題畫面渲染（類似題 ➔ 進階題循環，且答對 1 次即自動隱藏不再出現）
          */
         function renderQuizView() {
             const emptyState = document.getElementById("quizEmptyState");
@@ -2456,7 +2453,7 @@
                 tierTag.innerText = `第二階段：進階題 #${subNum}（突破盲點）`;
             }
 
-            document.getElementById("quizSubMasteryTag").innerText = `本題過關進度：${problem.rightCount || 0} / ${MASTERY_TARGET} 次`;
+            document.getElementById("quizSubMasteryTag").innerText = `答對即過關畢業（不再重複出現）`;
             document.getElementById("quizUnitBadge").innerText = item.unitTitle || `主題 ${item.unitId}`;
             document.getElementById("quizProgressText").innerText = `第 ${currentBankIndex + 1} / ${questionBank.length} 組`;
             document.getElementById("quizItemDate").innerText = item.createdDate || "";
@@ -2547,7 +2544,7 @@
         }
 
         /**
-         * 處理四選一作答判分、累計單題答對次數（達 2 次畢業隱藏）與紅果短劇時間計算
+         * 處理四選一作答判分（答對 1 次即不再出現；答錯不告知正確答案與解法）
          */
         function handleOptionSelect(selectedIndex) {
             if (isAnsweringLocked || questionBank.length === 0) return;
@@ -2563,9 +2560,10 @@
             const btns = document.querySelectorAll("#quizOptionsContainer .option-btn");
             btns.forEach((btn, idx) => {
                 btn.disabled = true;
-                if (idx === problem.answerIndex) {
+                if (isCorrect && idx === problem.answerIndex) {
                     btn.className = "option-btn text-left bg-emerald-950/90 border-2 border-emerald-400 rounded-2xl p-4 flex items-center space-x-3.5 shadow-lg";
-                } else if (idx === selectedIndex && !isCorrect) {
+                } else if (!isCorrect && idx === selectedIndex) {
+                    // 答錯時僅將選錯的選項標紅，絕不亮出正確答案是哪一個
                     btn.className = "option-btn text-left bg-red-950/90 border-2 border-red-500 rounded-2xl p-4 flex items-center space-x-3.5 shadow-lg";
                 } else {
                     btn.className = "option-btn text-left bg-slate-900/40 border-2 border-slate-800 rounded-2xl p-4 flex items-center space-x-3.5 opacity-50";
@@ -2578,6 +2576,7 @@
             const subEl = document.getElementById("resultSub");
             const deltaEl = document.getElementById("resultMinutesDelta");
             const totalEl = document.getElementById("resultTotalMinutes");
+            const expBox = document.getElementById("resultExplanationBox");
             const expEl = document.getElementById("resultExplanation");
             const nextBtn = document.getElementById("resultNextBtn");
 
@@ -2593,7 +2592,6 @@
                 item.stats.right = (item.stats.right || 0) + 1;
                 saveQuestionBank();
 
-                const retiredNow = problem.rightCount >= MASTERY_TARGET;
                 playSound(isFiveStreak ? 'streak' : 'correct');
 
                 iconBox.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl bg-emerald-500/20 text-emerald-400 border-2 border-emerald-400";
@@ -2603,9 +2601,7 @@
                     ? `連續答對 ${currentStreak} 題大滿貫！`
                     : "真相只有一個！推理完全正確！";
 
-                const retireNote = retiredNow
-                    ? `🎓 此題已累計答對 ${problem.rightCount} 次，正式畢業不再出現！`
-                    : `📌 此題目前答對 ${problem.rightCount} / ${MASTERY_TARGET} 次（再答對 1 次即畢業隱藏）。`;
+                const retireNote = "🎓 此題已答對過關，正式畢業不再出現！";
 
                 if (currentQuizMode === 'similar') {
                     subEl.innerText = `${retireNote} 下一題將晉級挑戰同題型的【進階題】！`;
@@ -2619,6 +2615,10 @@
                     ? "+4 分鐘（答對 +1 分 ＋ 5連勝獎勵 +3 分！）"
                     : "+1 分鐘";
                 totalEl.innerText = `目前本週累計可用觀看時間：${curMins} 分鐘`;
+
+                expBox.classList.remove("hidden");
+                expEl.innerText = problem.explanation || `正確選項為 (${labels[problem.answerIndex]}) ${problem.options[problem.answerIndex]}`;
+                renderMathIn(expEl);
             } else {
                 currentStreak = 0;
                 saveCurrentStreak();
@@ -2634,15 +2634,17 @@
                 iconBox.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl bg-red-500/20 text-red-400 border-2 border-red-400";
                 iconBox.innerHTML = "💦";
                 titleEl.className = "text-2xl font-black text-rose-400";
-                titleEl.innerText = `推理失誤！正確答案是 (${labels[problem.answerIndex]})`;
-                subEl.innerText = "別灰心！系統將繼續針對這組錯題安排【類似題】讓你再練習一次！";
+                titleEl.innerText = `推理失誤！選項 (${labels[selectedIndex]}) 不正確`;
+                subEl.innerText = "為了訓練獨立思考，答錯時不會直接公佈答案與解法，請重新檢查算式再挑戰一次！";
                 deltaEl.innerText = "-1 分鐘（連勝歸零）";
                 totalEl.innerText = `扣分後目前本週累計可用觀看時間：${curMins} 分鐘`;
-                nextBtn.innerText = "繼續挑戰類似題 💪 ➔";
+                nextBtn.innerText = "返回題目重新挑戰 💪 ➔";
+
+                // 答錯時隱藏解析與正確答案
+                expBox.classList.add("hidden");
+                expEl.innerText = "";
             }
 
-            expEl.innerText = problem.explanation || `正確選項為 (${labels[problem.answerIndex]}) ${problem.options[problem.answerIndex]}`;
-            renderMathIn(expEl);
             document.getElementById("resultModal").classList.remove("hidden");
         }
 
@@ -2663,18 +2665,8 @@
                     const simIdx = nextItem.similarProblems.findIndex(p => !isSubProblemMastered(p));
                     currentSubIndex = simIdx !== -1 ? simIdx : 0;
                 }
-            } else {
-                currentQuizMode = 'similar';
-                const unmasteredSims = item.similarProblems
-                    .map((p, idx) => ({ p, idx }))
-                    .filter(x => !isSubProblemMastered(x.p));
-                if (unmasteredSims.length > 1) {
-                    const other = unmasteredSims.find(x => x.idx !== currentSubIndex);
-                    if (other) currentSubIndex = other.idx;
-                } else if (unmasteredSims.length === 1) {
-                    currentSubIndex = unmasteredSims[0].idx;
-                }
             }
+            // 若答錯，保持在同一題重新思考作答，不洩漏答案也不跳過
 
             renderQuizView();
         }
@@ -2717,7 +2709,7 @@
         }
 
         /**
-         * 家長錯題庫卡片渲染（顯示 2 類似題 ＋ 2 進階題、各自答對/答錯次數、已答對 2 次畢業標記與重新產生按鈕）
+         * 家長錯題庫卡片渲染（顯示 2 類似題 ＋ 2 進階題、各自答對/答錯次數、已答對過關畢業標記與重新產生按鈕）
          */
         function renderSubProblemBox(itemId, realIdx, mode, subIdx, prob, labels) {
             const isSim = mode === 'similar';
@@ -2735,7 +2727,7 @@
                             <span class="text-xs font-black ${titleCol}">${title}</span>
                             <div class="flex items-center gap-1.5">
                                 <span class="text-[11px] font-bold px-2 py-0.5 rounded ${retired ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/50' : 'bg-slate-800 text-slate-300'}">
-                                    ${retired ? `✅ 已答對 ${rCount} 次（不再出現）` : `對 ${rCount}/${MASTERY_TARGET} 次・錯 ${wCount} 次`}
+                                    ${retired ? `✅ 已答對過關（不再出現）` : `尚未過關・錯 ${wCount} 次`}
                                 </span>
                                 <button onclick="regenerateSingleSubProblem(${realIdx}, '${mode}', ${subIdx})" title="重新產生此題並重置次數"
                                     class="px-2 py-0.5 bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/40 text-amber-300 text-[11px] font-bold rounded transition">
@@ -2802,7 +2794,7 @@
                             ${allFourRetired ? `
                                 <div class="bg-emerald-950/85 border border-emerald-500/60 rounded-xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
                                     <span class="text-xs font-bold text-emerald-300">
-                                        🎓 本組 4 題（2類似題＋2進階題）均已答對 2 次畢業不再出現！您可以重新產生新題目或移除此錯題。
+                                        🎓 本組 4 題（2類似題＋2進階題）均已答對畢業不再出現！您可以重新產生新題目或移除此錯題。
                                     </span>
                                     <div class="flex items-center gap-2">
                                         <button onclick="regenerateBankItem(${realIdx})" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-lg shadow transition">
@@ -3044,7 +3036,7 @@
         function detectTopicIdFromText(text) {
             if (!text) return 1;
             const rules = [
-                { id: 29, re: /星期[一二三四五六日天幾]|禮拜[一二三四五六日天幾]|(\d+\s*月\s*\d+\s*[號日].*星期)|餘數|餘|不足|每\s*\d+\s*[顆個支本張人]\s*一數/ },
+                { id: 29, re: /星期|禮拜|(\d+\s*月\s*\d+\s*[號日])|餘數|餘|不足|每\s*\d+\s*[顆個支本張人]\s*一數/ },
                 { id: 22, re: /長短針|時針|分針|鐘面|重合|成一直線|追趕|追上|相遇|相向/ },
                 { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
                 { id: 10, re: /數列|等差|循環|第\s*\d+\s*個數|重複出現|規律/ },
@@ -3194,7 +3186,7 @@
                 clearAddDiagram();
                 closeAddModal();
                 activateTab('bank');
-                showToast(`✅ 已依【${topicObj.name}】生成題組並保存附圖！`, "🎉");
+                showToast(`✅ 已依【${topicObj.name}】生成題組並保存！`, "🎉");
                 autoSyncGitHubIfConfigured();
             } catch (err) {
                 showToast(`生成題組時發生異常：${err.message}`, "❌");
