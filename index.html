@@ -99,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.4</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.5</span></p>
                 </div>
             </div>
 
@@ -418,7 +418,7 @@
                         <span>📋 一鍵貼上剪貼簿文字</span>
                     </button>
                 </div>
-                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：上午10點20分到11點之間，長短針成60度時，是在什麼時刻？"></textarea>
+                <textarea id="addQuestionInput" rows="3" oninput="onQuestionInputChange()" onpaste="setTimeout(onQuestionInputChange, 30)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400" placeholder="例如：晴子在飲料店打工，從3月3號開始一直做到4月20號結束，若已知3月3號為星期天，那麼4月30號為星期幾呢？"></textarea>
                 <div id="detectedTopicBanner" class="text-xs text-emerald-400 font-bold flex items-center space-x-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     <span>貼上題目或選擇幾何單元後，系統會自動生成包含示意圖的 2 類似題與 2 進階題。</span>
@@ -1157,6 +1157,78 @@
         }
 
         /**
+         * 針對「跨月日期與星期幾推算（週期 7 天餘數問題）」生成同構類似題與進階題
+         */
+        function tryBuildDateWeekdayPair(originalText, c1, c2, c3) {
+            if (!originalText) return null;
+            const isDateWeekday = /星期[一二三四五六日天幾]|禮拜[一二三四五六日天幾]/.test(originalText)
+                || (/\d+\s*月\s*\d+\s*[號日]/.test(originalText) && /星期|禮拜/.test(originalText));
+            if (!isDateWeekday) return null;
+
+            const daysInMonth = { 1: 31, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31 };
+            const weekNames = ["星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+            const shortWeek = ["日", "一", "二", "三", "四", "五", "六"];
+
+            // 隨機挑一個起點月（3~10月，避開2月閏年爭議）
+            const startM = [3, 4, 5, 7, 8, 9, 10][randInt(0, 6)];
+            const endM = startM + 1;
+            const startD = randInt(2, 12);
+            const midD = randInt(15, 25); // 干擾條件（打工結束日）
+            const targetD = randInt(22, 30);
+            const startW = randInt(0, 6);
+
+            const diffDays = (daysInMonth[startM] - startD) + targetD;
+            const rem = diffDays % 7;
+            const ansW = (startW + rem) % 7;
+
+            // 挑三個不重複的錯誤星期選項
+            const wrongIndices = [0, 1, 2, 3, 4, 5, 6].filter(w => w !== ansW).sort(() => Math.random() - 0.5).slice(0, 3);
+
+            const sim = {
+                question: `${c1}在波羅咖啡廳協助整理排班表，已知排班從 $${startM}$ 月 $${startD}$ 號開始一直做到 $${endM}$ 月 $${midD}$ 號結束；若已知 $${startM}$ 月 $${startD}$ 號為「${weekNames[startW]}」，那麼 $${endM}$ 月 $${targetD}$ 號是星期幾呢？`,
+                options: [
+                    `星期${shortWeek[ansW]}`,
+                    `星期${shortWeek[wrongIndices[0]]}`,
+                    `星期${shortWeek[wrongIndices[1]]}`,
+                    `星期${shortWeek[wrongIndices[2]]}`
+                ],
+                answerIndex: 0,
+                clue: `注意題目問的是「$${endM}$ 月 $${targetD}$ 號」（$${endM}$ 月 $${midD}$ 號只是干擾條件）！先確認 $${startM}$ 月共有 $${daysInMonth[startM]}$ 天，算出從 $${startM}$ 月 $${startD}$ 號經過幾天到達 $${endM}$ 月 $${targetD}$ 號，再除以 $7$ 看餘數！`,
+                explanation: `$${startM}$ 月共有 $${daysInMonth[startM]}$ 天。\n從 $${startM}$ 月 $${startD}$ 號到 $${endM}$ 月 $${targetD}$ 號共經過：$(${daysInMonth[startM]} - ${startD}) + ${targetD} = ${diffDays}$ 天。\n每 $7$ 天一循環：$${diffDays} \\div 7 = ${Math.floor(diffDays / 7)}$ 週 $\\dots$ 餘 $${rem}$ 天。\n從「${weekNames[startW]}」往後推 $${rem}$ 天，即為「星期${shortWeek[ansW]}」。`
+            };
+
+            // 進階題：跨兩個月（例如 5 月某日推算到 7 月某日，考驗大小月天數累計與逆推/順推）
+            const advStartM = [3, 5, 7, 8][randInt(0, 3)]; // 31天大月
+            const advMidM = advStartM + 1;
+            const advEndM = advStartM + 2;
+            const advStartD = randInt(10, 20);
+            const advEndD = randInt(5, 18);
+            const advStartW = randInt(0, 6);
+            const advDiffDays = (daysInMonth[advStartM] - advStartD) + daysInMonth[advMidM] + advEndD;
+            const advRem = advDiffDays % 7;
+            const advAnsW = (advStartW + advRem) % 7;
+            const advWrong = [0, 1, 2, 3, 4, 5, 6].filter(w => w !== advAnsW).sort(() => Math.random() - 0.5).slice(0, 3);
+
+            const adv = {
+                question: `${c2}與${c3}追蹤怪盜基德的預告日期：已知某年 $${advStartM}$ 月 $${advStartD}$ 日是「${weekNames[advStartW]}」，請問同一年的 $${advEndM}$ 月 $${advEndD}$ 日是星期幾？`,
+                options: [
+                    `星期${shortWeek[advAnsW]}`,
+                    `星期${shortWeek[advWrong[0]]}`,
+                    `星期${shortWeek[advWrong[1]]}`,
+                    `星期${shortWeek[advWrong[2]]}`
+                ],
+                answerIndex: 0,
+                clue: `跨過兩個月份時，要分別確認 $${advStartM}$ 月有 $${daysInMonth[advStartM]}$ 天、$${advMidM}$ 月有 $${daysInMonth[advMidM]}$ 天，將三段天數相加後再除以 $7$ 求餘數！`,
+                explanation: `$${advStartM}$ 月有 $${daysInMonth[advStartM]}$ 天，${advMidM}$ 月有 $${daysInMonth[advMidM]}$ 天。\n總經過天數 $= (${daysInMonth[advStartM]} - ${advStartD}) + ${daysInMonth[advMidM]} + ${advEndD} = ${advDiffDays}$ 天。\n$${advDiffDays} \\div 7 = ${Math.floor(advDiffDays / 7)}$ 週 $\\dots$ 餘 $${advRem}$ 天。\n從「${weekNames[advStartW]}」往後推 $${advRem}$ 天，得到「星期${shortWeek[advAnsW]}」。`
+            };
+
+            return {
+                sim: shuffleProblemOptions(sim),
+                adv: shuffleProblemOptions(adv)
+            };
+        }
+
+        /**
          * 針對「時鐘問題：長短針夾角／重合／成直角／成一直線」生成同構類似題與進階題
          */
         function formatFraction11Minutes(numerator) {
@@ -1173,13 +1245,11 @@
                 || (/\d+\s*點/.test(originalText) && /成\s*\d+\s*度|重合|成一直線|直角/.test(originalText));
             if (!isClockProblem) return null;
 
-            // 預設精選「H點之後，分針追過時針成 targetDeg 度」的標準題型（如 10點20分到11點之間成 60度 -> 300+60=360, 360*2/11 = 720/11 = 65又5/11? 不，10點整時時針在 300度，分針追上還差 300-60=240度 -> 240*2/11 = 480/11 = 43又7/11分！若已過20分則追過超過60度 -> (300+60)*2/11 = 720/11 = 65又5/11分超過11點，題目若問 10點到11點成60度有兩次：43又7/11分 與 65又5/11分；若問 10點20分後到11點成30度則是 (300+30)*2/11 = 660/11 = 60分；若成60度在 10點到11點之間則是 43又7/11分！）
             const clockPresets = [
                 {
                     hour: 10,
                     afterMinText: "10點20分到11點之間",
                     deg: 30,
-                    // 10點整時時針領先分針 300 度；在 10:20 分針在 120 度、時針在 310 度（相差 190 度），要追到「分針落後時針 30 度」，分針需比時針多走 300 - 30 = 270 度 -> 270 ÷ 5.5 = 540/11 = 49又1/11 分
                     num: 540,
                     calcDesc: `10點整時，時針在 $10 \\times 30^{\\circ} = 300^{\\circ}$ 處，領先分針 $300^{\\circ}$。要使長短針夾角為 $30^{\\circ}$（且在 10點20分之後），分針必須追到只落後時針 $30^{\\circ}$，也就是分針要比時針多走 $300^{\\circ} - 30^{\\circ} = 270^{\\circ}$。`
                 },
@@ -1187,7 +1257,6 @@
                     hour: 8,
                     afterMinText: "8點15分到9點之間",
                     deg: 60,
-                    // 8點整時時針領先 240 度，追到落後 60 度需多走 240 - 60 = 180 度 -> 180 ÷ 5.5 = 360/11 = 32又8/11 分（確實介於 15 分到 60 分之間！）
                     num: 360,
                     calcDesc: `8點整時，時針在 $8 \\times 30^{\\circ} = 240^{\\circ}$ 處，領先分針 $240^{\\circ}$。要使長短針成 $60^{\\circ}$（且在 8點15分之後），分針需比時針多走 $240^{\\circ} - 60^{\\circ} = 180^{\\circ}$。`
                 },
@@ -1195,7 +1264,6 @@
                     hour: 9,
                     afterMinText: "9點20分到10點之間",
                     deg: 60,
-                    // 9點整時時針領先 270 度，追到落後 60 度需多走 270 - 60 = 210 度 -> 210 ÷ 5.5 = 420/11 = 38又2/11 分（確實介於 20 分到 60 分之間！）
                     num: 420,
                     calcDesc: `9點整時，時針在 $9 \\times 30^{\\circ} = 270^{\\circ}$ 處，領先分針 $270^{\\circ}$。要使長短針成 $60^{\\circ}$（且在 9點20分之後），分針需比時針多走 $270^{\\circ} - 60^{\\circ} = 210^{\\circ}$。`
                 },
@@ -1203,7 +1271,6 @@
                     hour: 7,
                     afterMinText: "7點10分到8點之間",
                     deg: 90,
-                    // 7點整時時針領先 210 度，追到落後 90 度需多走 210 - 90 = 120 度 -> 120 ÷ 5.5 = 240/11 = 21又9/11 分
                     num: 240,
                     calcDesc: `7點整時，時針在 $7 \\times 30^{\\circ} = 210^{\\circ}$ 處，領先分針 $210^{\\circ}$。要使長短針成 $90^{\\circ}$（且在 7點10分之後），分針需比時針多走 $210^{\\circ} - 90^{\\circ} = 120^{\\circ}$。`
                 }
@@ -1229,9 +1296,8 @@
                 explanation: `${p.calcDesc}\n分針每分鐘比時針多走 $6^{\\circ} - 0.5^{\\circ} = 5.5^{\\circ} = \\frac{11}{2}^{\\circ}$。\n所需時間 $= ${p.num / 2} \\div \\frac{11}{2} = \\frac{${p.num}}{11} = ${ansFrac}$ 分。\n所以時刻為 $${p.hour}$ 點 $${ansFrac}$ 分。`
             };
 
-            // 進階題：長短針「重合」或「成一直線 (180度)」
             const advHour = randInt(4, 8);
-            const advNum = advHour * 60; // 重合需追 advHour * 30 度 -> (advHour*30) / (11/2) = advHour*60 / 11
+            const advNum = advHour * 60;
             const advAnsFrac = formatFraction11Minutes(advNum);
             const advW1 = formatFraction11Minutes(advNum + 60);
             const advW2 = formatFraction11Minutes(Math.max(11, advNum - 40));
@@ -1378,7 +1444,12 @@
         function generateSinglePair(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
 
-            // 1. 優先比對特定結構題型（時鐘長短針夾角追趕、基準量與成數逆推、二元一次買賣消去法）
+            // 1. 優先比對特定結構題型（跨月日期星期幾推算、時鐘長短針夾角追趕、基準量與成數逆推、二元一次買賣消去法）
+            const dateWeekdayPair = tryBuildDateWeekdayPair(originalText, c1, c2, c3);
+            if (dateWeekdayPair) {
+                return dateWeekdayPair;
+            }
+
             const clockPair = tryBuildClockAnglePair(originalText, c1, c2, c3);
             if (clockPair) {
                 return clockPair;
@@ -2973,6 +3044,7 @@
         function detectTopicIdFromText(text) {
             if (!text) return 1;
             const rules = [
+                { id: 29, re: /星期[一二三四五六日天幾]|禮拜[一二三四五六日天幾]|(\d+\s*月\s*\d+\s*[號日].*星期)|餘數|餘|不足|每\s*\d+\s*[顆個支本張人]\s*一數/ },
                 { id: 22, re: /長短針|時針|分針|鐘面|重合|成一直線|追趕|追上|相遇|相向/ },
                 { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
                 { id: 10, re: /數列|等差|循環|第\s*\d+\s*個數|重複出現|規律/ },
@@ -2986,7 +3058,6 @@
                 { id: 26, re: /工程|合作|獨自|完工/ },
                 { id: 27, re: /濃度|食鹽水|糖水|加.*成|利潤/ },
                 { id: 28, re: /文氏圖|都喜歡|都不喜歡|排容/ },
-                { id: 29, re: /餘數|餘|不足|每\s*\d+\s*[顆個支本張人]\s*一數/ },
                 { id: 30, re: /巧算|999|125/ },
                 { id: 15, re: /圓周長|扇形周長|弧長/ },
                 { id: 16, re: /圓面積|扇形面積|圓環/ },
