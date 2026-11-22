@@ -97,7 +97,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v2.6</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v2.7</span></p>
                 </div>
             </div>
 
@@ -1074,24 +1074,32 @@
                     explanation: `$${ha} \\times 10000 = ${ha * 10000}$ 平方公尺。`
                 };
             } else if (id === 9) {
-                const gap = randInt(5, 10), count = randInt(12, 20);
-                const dist = gap * (count - 1);
+                // 9. 植樹問題（含公尺與公分混用單位換算，貼合外牆/步道裝燈泡或種樹真題）
+                const stepCmOptions = [200, 250, 400, 500];
+                const stepCm = stepCmOptions[randInt(0, stepCmOptions.length - 1)];
+                const intervals = randInt(180, 360);
+                const wallCm = stepCm * intervals;
+                const wallM = wallCm / 100;
+                const ansBulbs = intervals + 1;
                 sim = {
-                    question: `米花公園筆直的步道一旁每隔 $${gap}$ 公尺種一棵櫻花樹，頭尾兩端都種，${c1}數了共有 $${count}$ 棵樹，這條步道全長多少公尺？`,
-                    options: [`$${dist}$ 公尺`, `$${gap * count}$ 公尺`, `$${gap * (count + 1)}$ 公尺`, `$${dist - gap}$ 公尺`],
+                    question: `${c1}勘查鈴木美術館的外牆，外牆長度若是 $${wallM}$ 公尺長，每隔 $${stepCm}$ 公分裝置一顆太陽能 LED 燈泡，最後兩端都要有燈泡，共需幾顆燈泡？`,
+                    options: [`$${ansBulbs}$ 顆`, `$${intervals}$ 顆`, `$${intervals - 1}$ 顆`, `$${ansBulbs + 1}$ 顆`],
                     answerIndex: 0,
-                    clue: `頭尾兩端都種樹時：間隔數 $= \\text{棵數} - 1$。`,
-                    explanation: `間隔數 $= ${count} - 1 = ${count - 1}$ 個，全長 $= ${gap} \\times ${count - 1} = ${dist}$ 公尺。`
+                    clue: `第一步先把 $${wallM}$ 公尺換算成「$${wallM * 100}$ 公分」統一單位！再除以間隔 $${stepCm}$ 公分求出間隔數，因為「兩端都要有燈泡」，最後記得要 $+ 1$。`,
+                    explanation: `統一單位：$${wallM}$ 公尺 $= ${wallCm}$ 公分。\n間隔數 $= ${wallCm} \\div ${stepCm} = ${intervals}$ 個間隔。\n兩端都要有燈泡，總數 $= ${intervals} + 1 = ${ansBulbs}$ 顆。`
                 };
-                const perim = randInt(12, 20) * 10;
-                const treeGap = 10;
-                const trees = perim / treeGap;
+
+                const stepCm2 = [250, 300, 400][randInt(0, 2)];
+                const intervals2 = randInt(120, 240);
+                const roadCm = stepCm2 * intervals2;
+                const roadM = roadCm / 100;
+                const bothSidesAns = (intervals2 + 1) * 2;
                 adv = {
-                    question: `${c2}與${c3}繞著周長 $${perim}$ 公尺的圓形噴水池每隔 $${treeGap}$ 公尺放一盞照明燈，請問噴水池周圍總共放了多少盞燈？`,
-                    options: [`$${trees}$ 盞`, `$${trees - 1}$ 盞`, `$${trees + 1}$ 盞`, `$${trees * 2}$ 盞`],
+                    question: `${c2}與${c3}協助規劃米花大橋的夜間照明，橋長 $${roadM}$ 公尺，在橋的「兩側」每隔 $${stepCm2}$ 公分各裝一盞警示燈，若橋的兩端都要裝，總共需要多少盞警示燈？`,
+                    options: [`$${bothSidesAns}$ 盞`, `$${intervals2 + 1}$ 盞`, `$${intervals2 * 2}$ 盞`, `$${(intervals2 - 1) * 2}$ 盞`],
                     answerIndex: 0,
-                    clue: `封閉圓形周圍植樹/放燈：盞數 $= \\text{間隔數} = \\text{周長} \\div \\text{間隔長}$。`,
-                    explanation: `封閉圓形頭尾相接，盞數 $= ${perim} \\div ${treeGap} = ${trees}$ 盞。`
+                    clue: `先將 $${roadM}$ 公尺換算成公分，算出「單側（兩端都裝）」的燈數（間隔數 $+ 1$），題目問的是橋的「兩側」，最後還要再乘以 $2$！`,
+                    explanation: `統一單位：$${roadM}$ 公尺 $= ${roadCm}$ 公分。\n單側間隔數 $= ${roadCm} \\div ${stepCm2} = ${intervals2}$ 個，單側兩端都裝需 $${intervals2} + 1 = ${intervals2 + 1}$ 盞。\n橋的兩側共需 $${intervals2 + 1} \\times 2 = ${bothSidesAns}$ 盞。`
                 };
             } else if (id === 10) {
                 const a1 = randInt(3, 8), d = randInt(4, 7), n = randInt(10, 15);
@@ -1935,7 +1943,6 @@
                     currentBankIndex = (currentBankIndex + 1) % questionBank.length;
                 }
             } else {
-                // 答錯：重新生成同題型的新類似題繼續練習
                 const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
                 item.similarProblem = fresh.similarProblem;
                 currentQuizMode = 'similar';
@@ -2111,12 +2118,20 @@
         function regenerateBankItem(idx) {
             const item = questionBank[idx];
             if (!item) return;
+            // 重新衍生時也自動重新校正題型，避免舊題被誤分類
+            const correctedUnitId = detectTopicIdFromText(item.originalQuestion) || item.unitId;
+            const topicObj = TOPICS.find(t => t.id === correctedUnitId);
+            if (topicObj) {
+                item.unitId = topicObj.id;
+                item.unitTitle = topicObj.name;
+            }
             const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
             item.similarProblem = fresh.similarProblem;
             item.advancedProblem = fresh.advancedProblem;
             saveQuestionBank();
             renderBankCards();
-            showToast("已為此題組重新生成全新數據與隨機選項！", "🔄");
+            autoSyncGitHubIfConfigured();
+            showToast("已依原題題型重新生成全新數據與隨機選項！", "🔄");
         }
 
         function deleteBankItem(idx) {
@@ -2196,10 +2211,10 @@
         function detectTopicIdFromText(text) {
             if (!text) return 1;
             const rules = [
+                { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
                 { id: 1, re: /x\s*元|y\s*元|原子筆|筆記本|代數|方程式|未知數|聯立|下列哪個選項/i },
                 { id: 11, re: /方陣|空心|實心.*正方形|最外層.*每邊|每邊.*人/ },
                 { id: 2, re: /指數|次方|\^/ },
-                { id: 9, re: /植樹|種樹|間隔|路燈/ },
                 { id: 22, re: /追趕|追上|相遇|相向/ },
                 { id: 21, re: /速率|時速|分速|秒速/ },
                 { id: 24, re: /雞兔|得.*分.*扣|倒扣/ },
@@ -2220,7 +2235,7 @@
                 { id: 13, re: /梯形|菱形|平行四邊形|四邊形/ },
                 { id: 14, re: /線段|棋盤|幾何計數/ },
                 { id: 10, re: /數列|等差|規律/ },
-                { id: 8, re: /公里|公尺|公頃|公畝|單位換算/ },
+                { id: 8, re: /公里|公尺|公分|公頃|公畝|單位換算/ },
                 { id: 7, re: /概數|四捨五入/ },
                 { id: 6, re: /小數/ },
                 { id: 5, re: /分數|幾分之幾/ },
@@ -2575,7 +2590,7 @@
             try {
                 let parsedData = null;
 
-                // 1. 優先向 GitHub Contents API 讀取即時無快取的最新版本（若家長端有 Token 則帶上 Token 突破速率限制）
+                // 1. 優先向 GitHub Contents API 讀取即時無快取的最新版本
                 if (repo) {
                     const controller = new AbortController();
                     const timer = setTimeout(() => controller.abort(), 5000);
@@ -2723,7 +2738,6 @@
                 updateTimeAndStreakUI();
                 updateGitHubStatusUI();
                 renderQuizView();
-                // 背景非阻塞式自動從 GitHub 抓取最新題庫（其他電腦/瀏覽器開啟即自動更新）
                 setTimeout(() => {
                     pullFromGitHub(true);
                 }, 200);
