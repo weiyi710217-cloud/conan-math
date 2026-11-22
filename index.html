@@ -1848,6 +1848,12 @@
                 const gained = isFiveStreak ? 4 : 1;
                 curMins = setWeeklyMinutes(curMins + gained);
 
+                // 累計此題組（類似題/進階題）答對次數與連續答對次數
+                item.stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
+                item.stats.right = (item.stats.right || 0) + 1;
+                item.stats.consecutiveRight = (item.stats.consecutiveRight || 0) + 1;
+                saveQuestionBank();
+
                 playSound(isFiveStreak ? 'streak' : 'correct');
 
                 iconBox.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl bg-emerald-500/20 text-emerald-400 border-2 border-emerald-400";
@@ -1872,110 +1878,13 @@
             } else {
                 currentStreak = 0;
                 curMins = setWeeklyMinutes(curMins - 1);
-                playSound('wrong');
 
-                iconBox.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl bg-red-500/20 text-red-400 border-2 border-red-500";
-                iconBox.innerHTML = "💦";
-                titleEl.className = "text-2xl font-black text-red-400";
-                titleEl.innerText = "推理出現盲點！";
-                subEl.innerText = `你選了 (${labels[selectedIndex]})，正確答案是 (${labels[problem.answerIndex]})。系統將為你重新出一道同單元類似題再戰！`;
-
-                deltaEl.innerText = "-1 分鐘（連勝歸零）";
-                totalEl.innerText = `扣分後目前本週累計：${curMins} 分鐘`;
-                nextBtn.innerText = "再戰一題類似題 💪 ➔";
-            }
-
-            expEl.innerText = problem.explanation || "請參考破案線索再算一次！";
-            renderMathIn(expEl);
-
-            setTimeout(() => {
-                document.getElementById("resultModal").classList.remove("hidden");
-            }, 420);
-        }
-
-        function closeResultModalAndNext() {
-            document.getElementById("resultModal").classList.add("hidden");
-            if (questionBank.length === 0) return;
-
-            const item = questionBank[currentBankIndex];
-            if (lastQuizWasCorrect) {
-                if (currentQuizMode === 'similar') {
-                    currentQuizMode = 'advanced';
-                } else {
-                    currentQuizMode = 'similar';
-                    currentBankIndex = (currentBankIndex + 1) % questionBank.length;
-                }
-            } else {
-                // 答錯：維持同一錯題，切回類似題並重新生成一題新變形類似題
-                currentQuizMode = 'similar';
-                const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
-                item.similarProblem = fresh.similarProblem;
+                // 累計此題組答錯次數，並重置該題組的連續答對紀錄
+                item.stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
+                item.stats.wrong = (item.stats.wrong || 0) + 1;
+                item.stats.consecutiveRight = 0;
                 saveQuestionBank();
-            }
-            renderQuizView();
-        }
 
-        function skipToNextBankItem() {
-            if (questionBank.length === 0) return;
-            currentBankIndex = (currentBankIndex + 1) % questionBank.length;
-            currentQuizMode = 'similar';
-            renderQuizView();
-            showToast(`已切換至第 ${currentBankIndex + 1} 組錯題`, "🔄");
-        }
-
-        /**
-         * 破案線索密碼解鎖（19820217）
-         */
-        function requestClueUnlock() {
-            if (isClueUnlockedForCurrentQuestion) {
-                document.getElementById("clueContentArea").classList.toggle("hidden");
-                return;
-            }
-            openPasswordModal(
-                "解鎖破案線索",
-                "查看名偵探推理提示需輸入家長密碼：",
-                () => {
-                    isClueUnlockedForCurrentQuestion = true;
-                    playSound('unlock');
-                    document.getElementById("clueLockIcon").className = "fa-solid fa-unlock text-emerald-400";
-                    document.getElementById("clueLockBtnText").innerText = "💡 破案線索（已解鎖，點擊收合/展開）";
-                    document.getElementById("clueContentArea").classList.remove("hidden");
-                }
-            );
-        }
-
-        /**
-         * 通用家長密碼 Modal 控制
-         */
-        function openPasswordModal(title, sub, onSuccess) {
-            pendingPasswordAction = onSuccess;
-            document.getElementById("passwordModalTitle").innerText = title;
-            document.getElementById("passwordModalSub").innerText = sub;
-            const input = document.getElementById("passwordInput");
-            input.value = "";
-            document.getElementById("passwordError").classList.add("hidden");
-            document.getElementById("passwordModal").classList.remove("hidden");
-            setTimeout(() => input.focus(), 60);
-        }
-
-        function closePasswordModal() {
-            document.getElementById("passwordModal").classList.add("hidden");
-            pendingPasswordAction = null;
-        }
-
-        function verifyPasswordSubmit() {
-            const val = document.getElementById("passwordInput").value.trim();
-            if (val === PARENT_PASSWORD) {
-                const action = pendingPasswordAction;
-                closePasswordModal();
-                if (action) action();
-            } else {
-                const errEl = document.getElementById("passwordError");
-                const card = document.getElementById("passwordCard");
-                errEl.classList.remove("hidden");
-                card.classList.remove("animate-shake");
-                void card.offsetWidth;
-                card.classList.add("animate-shake");
                 playSound('wrong');
             }
         }
@@ -2041,18 +1950,37 @@
                 const realIdx = questionBank.findIndex(q => q.id === item.id);
                 const sim = item.similarProblem;
                 const adv = item.advancedProblem;
+                const stats = item.stats || { right: 0, wrong: 0, consecutiveRight: 0 };
+                const rightCount = stats.right || 0;
+                const wrongCount = stats.wrong || 0;
+                const streakRight = stats.consecutiveRight || 0;
+                // 累計答對 >= 2 次（完整通過類似題+進階題）且連續答對 >= 2 次，判定已精熟不再出錯
+                const isMastered = rightCount >= 2 && streakRight >= 2;
 
                 const card = document.createElement("div");
-                card.className = "bg-slate-900/95 border border-slate-700/90 rounded-2xl p-5 shadow-xl space-y-4";
+                card.className = `bg-slate-900/95 border ${isMastered ? 'border-emerald-500/70 shadow-emerald-950/30' : 'border-slate-700/90'} rounded-2xl p-5 shadow-xl space-y-4`;
                 card.innerHTML = `
                     <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-800 pb-3">
-                        <div class="space-y-1 flex-1 min-w-[220px]">
+                        <div class="space-y-1.5 flex-1 min-w-[220px]">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-black px-2.5 py-0.5 rounded-lg">
                                     ${item.unitTitle || `主題 ${item.unitId}`}
                                 </span>
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200">
+                                    📊 戰績：答對 <strong class="text-emerald-400">${rightCount}</strong> 次 ／ 答錯 <strong class="text-rose-400">${wrongCount}</strong> 次
+                                </span>
                                 <span class="text-[11px] text-slate-500 font-mono">${item.createdDate || ""}</span>
                             </div>
+                            ${isMastered ? `
+                                <div class="bg-emerald-950/80 border border-emerald-500/50 rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+                                    <span class="text-xs font-bold text-emerald-300">
+                                        🏆 已精熟此題型（最近連續答對 ${streakRight} 次不再出錯），建議可移除這類題目！
+                                    </span>
+                                    <button onclick="deleteBankItem(${realIdx})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-lg shadow transition">
+                                        🗑️ 採納建議並移除
+                                    </button>
+                                </div>
+                            ` : ""}
                             <p class="math-rendered text-sm font-bold text-slate-100 pt-1">${item.originalQuestion}</p>
                         </div>
 
@@ -2280,70 +2208,72 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在生成【類似題】與【進階題】...</span>`;
 
-            const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
-            let variants = null;
+            try {
+                const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
+                let variants = null;
 
-            if (geminiKey) {
-                try {
-                    const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長貼上的錯題內容（單元：${topicObj.name}，原題目：「${qText}」），設計 1 題高度相關的「類似題 (similarProblem)」與 1 題加深難度的「進階題 (advancedProblem)」，皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3，不要每次都放 0）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
-                    請嚴格回傳 JSON 格式（不要有 markdown 標記）：
-                    {
-                      "similarProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
-                      "advancedProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"}
-                    }`;
+                if (geminiKey) {
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 12000);
+                        const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長貼上的錯題內容（單元：${topicObj.name}，原題目：「${qText}」），設計 1 題高度相關的「類似題 (similarProblem)」與 1 題加深難度的「進階題 (advancedProblem)」，皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3，不要每次都放 0）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色（如：江戶川柯南、工藤新一、毛利蘭、毛利小五郎、灰原哀、阿笠博士、吉田步美、小嶋元太、圓谷光彥、服部平次、怪盜基德、赤井秀一、沖矢昴、安室透）。
+                        請嚴格回傳 JSON 格式（不要有 markdown 標記）：
+                        {
+                          "similarProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
+                          "advancedProblem": {"question":"題目","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"}
+                        }`;
 
-                    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                    });
-                    if (resp.ok) {
-                        const data = await resp.json();
-                        const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-                        const parsed = JSON.parse(rawJson);
-                        variants = {
-                            similarProblem: shuffleProblemOptions(parsed.similarProblem),
-                            advancedProblem: shuffleProblemOptions(parsed.advancedProblem)
-                        };
+                        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            signal: controller.signal,
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        });
+                        clearTimeout(timeoutId);
+                        if (resp.ok) {
+                            const data = await resp.json();
+                            const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+                            const parsed = JSON.parse(rawJson);
+                            variants = {
+                                similarProblem: shuffleProblemOptions(parsed.similarProblem),
+                                advancedProblem: shuffleProblemOptions(parsed.advancedProblem)
+                            };
+                        }
+                    } catch (e) {
+                        console.log("Gemini fallback to local generator:", e);
                     }
-                } catch (e) {
-                    console.log("Gemini fallback to local generator:", e);
                 }
-            }
 
-            if (!variants) {
-                variants = generateVariantProblems(unitId, qText);
-            }
+                if (!variants) {
+                    variants = generateVariantProblems(unitId, qText);
+                }
 
-            const newItem = {
-                id: "q_" + Date.now(),
-                unitId: topicObj.id,
-                unitTitle: topicObj.name,
-                originalQuestion: qText,
-                photoUrl: "",
-                similarProblem: variants.similarProblem,
-                advancedProblem: variants.advancedProblem,
-                createdDate: new Date().toISOString().split('T')[0]
-            };
+                const newItem = {
+                    id: "q_" + Date.now(),
+                    unitId: topicObj.id,
+                    unitTitle: topicObj.name,
+                    originalQuestion: qText,
+                    photoUrl: "",
+                    similarProblem: variants.similarProblem,
+                    advancedProblem: variants.advancedProblem,
+                    stats: { right: 0, wrong: 0, consecutiveRight: 0 },
+                    createdDate: new Date().toISOString().split('T')[0]
+                };
 
-            questionBank.unshift(newItem);
-            currentBankIndex = 0;
-            currentQuizMode = 'similar';
-            saveQuestionBank();
+                questionBank.unshift(newItem);
+                currentBankIndex = 0;
+                currentQuizMode = 'similar';
+                saveQuestionBank();
 
-            btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>一鍵生成【類似題】與【進階題】並儲存</span>`;
-            closeAddModal();
-            activateTab('bank');
-            showToast(`✅ 已依【${topicObj.name}】生成類似題與進階題並加入錯題庫！`, "🎉");
-            autoSyncGitHubIfConfigured();
-        }
-
-        function autoSyncGitHubIfConfigured() {
-            const repo = (localStorage.getItem("conan_gh_repo") || "").trim();
-            const token = (localStorage.getItem("conan_gh_token") || "").trim();
-            if (repo && token) {
-                pushToGitHub();
+                closeAddModal();
+                activateTab('bank');
+                showToast(`✅ 已依【${topicObj.name}】生成類似題與進階題並加入錯題庫！`, "🎉");
+                autoSyncGitHubIfConfigured();
+            } catch (err) {
+                showToast(`生成題組時發生異常：${err.message}`, "❌");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>一鍵生成【類似題】與【進階題】並儲存</span>`;
             }
         }
 
