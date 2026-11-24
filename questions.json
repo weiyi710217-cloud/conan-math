@@ -1,6 +1,152 @@
 {
-  "updatedAt": "2026-11-24T13:42:17.342Z",
+  "updatedAt": "2026-11-24T13:43:32.893Z",
   "questions": [
+    {
+      "id": "q_1795527812266",
+      "unitId": 1,
+      "unitTitle": "1. 代數的式與運算",
+      "originalQuestion": "媽媽將 公斤的麵粉每 公斤裝成 1 包，最多可以裝滿 包\n麵粉，此時還剩下 公斤的麵粉。",
+      "photoUrl": "",
+      "similarProblems": [
+        {
+          "question": "小嶋元太破解密碼盒時發現代數線索：若 $x = 4$，則代數式 $7x + 15$ 的值是多少？",
+          "options": [
+            "$50$",
+            "$13$",
+            "$26$",
+            "$43$"
+          ],
+          "answerIndex": 3,
+          "clue": "將 $x = 4$ 代入 $7x + 15$，先算乘法 $7 \\times 4$ 再加上 $15$。",
+          "explanation": "$7 \\times 4 + 15 = 28 + 15 = 43$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "服部平次破解密碼盒時發現代數線索：若 $x = 4$，則代數式 $7x + 7$ 的值是多少？",
+          "options": [
+            "$18$",
+            "$21$",
+            "$35$",
+            "$42$"
+          ],
+          "answerIndex": 2,
+          "clue": "將 $x = 4$ 代入 $7x + 7$，先算乘法 $7 \\times 4$ 再加上 $7$。",
+          "explanation": "$7 \\times 4 + 7 = 28 + 7 = 35$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "advancedProblems": [
+        {
+          "question": "服部平次在現場找到一張方程式紙條：$5(x + 12) = 95$，請幫小嶋元太求出未知數 $x$ 是多少？",
+          "options": [
+            "$9$",
+            "$7$",
+            "$83$",
+            "$19$"
+          ],
+          "answerIndex": 1,
+          "clue": "兩邊先同時除以 $5$，得到 $x + 12 = 19$。",
+          "explanation": "$x + 12 = 95 \\div 5 = 19$，所以 $x = 19 - 12 = 7$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "沖矢昴在現場找到一張方程式紙條：$5(x + 7) = 85$，請幫服部平次求出未知數 $x$ 是多少？",
+          "options": [
+            "$17$",
+            "$78$",
+            "$10$",
+            "$12$"
+          ],
+          "answerIndex": 2,
+          "clue": "兩邊先同時除以 $5$，得到 $x + 7 = 17$。",
+          "explanation": "$x + 7 = 85 \\div 5 = 17$，所以 $x = 17 - 7 = 10$。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "stats": {
+        "right": 0,
+        "wrong": 0
+      },
+      "source": "template",
+      "createdDate": "2026-11-24"
+    },
+    {
+      "id": "q_1795527769539",
+      "unitId": 8,
+      "unitTitle": "8. 單位換算",
+      "originalQuestion": "請問 45 公里/小時＝ 公尺/分",
+      "photoUrl": "",
+      "similarProblems": [
+        {
+          "question": "赤井秀一追蹤訊號走了 $2$ 公里 $65$ 公尺，換算成公尺總共是多少公尺？",
+          "options": [
+            "$20650$ 公尺",
+            "$2650$ 公尺",
+            "$265$ 公尺",
+            "$2065$ 公尺"
+          ],
+          "answerIndex": 3,
+          "clue": "$1$ 公里 $= 1000$ 公尺，注意十位與百位補零。",
+          "explanation": "$2 \\times 1000 + 65 = 2065$ 公尺。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "吉田步美追蹤訊號走了 $5$ 公里 $54$ 公尺，換算成公尺總共是多少公尺？",
+          "options": [
+            "$554$ 公尺",
+            "$50540$ 公尺",
+            "$5540$ 公尺",
+            "$5054$ 公尺"
+          ],
+          "answerIndex": 3,
+          "clue": "$1$ 公里 $= 1000$ 公尺，注意十位與百位補零。",
+          "explanation": "$5 \\times 1000 + 54 = 5054$ 公尺。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "advancedProblems": [
+        {
+          "question": "鈴木財團買下一塊面積為 $4$ 公頃的展覽園區，請問這塊園區的面積是多少平方公尺？",
+          "options": [
+            "$40000$ 平方公尺",
+            "$4000$ 平方公尺",
+            "$400000$ 平方公尺",
+            "$400$ 平方公尺"
+          ],
+          "answerIndex": 0,
+          "clue": "$1$ 公頃 $= 100$ 公畝 $= 10000$ 平方公尺。",
+          "explanation": "$4 \\times 10000 = 40000$ 平方公尺。",
+          "rightCount": 0,
+          "wrongCount": 0
+        },
+        {
+          "question": "鈴木財團買下一塊面積為 $4$ 公頃的展覽園區，請問這塊園區的面積是多少平方公尺？",
+          "options": [
+            "$40000$ 平方公尺",
+            "$400000$ 平方公尺",
+            "$4000$ 平方公尺",
+            "$400$ 平方公尺"
+          ],
+          "answerIndex": 0,
+          "clue": "$1$ 公頃 $= 100$ 公畝 $= 10000$ 平方公尺。",
+          "explanation": "$4 \\times 10000 = 40000$ 平方公尺。",
+          "rightCount": 0,
+          "wrongCount": 0
+        }
+      ],
+      "stats": {
+        "right": 0,
+        "wrong": 0
+      },
+      "source": "template",
+      "createdDate": "2026-11-24"
+    },
     {
       "id": "q_1795355635733",
       "unitId": 5,
