@@ -99,7 +99,7 @@
                     <h1 class="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-red-400 tracking-wide">
                         名偵探柯南：六升私中數學推理挑戰
                     </h1>
-                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.7</span></p>
+                    <p class="text-xs text-slate-400" id="weekCycleLabel">紅果短劇時間銀行連動專案 <span class="text-amber-400/80 font-mono ml-1">v3.8</span></p>
                 </div>
             </div>
 
@@ -685,9 +685,9 @@
             </div>
 
             <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-300">Google Gemini API Key（可選，用於 AI 智慧衍生專屬題目）：</label>
+                <label class="block text-xs font-bold text-slate-300">Google Gemini API Key（強烈建議填入，可 100% 依原題同構出題並自檢答案）：</label>
                 <input type="password" id="geminiApiKeyInput" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-mono text-white focus:outline-none focus:border-amber-400" placeholder="AIzaSy...">
-                <p class="text-[11px] text-slate-400">若未設定 Gemini API Key，系統將預設使用內建「30 大私中數學題目生成器」自動產生 2 題類似題與 2 題進階題。</p>
+                <p class="text-[11px] text-slate-400">若未設定 Gemini API Key，系統將使用內建計分式單元辨識與 30 大私中數學題目生成器產生題組。</p>
             </div>
 
             <!-- GitHub 跨裝置雲端題庫同步設定 -->
@@ -1157,6 +1157,56 @@
         }
 
         /**
+         * A. 計分式題型偵測（取代第一個命中就停的寬鬆正規表達式）
+         */
+        const TOPIC_KEYWORDS = {
+            1: [[/x\s*元|y\s*元|方程式|未知數|聯立|代數/i, 4], [/共用去|共花/, 2]],
+            2: [[/指數|次方|\^/, 4]],
+            3: [[/因數|倍數/, 3], [/質數|整除/, 2]],
+            4: [[/公因數|公倍數|最大公因數|最小公倍數/, 5], [/平分|同時.*(經過|出發|響)/, 2]],
+            5: [[/機率/, 5], [/硬幣|骰子|抽球|抽中/, 3], [/分數|幾分之幾/, 4]],
+            6: [[/小數/, 4]],
+            7: [[/概數|四捨五入/, 5]],
+            8: [[/單位換算|公頃|公畝/, 4], [/公里|公尺|公分/, 1]],
+            9: [[/植樹|種樹|路燈|燈泡|電線桿/, 4], [/每隔|間隔/, 3], [/兩端|兩側|兩旁/, 2]],
+            10: [[/數列|等差|等比/, 4], [/循環|規律|重複出現/, 3], [/第\s*\d+\s*個數/, 3]],
+            11: [[/方陣/, 5], [/空心|實心/, 3], [/最外層/, 2]],
+            12: [[/三角形|內角/, 4]],
+            13: [[/梯形|菱形|平行四邊形|四邊形/, 4]],
+            14: [[/線段|棋盤|幾何計數/, 4], [/幾個(正方形|三角形|長方形)/, 4]],
+            15: [[/周長|弧長/, 3], [/圓|扇形/, 2]],
+            16: [[/面積/, 2], [/圓|扇形|圓環/, 3]],
+            17: [[/長方體|正方體|表面積|體積/, 4]],
+            18: [[/圓柱|角柱|圓錐|容積|展開圖/, 4]],
+            19: [[/連比|比值/, 4], [/\d+\s*[:：]\s*\d+/, 2], [/比例/, 2]],
+            20: [[/比例尺|地圖/, 5]],
+            21: [[/時速|分速|秒速|速率|平均速/, 4]],
+            22: [[/追上|追趕|相遇|相向|同時出發/, 4], [/長短針|時針|分針|鐘面/, 5]],
+            23: [[/[一二三四五六七八九1-9]成|百分之|百分率|%|打.*折/, 4], [/一半又|基準量|不及格/, 2]],
+            24: [[/雞兔|雞和兔/, 5], [/倒扣|答對.*得.*分/, 4], [/腳/, 2]],
+            25: [[/年齡|歲/, 4], [/每人分.*(剩|不夠|不足|少)|盈虧/, 4]],
+            26: [[/工程|合作|獨自|單獨|完工/, 4]],
+            27: [[/濃度|食鹽水|糖水|溶液/, 5], [/利潤|成本|定價|賺|賠/, 3]],
+            28: [[/文氏圖|都喜歡|都不喜歡|兩者都|排容/, 5]],
+            29: [[/餘數|除以.*餘|餘\s*\d/, 5], [/星期|禮拜/, 5]],
+            30: [[/巧算|速算|簡便/, 5]]
+        };
+
+        function detectTopic(text) {
+            let best = { id: 1, score: 0, ok: false };
+            for (const [id, rules] of Object.entries(TOPIC_KEYWORDS)) {
+                const score = rules.reduce((s, [re, w]) => s + (re.test(text) ? w : 0), 0);
+                if (score > best.score) best = { id: Number(id), score };
+            }
+            best.ok = best.score >= 4;
+            return best;
+        }
+
+        function detectTopicIdFromText(t) {
+            return t ? detectTopic(t).id : 1;
+        }
+
+        /**
          * 針對「基礎機率（公正硬幣投擲、骰子點數、袋中抽球）」生成同構類似題與進階題
          */
         function tryBuildProbabilityPair(originalText, c1, c2, c3) {
@@ -1281,7 +1331,7 @@
                 ],
                 answerIndex: 0,
                 clue: `跨過兩個月份時，要分別確認 $${advStartM}$ 月有 $${daysInMonth[advStartM]}$ 天、$${advMidM}$ 月有 $${daysInMonth[advMidM]}$ 天，將三段天數相加後再除以 $7$ 求餘數！`,
-                explanation: `$${advStartM}$ 月有 $${daysInMonth[advStartM]}$ 天，${advMidM}$ 月有 $${daysInMonth[advMidM]}$ 天。\n總經過天數 $= (${daysInMonth[advStartM]} - ${advStartD}) + ${daysInMonth[advMidM]} + ${advEndD} = ${advDiffDays}$ 天。\n$${advDiffDays} \\div 7 = ${Math.floor(advDiffDays / 7)}$ 週 $\\dots$ 餘 $${advRem}$ 天。\n從「${weekNames[advStartW]}」往後推 $${advRem}$ 天，得到「星期${shortWeek[advAnsW]}」。`
+                explanation: `$${advStartM}$ 月有 $${daysInMonth[advStartM]}$ 天，$${advMidM}$ 月有 $${daysInMonth[advMidM]}$ 天。\n總經過天數 $= (${daysInMonth[advStartM]} - ${advStartD}) + ${daysInMonth[advMidM]} + ${advEndD} = ${advDiffDays}$ 天。\n$${advDiffDays} \\div 7 = ${Math.floor(advDiffDays / 7)}$ 週 $\\dots$ 餘 $${advRem}$ 天。\n從「${weekNames[advStartW]}」往後推 $${advRem}$ 天，得到「星期${shortWeek[advAnsW]}」。`
             };
 
             return {
@@ -1501,38 +1551,28 @@
         }
 
         /**
+         * B. 特殊產生器：嚴格觸發條件 ＋ 單元必須吻合才執行
+         */
+        const SPECIAL_BUILDERS = [
+            { unit: 5,  test: t => /機率/.test(t) && /硬幣|骰子|抽球|抽中/.test(t), build: tryBuildProbabilityPair },
+            { unit: 29, test: t => /星期|禮拜/.test(t) && /\d+\s*月\s*\d+\s*[日號]/.test(t), build: tryBuildDateWeekdayPair },
+            { unit: 22, test: t => /長短針|時針|分針/.test(t) && /度|重合|直角|一直線/.test(t), build: tryBuildClockAnglePair },
+            { unit: 23, test: t => /[一二三四五六七八九1-9]成|百分之|%/.test(t) && /一半又|剩下|只有/.test(t), build: tryBuildBaseRateRemainderPair },
+            { unit: 1,  test: t => /共用去|共花/.test(t) && /\d+\s*[支枝本個顆張瓶份件]/.test(t), build: tryBuildSingleLinearSystemPair }
+        ];
+
+        /**
          * 生成單一組（1 題類似題 + 1 題進階題）
          */
         function generateSinglePair(unitId, originalText = "") {
             const [c1, c2, c3] = pickConanChars(3);
-
-            // 1. 無條件優先比對特定結構題型（機率硬幣骰子、跨月日期星期幾推算、時鐘長短針夾角追趕、基準量與成數逆推、二元一次買賣消去法）
-            const probPair = tryBuildProbabilityPair(originalText, c1, c2, c3);
-            if (probPair) {
-                return probPair;
+            const text = originalText || "";
+            for (const b of SPECIAL_BUILDERS) {
+                if (Number(unitId) !== b.unit || !b.test(text)) continue;
+                const pair = b.build(text, c1, c2, c3);
+                if (pair) return pair;
             }
-
-            const dateWeekdayPair = tryBuildDateWeekdayPair(originalText, c1, c2, c3);
-            if (dateWeekdayPair) {
-                return dateWeekdayPair;
-            }
-
-            const clockPair = tryBuildClockAnglePair(originalText, c1, c2, c3);
-            if (clockPair) {
-                return clockPair;
-            }
-
-            const baseRatePair = tryBuildBaseRateRemainderPair(originalText, c1, c2, c3);
-            if (baseRatePair) {
-                return baseRatePair;
-            }
-
-            const linearPair = tryBuildSingleLinearSystemPair(originalText, c1, c2, c3);
-            if (linearPair) {
-                return linearPair;
-            }
-
-            const id = Number(unitId) || detectTopicIdFromText(originalText);
+            const id = Number(unitId) || detectTopic(text).id || 1;
             let sim, adv;
 
             if (id === 1) {
@@ -2146,6 +2186,67 @@
                 similarProblems: [pair1.sim, pair2.sim],
                 advancedProblems: [pair1.adv, pair2.adv]
             };
+        }
+
+        /**
+         * C. 共用 Gemini 同構出題與答案自檢函式
+         */
+        const normOpt = s => String(s).replace(/[\s$\\]/g, "");
+        function isValidProblem(p) {
+            if (!p || !p.question || !Array.isArray(p.options) || p.options.length !== 4) return false;
+            if (new Set(p.options.map(normOpt)).size !== 4) return false;
+            if (!Number.isInteger(p.answerIndex) || p.answerIndex < 0 || p.answerIndex > 3) return false;
+            if (!p.finalAnswer) return true;
+            const a = normOpt(p.options[p.answerIndex]), f = normOpt(p.finalAnswer);
+            return a.includes(f) || f.includes(a);
+        }
+
+        async function callGeminiVariants({ qText, topicName, photo, autoUnit = false }) {
+            const key = (localStorage.getItem("conan_gemini_api_key") || "").trim();
+            if (!key) return null;
+            const topicList = TOPICS.map(t => t.name).join("；");
+            const prompt = `你是台灣國小六升私中數學資深老師。
+原題：「${qText || "請直接判讀附圖"}」
+${autoUnit ? `請先從下列清單判斷原題單元編號 unitId：${topicList}` : `原題單元：${topicName}`}
+出題規則：
+1. 類似題 2 題：必須與原題「同構」——題型結構、已知條件類型、解題方法完全相同，只換數字與情境，答案不可與原題相同。
+2. 進階題 2 題：同一核心觀念，但多一個轉折（多一步驟、單位換算、干擾條件或逆向求解）。
+3. 4 選 1，誘答選項要來自常見錯誤算法，4 個選項互不相同，answerIndex 隨機分布。
+4. 每題先自行算出 finalAnswer，並確保它與 options[answerIndex] 一致。
+5. 數學式用 $...$ LaTeX；人物用《名偵探柯南》角色；有幾何圖形才給深色背景適用的 svgCode（線條用 #60a5fa 或 #fbbf24），否則 ""。
+只回傳 JSON：{"unitId":1,"extractedQuestion":"","similarProblems":[{"question":"","svgCode":"","options":["","","",""],"answerIndex":0,"finalAnswer":"","clue":"","explanation":""},{"question":"","svgCode":"","options":["","","",""],"answerIndex":0,"finalAnswer":"","clue":"","explanation":""}],"advancedProblems":[{"question":"","svgCode":"","options":["","","",""],"answerIndex":0,"finalAnswer":"","clue":"","explanation":""},{"question":"","svgCode":"","options":["","","",""],"answerIndex":0,"finalAnswer":"","clue":"","explanation":""}]}`;
+
+            const parts = [{ text: prompt }];
+            if (photo) parts.push({ inline_data: { mime_type: "image/jpeg", data: photo.split(",")[1] } });
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 30000);
+            try {
+                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    signal: ctrl.signal,
+                    body: JSON.stringify({
+                        contents: [{ parts }],
+                        generationConfig: { responseMimeType: "application/json", temperature: 0.5 }
+                    })
+                });
+                if (!resp.ok) return null;
+                const data = await resp.json();
+                const p = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim());
+                const ok = l => Array.isArray(l) && l.length >= 2 && l.slice(0, 2).every(isValidProblem);
+                if (!ok(p.similarProblems) || !ok(p.advancedProblems)) return null;
+                return {
+                    unitId: Number(p.unitId) || null,
+                    extractedQuestion: p.extractedQuestion || "",
+                    similarProblems: p.similarProblems.slice(0, 2).map(shuffleProblemOptions),
+                    advancedProblems: p.advancedProblems.slice(0, 2).map(shuffleProblemOptions)
+                };
+            } catch (e) {
+                console.warn("Gemini failed:", e);
+                return null;
+            } finally {
+                clearTimeout(timer);
+            }
         }
 
         /**
@@ -2853,6 +2954,7 @@
                                 <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-black px-2.5 py-0.5 rounded-lg">
                                     ${item.unitTitle || `主題 ${item.unitId}`}
                                 </span>
+                                ${item.source === 'template' ? '<span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/50">⚠️ 範本題（可能與原題不同構）</span>' : ''}
                                 <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200">
                                     📊 總累計：答對 <strong class="text-emerald-400">${totalRight}</strong> 次 ／ 答錯 <strong class="text-rose-400">${totalWrong}</strong> 次
                                 </span>
@@ -2929,44 +3031,49 @@
             showToast("已切換至此錯題開始挑戰！", "🔍");
         }
 
-        function regenerateSingleSubProblem(realIdx, mode, subIdx) {
+        /**
+         * E. 重新產生題組（改走 Gemini 且保留原單元不覆蓋）
+         */
+        async function freshVariants(item) {
+            const topic = TOPICS.find(t => t.id === item.unitId) || TOPICS[0];
+            const ai = await callGeminiVariants({
+                qText: item.originalQuestion,
+                topicName: topic.name,
+                photo: item.photoUrl
+            });
+            return ai
+                ? { ...ai, source: "ai" }
+                : { ...generateVariantProblems(item.unitId, item.originalQuestion), source: "template" };
+        }
+
+        async function regenerateBankItem(idx) {
+            const item = questionBank[idx];
+            if (!item) return;
+            showToast("重新出題中…", "⏳");
+            const f = await freshVariants(item);
+            item.similarProblems = f.similarProblems;
+            item.advancedProblems = f.advancedProblems;
+            item.source = f.source;
+            saveQuestionBank();
+            renderBankCards();
+            autoSyncGitHubIfConfigured();
+            showToast(f.source === "ai" ? "已由 AI 重新同構出題！" : "已用範本重新出題（未設定 Gemini 或 AI 失敗）", "🔄");
+        }
+
+        async function regenerateSingleSubProblem(realIdx, mode, subIdx) {
             const item = questionBank[realIdx];
             if (!item) return;
             normalizeBankItem(item);
-            const correctedUnitId = detectTopicIdFromText(item.originalQuestion) || item.unitId;
-            const topicObj = TOPICS.find(t => t.id === correctedUnitId);
-            if (topicObj) {
-                item.unitId = topicObj.id;
-                item.unitTitle = topicObj.name;
-            }
-            const freshPair = generateSinglePair(item.unitId, item.originalQuestion);
-            if (mode === 'similar') {
-                item.similarProblems[subIdx] = freshPair.sim;
-            } else {
-                item.advancedProblems[subIdx] = freshPair.adv;
-            }
+            showToast("正在重新產生此題…", "⏳");
+            const f = await freshVariants(item);
+            const fresh = mode === "similar" ? f.similarProblems : f.advancedProblems;
+            const arr = mode === "similar" ? item.similarProblems : item.advancedProblems;
+            arr[subIdx] = fresh.find(p => p.question !== arr[1 - subIdx].question) || fresh[0];
+            item.source = f.source;
             saveQuestionBank();
             renderBankCards();
             autoSyncGitHubIfConfigured();
-            showToast(`已重新產生「${mode === 'similar' ? '類似題' : '進階題'} #${subIdx + 1}」並重新開放出題！`, "🔄");
-        }
-
-        function regenerateBankItem(idx) {
-            const item = questionBank[idx];
-            if (!item) return;
-            const correctedUnitId = detectTopicIdFromText(item.originalQuestion) || item.unitId;
-            const topicObj = TOPICS.find(t => t.id === correctedUnitId);
-            if (topicObj) {
-                item.unitId = topicObj.id;
-                item.unitTitle = topicObj.name;
-            }
-            const fresh = generateVariantProblems(item.unitId, item.originalQuestion);
-            item.similarProblems = fresh.similarProblems;
-            item.advancedProblems = fresh.advancedProblems;
-            saveQuestionBank();
-            renderBankCards();
-            autoSyncGitHubIfConfigured();
-            showToast("已重新產生全新的【2 類似題 ＋ 2 進階題】並重置過關次數！", "🔄");
+            showToast("已重新產生此題並重新開放出題！", "🔄");
         }
 
         function deleteBankItem(idx) {
@@ -3100,49 +3207,6 @@
             showToast("請在輸入框內長按選擇「貼上」或按 Ctrl+V！", "💡");
         }
 
-        function detectTopicIdFromText(text) {
-            if (!text) return 1;
-            const rules = [
-                { id: 5, re: /機率|硬幣|正面|反面|骰子|投擲|抽中|抽球/ },
-                { id: 29, re: /星期|禮拜|(\d+\s*月\s*\d+\s*[號日])|餘數|餘|不足|每\s*\d+\s*[顆個支本張人]\s*一數/ },
-                { id: 22, re: /長短針|時針|分針|鐘面|重合|成一直線|追趕|追上|相遇|相向/ },
-                { id: 9, re: /每隔|植樹|種樹|間隔|路燈|燈泡|電線桿|兩端都|一端.*一端|兩旁|兩側/ },
-                { id: 10, re: /數列|等差|循環|第\s*\d+\s*個數|重複出現|規律/ },
-                { id: 23, re: /佔了.*([一二三四五六七八九1-9]成|一半|百分之|\d+%)|不及格.*成|一半又\s*\d+|百分率|打.*折|%/ },
-                { id: 1, re: /x\s*元|y\s*元|原子筆|筆記本|代數|方程式|未知數|聯立|下列哪個選項/i },
-                { id: 11, re: /方陣|空心|實心.*正方形|最外層.*每邊|每邊.*人/ },
-                { id: 2, re: /指數|次方|\^/ },
-                { id: 21, re: /速率|時速|分速|秒速/ },
-                { id: 24, re: /雞兔|得.*分.*扣|倒扣/ },
-                { id: 25, re: /年齡|歲|盈|虧|每人分/ },
-                { id: 26, re: /工程|合作|獨自|完工/ },
-                { id: 27, re: /濃度|食鹽水|糖水|加.*成|利潤/ },
-                { id: 28, re: /文氏圖|都喜歡|都不喜歡|排容/ },
-                { id: 30, re: /巧算|999|125/ },
-                { id: 15, re: /圓周長|扇形周長|弧長/ },
-                { id: 16, re: /圓面積|扇形面積|圓環/ },
-                { id: 17, re: /長方體|正方體|表面積|體積/ },
-                { id: 18, re: /圓柱|角柱|容積/ },
-                { id: 19, re: /連比|比值|比例/ },
-                { id: 20, re: /比例尺|地圖/ },
-                { id: 12, re: /三角形|內角/ },
-                { id: 13, re: /梯形|菱形|平行四邊形|四邊形/ },
-                { id: 14, re: /線段|棋盤|幾何計數/ },
-                { id: 8, re: /公里|公尺|公分|公頃|公畝|單位換算/ },
-                { id: 7, re: /概數|四捨五入/ },
-                { id: 6, re: /小數/ },
-                { id: 5, re: /分數|幾分之幾/ },
-                { id: 4, re: /公因數|公倍數/ },
-                { id: 3, re: /因數|倍數/ }
-            ];
-            for (const r of rules) {
-                if (r.re.test(text)) {
-                    return r.id;
-                }
-            }
-            return 1;
-        }
-
         function onQuestionInputChange() {
             const text = document.getElementById("addQuestionInput").value.trim();
             const banner = document.getElementById("detectedTopicBanner");
@@ -3150,90 +3214,51 @@
                 banner.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>貼上題目後，系統會自動判斷對應的私中數學題型並生成 2 題類似題與 2 題進階題。</span>`;
                 return;
             }
-            const detectedId = detectTopicIdFromText(text);
-            const topicObj = TOPICS.find(t => t.id === detectedId) || TOPICS[0];
-            banner.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>🎯 自動辨識題型為：【${topicObj.name}】</span>`;
+            const det = detectTopic(text);
+            const topicObj = TOPICS.find(t => t.id === det.id) || TOPICS[0];
+            if (det.ok) {
+                banner.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>🎯 自動辨識題型為：【${topicObj.name}】</span>`;
+            } else {
+                banner.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">題型關鍵字信心較低（暫估【${topicObj.name}】），建議在下方手動指定單元或設定 Gemini API Key！</span>`;
+            }
         }
 
+        /**
+         * D. 儲存新增錯題（結合計分式偵測與共用 Gemini 驗證出題）
+         */
         async function saveNewWrongQuestion() {
-            const rawSelectVal = document.getElementById("addUnitSelect").value;
+            const sel = document.getElementById("addUnitSelect").value;
             const qText = document.getElementById("addQuestionInput").value.trim();
-
             if (!qText && !currentAddDiagramDataUrl) {
                 showToast("請貼上錯題文字，或上傳一張幾何圖形照片！", "⚠️");
                 return;
             }
-
             const defaultGeoText = "【幾何圖形錯題】請觀察附圖中的幾何尺寸與塗色區域，計算出正確答案。";
             const effectiveText = qText || defaultGeoText;
-            const fallbackUnit = currentAddDiagramDataUrl ? 16 : 1;
-            const unitId = rawSelectVal === "AUTO"
-                ? (qText ? detectTopicIdFromText(qText) : fallbackUnit)
-                : (parseInt(rawSelectVal, 10) || fallbackUnit);
-            const topicObj = TOPICS.find(t => t.id === unitId) || TOPICS[0];
+            const auto = sel === "AUTO";
+            const det = qText ? detectTopic(qText) : { id: 16, ok: false };
+            let unitId = auto ? det.id : (parseInt(sel, 10) || det.id);
+            let topicObj = TOPICS.find(t => t.id === unitId) || TOPICS[0];
 
             const btn = document.getElementById("saveNewQuestionBtn");
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在生成【2類似題 + 2進階題】...</span>`;
-
             try {
-                const geminiKey = (localStorage.getItem("conan_gemini_api_key") || "").trim();
-                let variants = null;
-
-                if (geminiKey) {
-                    try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 16000);
-                        const prompt = `你是一位台灣國小六升私中數學資深老師。請緊扣以下家長提供的錯題（單元：${topicObj.name}，文字：「${qText || "請直接判讀附圖中的幾何圖形與文字"}」），設計 2 題不同數據或問法的「類似題 (similarProblems)」與 2 題加深難度的「進階題 (advancedProblems)」，每題皆為 4 選 1 選擇題，數學公式請用 $...$ LaTeX 格式。若原題包含幾何圖形，請為每題生成一個簡潔清晰的深色背景適配 SVG 向量圖程式碼（放在 svgCode 欄位，例如 <svg viewBox="0 0 220 145" class="w-52 h-36">...</svg>，線條用 #60a5fa 或 #fbbf24）；若無需圖形則 svgCode 留空字串 ""。請將正確答案隨機放在不同的選項位置（answerIndex 可為 0、1、2 或 3）。出題情境若需要人物名稱，請務必使用《名偵探柯南》角色。
-                        請嚴格回傳 JSON 格式（不要有 markdown 標記）：
-                        {
-                          "extractedQuestion": "若附圖有題目文字請辨識出完整原題文字，否則回傳空字串",
-                          "similarProblems": [
-                            {"question":"類似題1","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":1,"clue":"破案線索","explanation":"詳細解析"},
-                            {"question":"類似題2","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":3,"clue":"破案線索","explanation":"詳細解析"}
-                          ],
-                          "advancedProblems": [
-                            {"question":"進階題1","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":2,"clue":"破案線索","explanation":"詳細解析"},
-                            {"question":"進階題2","svgCode":"","options":["選項A","選項B","選項C","選項D"],"answerIndex":0,"clue":"破案線索","explanation":"詳細解析"}
-                          ]
-                        }`;
-
-                        const parts = [{ text: prompt }];
-                        if (currentAddDiagramDataUrl) {
-                            const base64 = currentAddDiagramDataUrl.split(',')[1];
-                            parts.push({ inline_data: { mime_type: "image/jpeg", data: base64 } });
-                        }
-
-                        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            signal: controller.signal,
-                            body: JSON.stringify({ contents: [{ parts }] })
-                        });
-                        clearTimeout(timeoutId);
-                        if (resp.ok) {
-                            const data = await resp.json();
-                            const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-                            const parsed = JSON.parse(rawJson);
-                            if (Array.isArray(parsed.similarProblems) && parsed.similarProblems.length >= 2 &&
-                                Array.isArray(parsed.advancedProblems) && parsed.advancedProblems.length >= 2) {
-                                variants = {
-                                    extractedQuestion: parsed.extractedQuestion || "",
-                                    similarProblems: parsed.similarProblems.slice(0, 2).map(shuffleProblemOptions),
-                                    advancedProblems: parsed.advancedProblems.slice(0, 2).map(shuffleProblemOptions)
-                                };
-                            }
-                        }
-                    } catch (e) {
-                        console.log("Gemini fallback to local generator:", e);
-                    }
+                const ai = await callGeminiVariants({
+                    qText,
+                    topicName: topicObj.name,
+                    photo: currentAddDiagramDataUrl,
+                    autoUnit: auto && !det.ok
+                });
+                if (ai && auto && !det.ok && ai.unitId) {
+                    unitId = ai.unitId;
+                    topicObj = TOPICS.find(t => t.id === unitId) || topicObj;
                 }
+                const variants = ai || generateVariantProblems(unitId, effectiveText);
+                const source = ai ? "ai" : "template";
+                const warn = !ai && auto && !det.ok;
 
-                if (!variants) {
-                    variants = generateVariantProblems(unitId, effectiveText);
-                }
-
-                const newItem = {
+                questionBank.unshift({
                     id: "q_" + Date.now(),
                     unitId: topicObj.id,
                     unitTitle: topicObj.name,
@@ -3242,19 +3267,22 @@
                     similarProblems: variants.similarProblems,
                     advancedProblems: variants.advancedProblems,
                     stats: { right: 0, wrong: 0 },
-                    createdDate: new Date().toISOString().split('T')[0]
-                };
-
-                questionBank.unshift(newItem);
+                    source,
+                    createdDate: new Date().toISOString().split("T")[0]
+                });
                 currentBankIndex = 0;
-                currentQuizMode = 'similar';
+                currentQuizMode = "similar";
                 currentSubIndex = 0;
                 saveQuestionBank();
-
                 clearAddDiagram();
                 closeAddModal();
-                activateTab('bank');
-                showToast(`✅ 已依【${topicObj.name}】生成題組並保存！`, "🎉");
+                activateTab("bank");
+                showToast(
+                    warn
+                        ? `題型辨識信心不足，暫判為【${topicObj.name}】並用範本出題，請到錯題庫確認單元`
+                        : `✅ 已依【${topicObj.name}】生成題組並保存！`,
+                    warn ? "⚠️" : "🎉"
+                );
                 autoSyncGitHubIfConfigured();
             } catch (err) {
                 showToast(`生成題組時發生異常：${err.message}`, "❌");
